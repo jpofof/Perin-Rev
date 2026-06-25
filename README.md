@@ -352,6 +352,7 @@ Nenhum servidor, build ou instalação de dependências é necessária.
 | 09/06/2026 | Delay do texto reduzido (0.7s → 0.4s) | `script.js` |
 | 09/06/2026 | Documentação atualizada | `README.md` |
 | 10/06/2026 | Substituição do select nativo por dropdown customizado no formulário de contato, com ícones SVG por tipo de serviço, estilos com a paleta verde do site e navegação por teclado | `index.html`, `styles.css`, `script.js` |
+| 25/06/2026 | Ajustes no carrossel automático de clientes: cards ~13% maiores (215×152px), proporção menos alongada (~1.41:1), velocidade do autoplay aumentada (2.8 px/frame), inércia mais forte (FRICTION 0.95, DRAG_FACTOR 1.05, MAX_SPEED 22), direção inicial ← ← ← (direita para esquerda, baseSpeed=-2.8), definição JS das variáveis CSS `--slide-w`/`--slide-h` | `styles.css`, `script.js` |
 
 ---
 

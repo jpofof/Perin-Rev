@@ -1457,8 +1457,8 @@ h6 {
 /* Card: largura fixa calculada pelo JS via --slide-w,
    fallback de 190px para não quebrar antes do JS rodar */
 .clients-carousel-slide {
-    flex: 0 0 var(--slide-w, 190px);
-    height: var(--slide-h, 130px);
+    flex: 0 0 var(--slide-w, 215px);
+    height: var(--slide-h, 152px);
     display: flex;
     align-items: center;
     justify-content: center;

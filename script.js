@@ -1074,14 +1074,23 @@ function initClientsCarousel() {
         });
     }
 
+    // Set CSS custom properties for slide dimensions (used by card sizing)
+    function setSlideDimensions() {
+        const w = originalSlides[0].offsetWidth;
+        const h = originalSlides[0].offsetHeight;
+        track.style.setProperty('--slide-w', w + 'px');
+        track.style.setProperty('--slide-h', h + 'px');
+    }
+    setSlideDimensions();
+
     // Physics state
     let currentX = -setWidth;          // start at first original set
     let velocity = 0;
-    let baseSpeed = 1.8;               // px per frame, rightward (left-to-right)
-    const FRICTION = 0.92;             // inertia deceleration (higher = slides longer)
+    let baseSpeed = -2.8;              // px per frame, leftward (right-to-left) — negative = ← ← ←
+    const FRICTION = 0.95;             // inertia deceleration (higher = slides longer)
     const RETURN_SPRING = 0.025;       // how fast velocity returns to baseSpeed
-    const MAX_SPEED = 18;              // max momentum on release
-    const DRAG_FACTOR = 0.85;          // momentum multiplier on release
+    const MAX_SPEED = 22;              // max momentum on release
+    const DRAG_FACTOR = 1.05;          // momentum multiplier on release
     let isDragging = false;
     let lastPointerX = 0;
     let dragDelta = 0;
