@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perin Construções — Engenharia e Arquitetura Premium</title>
+    <meta name="description"
+        content="Perin Construções — Construção Residencial, Comercial e Industrial. Reformas, Ampliações, Gerenciamento de Obras e Consultoria Técnica.">
+    <meta name="keywords"
+        content="construção, engenharia, arquitetura, reformas, ampliações, obras, consultoria técnica">
+    <meta name="author" content="Perin Construções">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://perinconstrucoes.com.br/">
+    <meta property="og:title" content="Perin Construções — Engenharia e Arquitetura Premium">
+    <meta property="og:description"
+        content="Excelência em construção residencial, comercial e industrial. Transformamos projetos em realidade com engenharia de precisão.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://perinconstrucoes.com.br/">
+    <meta name="theme-color" content="#0A0B0B">
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <!-- NAVIGATION -->
+    <header class="premium-navigation" id="mainNav" role="banner">
+        <nav class="nav-container" aria-label="Navegação principal">
+            <a href="#" class="nav-logo" aria-label="Perin Construções - Início">
+                <img src="LOGO PERIN PNG ATUAL02.jpg" alt="Logo da Perin Construções" class="nav-logo-image">
+            </a>
+            <div class="nav-links" id="navLinks">
+                <a href="#about" class="nav-link">Sobre</a>
+                <a href="#services" class="nav-link">Serviços</a>
+                <a href="#process" class="nav-link">Processo</a>
+                <a href="#portfolio" class="nav-link">Portfólio</a>
+                <a href="#contact" class="nav-link nav-link-highlight">Contato</a>
+            </div>
+            <button class="nav-toggle" id="navToggle" aria-label="Abrir menu" aria-expanded="false">
+                <span class="nav-toggle-line"></span>
+                <span class="nav-toggle-line"></span>
+                <span class="nav-toggle-line"></span>
+            </button>
+        </nav>
+    </header>
+
+    <!-- MOBILE MENU OVERLAY -->
+    <div class="mobile-menu-overlay" id="mobileMenu" role="dialog" aria-modal="true" aria-label="Menu de navegação">
+        <div class="mobile-menu-content">
+            <nav class="mobile-menu-links" aria-label="Navegação mobile">
+                <a href="#about" class="mobile-link" data-text="Sobre">Sobre</a>
+                <a href="#services" class="mobile-link" data-text="Serviços">Serviços</a>
+                <a href="#process" class="mobile-link" data-text="Processo">Processo</a>
+                <a href="#portfolio" class="mobile-link" data-text="Portfólio">Portfólio</a>
+                <a href="#differentials" class="mobile-link" data-text="Diferenciais">Diferenciais</a>
+                <a href="#contact" class="mobile-link-highlight" data-text="Contato">Contato</a>
+            </nav>
+            <div class="mobile-menu-footer">
+                <span class="mobile-menu-footer-text">© 2026 Perin Construções</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- HERO SECTION -->
+    <section class="hero-architectural-scene" id="hero" aria-label="Hero principal">
+        <div class="hero-canvas" id="heroCanvas">
+            <div class="hero-grid-layer" id="heroGrid"></div>
+            <div class="hero-geometries" id="heroGeometries">
+                <div class="geometry-shape geometry-shape-1" data-depth="0.3">
+                    <svg viewBox="0 0 400 400" fill="none">
+                        <rect x="50" y="50" width="300" height="300" rx="8" stroke="#2A873E" stroke-width="0.5"
+                            opacity="0.6" />
+                        <rect x="100" y="100" width="200" height="200" rx="4" stroke="#F5F5F5" stroke-width="0.3"
+                            opacity="0.3" />
+                        <circle cx="200" cy="200" r="80" stroke="#3FCC5B" stroke-width="0.5" opacity="0.4" />
+                    </svg>
+                </div>
+                <div class="geometry-shape geometry-shape-2" data-depth="0.5">
+                    <svg viewBox="0 0 300 300" fill="none">
+                        <polygon points="150,30 270,180 30,180" stroke="#2A873E" stroke-width="0.5" opacity="0.5" />
+                        <polygon points="150,70 230,160 70,160" stroke="#F5F5F5" stroke-width="0.3" opacity="0.2" />
+                    </svg>
+                </div>
+                <div class="geometry-shape geometry-shape-3" data-depth="0.2">
+                    <svg viewBox="0 0 200 200" fill="none">
+                        <rect x="20" y="20" width="160" height="160" stroke="#3FCC5B" stroke-width="0.5" opacity="0.4"
+                            transform="rotate(45, 100, 100)" />
+                        <rect x="50" y="50" width="100" height="100" stroke="#F5F5F5" stroke-width="0.3" opacity="0.2"
+                            transform="rotate(45, 100, 100)" />
+                    </svg>
+                </div>
+            </div>
+            <div class="hero-lighting-layer" id="heroLighting">
+                <div class="light-spot light-spot-1"></div>
+                <div class="light-spot light-spot-2"></div>
+                <div class="light-spot light-spot-3"></div>
+            </div>
+            <div class="hero-particles" id="heroParticles"></div>
+            <div class="hero-content-overlay">
+                <div class="hero-content-wrapper">
+                    <div class="hero-badge">
+                        <span class="hero-badge-line"></span>
+                        <span class="hero-badge-text">Engenharia & Arquitetura</span>
+                        <span class="hero-badge-line"></span>
+                    </div>
+                    <h1 class="hero-title" id="heroTitle">
+                        <span class="hero-title-line hero-title-line-1">Construímos o</span>
+                        <span class="hero-title-line hero-title-line-2">Futuro com</span>
+                        <span class="hero-title-line hero-title-line-3 hero-title-accent">Precisão</span>
+                    </h1>
+                    <p class="hero-subtitle" id="heroSubtitle">Da fundação ao acabamento, cada detalhe é pensado para
+                        transformar seu projeto em uma obra-prima da engenharia.</p>
+                    <div class="hero-actions">
+                        <a href="#portfolio" class="hero-button-primary">Ver Projetos<span
+                                class="hero-button-glow"></span></a>
+                        <a href="#contact" class="hero-button-secondary">Solicitar Orçamento
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                <path d="M1 8H15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                                <path d="M8 1L15 8L8 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                                    stroke-linejoin="round" />
+                            </svg>
+                        </a>
+                    </div>
+                    <div class="hero-scroll-indicator">
+                        <span class="hero-scroll-text">Role para explorar</span>
+                        <div class="hero-scroll-line">
+                            <div class="hero-scroll-dot"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="hero-overlay-gradient"></div>
+    </section>
+
+    <!-- ABOUT SECTION -->
+    <section class="about-narrative-section" id="about" aria-label="Sobre a Perin Construções">
+        <div class="about-container">
+            <div class="about-grid">
+                <div class="about-content-left">
+                    <div class="section-tag-reveal"><span class="section-tag">Sobre Nós</span></div>
+                    <h2 class="about-title section-title-reveal">Engenharia que<br><span
+                            class="text-accent-green">Constrói</span> Confiança</h2>
+                    <div class="about-text-container">
+                        <p class="about-text text-reveal">[Inserir apresentação da empresa] A Perin Construções nasce da
+                            paixão por transformar espaços e criar estruturas que definem o amanhã.</p>
+                        <p class="about-text text-reveal">[Inserir missão] Nossa missão é oferecer soluções completas em
+                            construção civil, integrando planejamento estratégico, execução precisa e materiais de
+                            altíssima qualidade.</p>
+                    </div>
+                </div>
+                <div class="about-content-right">
+                    <div class="about-visual-element">
+                        <div class="about-image-frame">
+                            <div class="about-image-placeholder">
+                                <svg viewBox="0 0 600 700" fill="none">
+                                    <rect width="600" height="700" fill="#111111" rx="8" />
+                                    <rect x="100" y="200" width="400" height="300" rx="4" stroke="#262626"
+                                        stroke-width="1" fill="none" />
+                                    <rect x="150" y="250" width="300" height="200" rx="2" stroke="#2A873E"
+                                        stroke-width="0.5" fill="none" />
+                                    <line x1="100" y1="350" x2="500" y2="350" stroke="#262626" stroke-width="0.5" />
+                                    <line x1="300" y1="200" x2="300" y2="500" stroke="#262626" stroke-width="0.5" />
+                                    <text x="300" y="420" text-anchor="middle" font-family="Manrope" font-size="14"
+                                        fill="#BDB49F">[Inserir imagem real]</text>
+                                </svg>
+                            </div>
+                            <div class="about-image-overlay"></div>
+                        </div>
+                        <div class="about-stats-grid">
+                            <div class="about-stat"><span class="about-stat-number counter-target"
+                                    data-target="[Inserir quantidade de projetos]">0</span><span
+                                    class="about-stat-label">Projetos Realizados</span></div>
+                            <div class="about-stat"><span class="about-stat-number counter-target"
+                                    data-target="[anos]">0</span><span class="about-stat-label">Anos de
+                                    Experiência</span></div>
+                            <div class="about-stat"><span class="about-stat-number counter-target"
+                                    data-target="[indice]">0</span><span class="about-stat-label">Satisfação</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="values-row">
+                <div class="value-item">
+                    <div class="value-icon"><svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                            <path d="M16 4L28 10V22L16 28L4 22V10L16 4Z" stroke="#2A873E" stroke-width="1.5" />
+                            <path d="M16 4V28" stroke="#2A873E" stroke-width="1" opacity="0.5" />
+                            <path d="M4 10L28 22" stroke="#2A873E" stroke-width="1" opacity="0.5" />
+                            <path d="M28 10L4 22" stroke="#2A873E" stroke-width="1" opacity="0.5" />
+                        </svg></div>
+                    <h3 class="value-title">[Inserir valor]</h3>
+                    <p class="value-description">[Inserir descrição do valor]</p>
+                </div>
+                <div class="value-item">
+                    <div class="value-icon"><svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                            <circle cx="16" cy="16" r="12" stroke="#2A873E" stroke-width="1.5" />
+                            <circle cx="16" cy="16" r="6" stroke="#2A873E" stroke-width="1" />
+                            <path d="M16 4V8M16 24V28M4 16H8M24 16H28" stroke="#2A873E" stroke-width="1"
+                                stroke-linecap="round" />
+                        </svg></div>
+                    <h3 class="value-title">[Inserir valor]</h3>
+                    <p class="value-description">[Inserir descrição do valor]</p>
+                </div>
+                <div class="value-item">
+                    <div class="value-icon"><svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                            <path d="M8 24L16 8L24 24" stroke="#2A873E" stroke-width="1.5" stroke-linecap="round"
+                                stroke-linejoin="round" />
+                            <path d="M12 18H20" stroke="#2A873E" stroke-width="1" stroke-linecap="round" />
+                        </svg></div>
+                    <h3 class="value-title">[Inserir valor]</h3>
+                    <p class="value-description">[Inserir descrição do valor]</p>
+                </div>
+                <div class="value-item">
+                    <div class="value-icon"><svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                            <rect x="4" y="8" width="24" height="16" rx="2" stroke="#2A873E" stroke-width="1.5" />
+                            <path d="M12 8V6C12 4.9 12.9 4 14 4H18C19.1 4 20 4.9 20 6V8" stroke="#2A873E"
+                                stroke-width="1" />
+                            <path d="M8 14H10M22 14H24M8 18H10M22 18H24" stroke="#2A873E" stroke-width="1"
+                                stroke-linecap="round" />
+                        </svg></div>
+                    <h3 class="value-title">[Inserir valor]</h3>
+                    <p class="value-description">[Inserir descrição do valor]</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SERVICES SECTION -->
+    <section class="services-interactive-module" id="services" aria-label="Serviços">
+        <div class="services-container">
+            <div class="services-header">
+                <div class="section-tag-reveal"><span class="section-tag">Nossos Serviços</span></div>
+                <h2 class="services-main-title section-title-reveal">Soluções Completas em<br><span
+                        class="text-accent-green">Engenharia</span></h2>
+            </div>
+            <div class="services-mosaic" id="servicesMosaic">
+                <div class="service-mosaic-item" data-service="residential">
+                    <div class="service-mosaic-inner">
+                        <div class="service-mosaic-number">01</div>
+                        <div class="service-mosaic-content">
+                            <h3 class="service-mosaic-title">Construção Residencial</h3>
+                            <p class="service-mosaic-description">Transformamos sonhos em lares. Projetos residenciais
+                                que aliam conforto, estética e funcionalidade com rigor técnico.</p>
+                            <a href="#contact" class="service-mosaic-cta">Solicitar Orçamento</a>
+                        </div>
+                        <div class="service-mosaic-visual"><svg viewBox="0 0 200 200" fill="none">
+                                <rect x="40" y="80" width="120" height="100" rx="2" stroke="#262626" stroke-width="1" />
+                                <polygon points="20,80 100,30 180,80" stroke="#2A873E" stroke-width="1" fill="none" />
+                                <rect x="100" y="130" width="30" height="50" rx="1" stroke="#262626"
+                                    stroke-width="0.5" />
+                                <rect x="65" y="140" width="20" height="20" rx="1" stroke="#262626"
+                                    stroke-width="0.5" />
+                            </svg></div>
+                    </div>
+                </div>
+                <div class="service-mosaic-item" data-service="commercial">
+                    <div class="service-mosaic-inner">
+                        <div class="service-mosaic-number">02</div>
+                        <div class="service-mosaic-content">
+                            <h3 class="service-mosaic-title">Construção Comercial</h3>
+                            <p class="service-mosaic-description">Espaços comerciais que impulsionam negócios.
+                                Estruturas modernas, funcionais e projetadas para o sucesso.</p>
+                            <a href="#contact" class="service-mosaic-cta">Solicitar Orçamento</a>
+                        </div>
+                        <div class="service-mosaic-visual"><svg viewBox="0 0 200 200" fill="none">
+                                <rect x="30" y="50" width="140" height="130" rx="2" stroke="#262626" stroke-width="1" />
+                                <rect x="50" y="70" width="100" height="30" rx="1" stroke="#2A873E"
+                                    stroke-width="0.5" />
+                                <rect x="50" y="110" width="45" height="30" rx="1" stroke="#262626"
+                                    stroke-width="0.5" />
+                                <rect x="105" y="110" width="45" height="30" rx="1" stroke="#262626"
+                                    stroke-width="0.5" />
+                                <rect x="80" y="150" width="40" height="30" rx="1" stroke="#262626"
+                                    stroke-width="0.5" />
+                            </svg></div>
+                    </div>
+                </div>
+                <div class="service-mosaic-item" data-service="industrial">
+                    <div class="service-mosaic-inner">
+                        <div class="service-mosaic-number">03</div>
+                        <div class="service-mosaic-content">
+                            <h3 class="service-mosaic-title">Construção Industrial</h3>
+                            <p class="service-mosaic-description">Galpões, armazéns e plantas industriais com
+                                infraestrutura robusta para operações de alto desempenho.</p>
+                            <a href="#contact" class="service-mosaic-cta">Solicitar Orçamento</a>
+                        </div>
+                        <div class="service-mosaic-visual"><svg viewBox="0 0 200 200" fill="none">
+                                <rect x="30" y="90" width="140" height="90" rx="2" stroke="#262626" stroke-width="1" />
+                                <rect x="30" y="40" width="140" height="50" rx="1" stroke="#2A873E" stroke-width="1" />
+                                <line x1="100" y1="40" x2="100" y2="180" stroke="#262626" stroke-width="0.5" />
+                                <rect x="45" y="105" width="35" height="40" rx="1" stroke="#262626"
+                                    stroke-width="0.5" />
+                                <rect x="120" y="105" width="35" height="40" rx="1" stroke="#262626"
+                                    stroke-width="0.5" />
+                            </svg></div>
+                    </div>
+                </div>
+                <div class="service-mosaic-item" data-service="renovations">
+                    <div class="service-mosaic-inner">
+                        <div class="service-mosaic-number">04</div>
+                        <div class="service-mosaic-content">
+                            <h3 class="service-mosaic-title">Reformas</h3>
+                            <p class="service-mosaic-description">Renovamos espaços com inteligência. Preservamos o que
+                                é essencial e transformamos o que precisa evoluir.</p>
+                            <a href="#contact" class="service-mosaic-cta">Solicitar Orçamento</a>
+                        </div>
+                        <div class="service-mosaic-visual"><svg viewBox="0 0 200 200" fill="none">
+                                <rect x="40" y="60" width="120" height="100" rx="2" stroke="#262626" stroke-width="1"
+                                    transform="rotate(-5, 100, 110)" />
+                                <rect x="55" y="75" width="40" height="40" rx="1" stroke="#2A873E" stroke-width="0.5"
+                                    transform="rotate(-5, 75, 95)" />
+                                <rect x="105" y="75" width="40" height="40" rx="1" stroke="#262626" stroke-width="0.5"
+                                    transform="rotate(-5, 125, 95)" />
+                                <line x1="60" y1="140" x2="140" y2="140" stroke="#2A873E" stroke-width="0.5" />
+                            </svg></div>
+                    </div>
+                </div>
+                <div class="service-mosaic-item" data-service="expansions">
+                    <div class="service-mosaic-inner">
+                        <div class="service-mosaic-number">05</div>
+                        <div class="service-mosaic-content">
+                            <h3 class="service-mosaic-title">Ampliações</h3>
+                            <p class="service-mosaic-description">Expandimos horizontes. Ampliações planejadas que
+                                integram perfeitamente o novo ao existente.</p>
+                            <a href="#contact" class="service-mosaic-cta">Solicitar Orçamento</a>
+                        </div>
+                        <div class="service-mosaic-visual"><svg viewBox="0 0 200 200" fill="none">
+                                <rect x="30" y="80" width="80" height="100" rx="2" stroke="#262626" stroke-width="1" />
+                                <rect x="110" y="100" width="60" height="80" rx="2" stroke="#2A873E" stroke-width="1"
+                                    stroke-dasharray="4 4" />
+                                <path d="M110 120L120 100" stroke="#2A873E" stroke-width="1" />
+                                <path d="M130 130L140 110" stroke="#2A873E" stroke-width="1" />
+                            </svg></div>
+                    </div>
+                </div>
+                <div class="service-mosaic-item" data-service="management">
+                    <div class="service-mosaic-inner">
+                        <div class="service-mosaic-number">06</div>
+                        <div class="service-mosaic-content">
+                            <h3 class="service-mosaic-title">Gerenciamento de Obras</h3>
+                            <p class="service-mosaic-description">Gestão técnica completa do início ao fim. Cronograma,
+                                orçamento e qualidade sob controle absoluto.</p>
+                            <a href="#contact" class="service-mosaic-cta">Solicitar Orçamento</a>
+                        </div>
+                        <div class="service-mosaic-visual"><svg viewBox="0 0 200 200" fill="none">
+                                <circle cx="100" cy="100" r="60" stroke="#2A873E" stroke-width="1" />
+                                <circle cx="100" cy="100" r="40" stroke="#262626" stroke-width="0.5" />
+                                <circle cx="100" cy="100" r="20" stroke="#262626" stroke-width="0.5" />
+                                <line x1="100" y1="40" x2="100" y2="160" stroke="#262626" stroke-width="0.5" />
+                                <line x1="40" y1="100" x2="160" y2="100" stroke="#262626" stroke-width="0.5" />
+                            </svg></div>
+                    </div>
+                </div>
+                <div class="service-mosaic-item" data-service="consulting">
+                    <div class="service-mosaic-inner">
+                        <div class="service-mosaic-number">07</div>
+                        <div class="service-mosaic-content">
+                            <h3 class="service-mosaic-title">Consultoria Técnica</h3>
+                            <p class="service-mosaic-description">Análise especializada, pareceres técnicos e soluções
+                                inteligentes para os desafios da sua construção.</p>
+                            <a href="#contact" class="service-mosaic-cta">Solicitar Orçamento</a>
+                        </div>
+                        <div class="service-mosaic-visual"><svg viewBox="0 0 200 200" fill="none">
+                                <rect x="40" y="50" width="120" height="100" rx="2" stroke="#2A873E" stroke-width="1" />
+                                <line x1="60" y1="80" x2="140" y2="80" stroke="#262626" stroke-width="0.5" />
+                                <line x1="60" y1="100" x2="120" y2="100" stroke="#262626" stroke-width="0.5" />
+                                <line x1="60" y1="120" x2="100" y2="120" stroke="#262626" stroke-width="0.5" />
+                                <circle cx="150" cy="165" r="15" stroke="#2A873E" stroke-width="1" /><text x="150"
+                                    y="169" text-anchor="middle" fill="#2A873E" font-size="12"
+                                    font-family="Manrope">?</text>
+                            </svg></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PROCESS SECTION -->
+    <section class="process-journey-section" id="process" aria-label="Processo de trabalho">
+        <div class="process-container">
+            <div class="process-header">
+                <div class="section-tag-reveal"><span class="section-tag">Nosso Processo</span></div>
+                <h2 class="process-main-title section-title-reveal">Como<br><span
+                        class="text-accent-green">Construímos</span></h2>
+                <p class="process-subtitle text-reveal">Um método estruturado que transforma seu projeto em realidade
+                    com previsibilidade e qualidade.</p>
+            </div>
+            <div class="process-timeline" id="processTimeline">
+                <div class="process-step" data-step="1">
+                    <div class="process-step-number"><span>01</span></div>
+                    <div class="process-step-content">
+                        <h3 class="process-step-title">Planejamento</h3>
+                        <p class="process-step-description">Análise detalhada do projeto, levantamento de requisitos,
+                            viabilidade técnica e orçamentária.</p>
+                        <div class="process-step-visual"><svg viewBox="0 0 300 200" fill="none">
+                                <rect x="20" y="20" width="260" height="160" rx="8" stroke="#262626" stroke-width="1" />
+                                <rect x="40" y="40" width="100" height="60" rx="4" stroke="#2A873E"
+                                    stroke-width="0.5" />
+                                <rect x="160" y="40" width="100" height="60" rx="4" stroke="#262626"
+                                    stroke-width="0.5" />
+                                <rect x="40" y="120" width="220" height="40" rx="4" stroke="#262626"
+                                    stroke-width="0.5" />
+                            </svg></div>
+                    </div>
+                </div>
+                <div class="process-step" data-step="2">
+                    <div class="process-step-number"><span>02</span></div>
+                    <div class="process-step-content">
+                        <h3 class="process-step-title">Orçamento</h3>
+                        <p class="process-step-description">Proposta transparente e detalhada com todos os custos,
+                            prazos e especificações técnicas do seu projeto.</p>
+                        <div class="process-step-visual"><svg viewBox="0 0 300 200" fill="none">
+                                <rect x="20" y="40" width="260" height="120" rx="8" stroke="#262626" stroke-width="1" />
+                                <text x="150" y="90" text-anchor="middle" fill="#2A873E" font-size="14"
+                                    font-family="Manrope">R$</text>
+                                <line x1="60" y1="110" x2="240" y2="110" stroke="#262626" stroke-width="0.5" />
+                                <rect x="60" y="120" width="180" height="8" rx="4" fill="#2A873E" opacity="0.3" />
+                                <rect x="60" y="120" width="130" height="8" rx="4" fill="#2A873E" />
+                            </svg></div>
+                    </div>
+                </div>
+                <div class="process-step" data-step="3">
+                    <div class="process-step-number"><span>03</span></div>
+                    <div class="process-step-content">
+                        <h3 class="process-step-title">Execução</h3>
+                        <p class="process-step-description">Mão de obra qualificada, materiais selecionados e
+                            acompanhamento técnico rigoroso em cada etapa da obra.</p>
+                        <div class="process-step-visual"><svg viewBox="0 0 300 200" fill="none">
+                                <rect x="20" y="30" width="260" height="150" rx="8" stroke="#2A873E" stroke-width="1" />
+                                <rect x="40" y="50" width="50" height="80" rx="2" stroke="#262626" stroke-width="0.5" />
+                                <rect x="100" y="50" width="50" height="110" rx="2" stroke="#262626"
+                                    stroke-width="0.5" />
+                                <rect x="160" y="50" width="50" height="60" rx="2" stroke="#262626"
+                                    stroke-width="0.5" />
+                                <rect x="220" y="50" width="40" height="40" rx="2" stroke="#262626"
+                                    stroke-width="0.5" />
+                            </svg></div>
+                    </div>
+                </div>
+                <div class="process-step" data-step="4">
+                    <div class="process-step-number"><span>04</span></div>
+                    <div class="process-step-content">
+                        <h3 class="process-step-title">Acompanhamento</h3>
+                        <p class="process-step-description">Relatórios periódicos, registros fotográficos e comunicação
+                            transparente para você acompanhar cada avanço.</p>
+                        <div class="process-step-visual"><svg viewBox="0 0 300 200" fill="none">
+                                <circle cx="150" cy="100" r="70" stroke="#262626" stroke-width="1" />
+                                <circle cx="150" cy="100" r="50" stroke="#2A873E" stroke-width="0.5" />
+                                <path d="M150 100 L150 50" stroke="#2A873E" stroke-width="1.5" />
+                                <path d="M150 100 L190 110" stroke="#2A873E" stroke-width="1.5" />
+                                <circle cx="150" cy="100" r="5" fill="#2A873E" />
+                            </svg></div>
+                    </div>
+                </div>
+                <div class="process-step" data-step="5">
+                    <div class="process-step-number"><span>05</span></div>
+                    <div class="process-step-content">
+                        <h3 class="process-step-title">Entrega</h3>
+                        <p class="process-step-description">Entrega formal com vistoria final, documentação completa e
+                            garantia de qualidade.</p>
+                        <div class="process-step-visual"><svg viewBox="0 0 300 200" fill="none">
+                                <path d="M50 100 L130 170 L250 40" stroke="#2A873E" stroke-width="3"
+                                    stroke-linecap="round" stroke-linejoin="round" />
+                                <circle cx="150" cy="100" r="80" stroke="#262626" stroke-width="0.5" />
+                            </svg></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PORTFOLIO SECTION -->
+    <section class="portfolio-gallery-section" id="portfolio" aria-label="Portfólio">
+        <div class="portfolio-container">
+            <div class="portfolio-header">
+                <div class="section-tag-reveal"><span class="section-tag">Portfólio</span></div>
+                <h2 class="portfolio-main-title section-title-reveal">Projetos que<br><span
+                        class="text-accent-green">Definem</span> Nosso Legado</h2>
+            </div>
+            <div class="cascading-slider" aria-label="Featured content" aria-roledescription="carousel">
+                <div class="cascading-slider-collection">
+                    <div class="cascading-slider-list" id="cascadingSliderList">
+                        <div class="cascading-slide" data-status="active" data-project="1">
+                            <div class="cascading-slide-inner">
+                                <div class="cascading-slide-image">
+                                    <img src="trabalhando01.jpeg" alt="Portifólio foto">
+                                    <div class="cascading-slide-overlay"></div>
+                                </div>
+                                <div class="cascading-slide-content">
+                                    <h3 class="cascading-slide-title">[Inserir nome do projeto]</h3>
+                                    <p class="cascading-slide-subtitle">[Inserir tipo]</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="cascading-slide" data-status="inactive" data-project="2">
+                            <div class="cascading-slide-inner">
+                                <div class="cascading-slide-image">
+                                    <img src="trabalhando02.jpeg" alt="Portifólio foto">
+                                    <div class="cascading-slide-overlay"></div>
+                                </div>
+                                <div class="cascading-slide-content">
+                                    <h3 class="cascading-slide-title">[Inserir nome do projeto]</h3>
+                                    <p class="cascading-slide-subtitle">[Inserir tipo]</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="cascading-slide" data-status="inactive" data-project="3">
+                            <div class="cascading-slide-inner">
+                                <div class="cascading-slide-image"><svg viewBox="0 0 800 600" fill="none"
+                                        preserveAspectRatio="xMidYMid slice">
+                                        <rect width="800" height="600" fill="#111111" rx="4" />
+                                        <rect x="200" y="150" width="400" height="300" rx="2" stroke="#262626"
+                                            stroke-width="1" fill="none" /><text x="400" y="310" text-anchor="middle"
+                                            fill="#BDB49F" font-size="16" font-family="Manrope">[Inserir imagem
+                                            real]</text><text x="400" y="340" text-anchor="middle" fill="#BDB49F"
+                                            font-size="12" font-family="Inter">+ Projeto 3</text>
+                                    </svg>
+                                    <div class="cascading-slide-overlay"></div>
+                                </div>
+                                <div class="cascading-slide-content">
+                                    <h3 class="cascading-slide-title">[Inserir nome do projeto]</h3>
+                                    <p class="cascading-slide-subtitle">[Inserir tipo]</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="cascading-slide" data-status="inactive" data-project="4">
+                            <div class="cascading-slide-inner">
+                                <div class="cascading-slide-image"><svg viewBox="0 0 800 600" fill="none">
+                                        <rect width="800" height="600" fill="#111111" rx="4" />
+                                        <rect x="200" y="150" width="400" height="300" rx="2" stroke="#262626"
+                                            stroke-width="1" fill="none" /><text x="400" y="310" text-anchor="middle"
+                                            fill="#BDB49F" font-size="16" font-family="Manrope">[Inserir imagem
+                                            real]</text><text x="400" y="340" text-anchor="middle" fill="#BDB49F"
+                                            font-size="12" font-family="Inter">+ Projeto 4</text>
+                                    </svg>
+                                    <div class="cascading-slide-overlay"></div>
+                                </div>
+                                <div class="cascading-slide-content">
+                                    <h3 class="cascading-slide-title">[Inserir nome do projeto]</h3>
+                                    <p class="cascading-slide-subtitle">[Inserir tipo]</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="cascading-slide" data-status="inactive" data-project="5">
+                            <div class="cascading-slide-inner">
+                                <div class="cascading-slide-image"><svg viewBox="0 0 800 600" fill="none">
+                                        <rect width="800" height="600" fill="#111111" rx="4" />
+                                        <rect x="200" y="150" width="400" height="300" rx="2" stroke="#262626"
+                                            stroke-width="1" fill="none" /><text x="400" y="310" text-anchor="middle"
+                                            fill="#BDB49F" font-size="16" font-family="Manrope">[Inserir imagem
+                                            real]</text><text x="400" y="340" text-anchor="middle" fill="#BDB49F"
+                                            font-size="12" font-family="Inter">+ Projeto 5</text>
+                                    </svg>
+                                    <div class="cascading-slide-overlay"></div>
+                                </div>
+                                <div class="cascading-slide-content">
+                                    <h3 class="cascading-slide-title">[Inserir nome do projeto]</h3>
+                                    <p class="cascading-slide-subtitle">[Inserir tipo]</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <nav class="cascading-slider-nav" aria-label="slider navigation">
+                    <button class="cascading-slider-button cascading-slider-button-prev" aria-label="previous slide">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <path d="M14 19L21 12L14 5" stroke="currentColor" stroke-miterlimit="10"
+                                stroke-width="1.5" />
+                            <path d="M21 12H2" stroke="currentColor" stroke-miterlimit="10" stroke-width="1.5" />
+                        </svg>
+                    </button>
+                    <button class="cascading-slider-button cascading-slider-button-next" aria-label="next slide">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <path d="M14 19L21 12L14 5" stroke="currentColor" stroke-miterlimit="10"
+                                stroke-width="1.5" />
+                            <path d="M21 12H2" stroke="currentColor" stroke-miterlimit="10" stroke-width="1.5" />
+                        </svg>
+                    </button>
+                </nav>
+            </div>
+        </div>
+    </section>
+
+    <!-- DIFFERENTIALS SECTION -->
+    <section class="differentials-showcase-section" id="differentials" aria-label="Diferenciais">
+        <div class="differentials-container">
+            <div class="differentials-header">
+                <div class="section-tag-reveal"><span class="section-tag">Diferenciais</span></div>
+                <h2 class="differentials-main-title section-title-reveal">Por que<br><span
+                        class="text-accent-green">Escolher</span> a Perin</h2>
+            </div>
+            <div class="differentials-grid">
+                <div class="differential-item">
+                    <div class="differential-visual"><svg viewBox="0 0 120 120" fill="none">
+                            <circle cx="60" cy="60" r="50" stroke="#262626" stroke-width="0.5" />
+                            <path d="M60 10 L60 110" stroke="#2A873E" stroke-width="1" opacity="0.5" />
+                            <path d="M10 60 L110 60" stroke="#2A873E" stroke-width="1" opacity="0.5" />
+                            <circle cx="60" cy="60" r="20" stroke="#2A873E" stroke-width="1" />
+                            <circle cx="60" cy="60" r="8" fill="#2A873E" />
+                        </svg></div>
+                    <h3 class="differential-title">[Inserir diferencial]</h3>
+                    <p class="differential-description">[Inserir descrição do diferencial]</p>
+                </div>
+                <div class="differential-item">
+                    <div class="differential-visual"><svg viewBox="0 0 120 120" fill="none">
+                            <rect x="20" y="40" width="80" height="60" rx="4" stroke="#262626" stroke-width="0.5" />
+                            <polygon points="20,40 60,15 100,40" stroke="#2A873E" stroke-width="1" fill="none" />
+                            <line x1="60" y1="40" x2="60" y2="100" stroke="#262626" stroke-width="0.5" />
+                        </svg></div>
+                    <h3 class="differential-title">[Inserir diferencial]</h3>
+                    <p class="differential-description">[Inserir descrição do diferencial]</p>
+                </div>
+                <div class="differential-item">
+                    <div class="differential-visual"><svg viewBox="0 0 120 120" fill="none">
+                            <circle cx="60" cy="60" r="45" stroke="#262626" stroke-width="0.5" />
+                            <path d="M60 15 L60 60 L90 75" stroke="#2A873E" stroke-width="1.5" stroke-linecap="round" />
+                            <circle cx="60" cy="60" r="3" fill="#2A873E" />
+                        </svg></div>
+                    <h3 class="differential-title">[Inserir diferencial]</h3>
+                    <p class="differential-description">[Inserir descrição do diferencial]</p>
+                </div>
+                <div class="differential-item">
+                    <div class="differential-visual"><svg viewBox="0 0 120 120" fill="none">
+                            <rect x="25" y="25" width="70" height="70" rx="4" stroke="#262626" stroke-width="0.5" />
+                            <rect x="35" y="35" width="50" height="50" rx="2" stroke="#2A873E" stroke-width="1" />
+                            <path d="M35 60 L50 75 L85 40" stroke="#2A873E" stroke-width="1.5" stroke-linecap="round"
+                                stroke-linejoin="round" />
+                        </svg></div>
+                    <h3 class="differential-title">[Inserir diferencial]</h3>
+                    <p class="differential-description">[Inserir descrição do diferencial]</p>
+                </div>
+                <div class="differential-item">
+                    <div class="differential-visual"><svg viewBox="0 0 120 120" fill="none">
+                            <path d="M20 90 L40 30 L60 70 L80 20 L100 90" stroke="#2A873E" stroke-width="1.5"
+                                stroke-linecap="round" stroke-linejoin="round" />
+                            <line x1="20" y1="90" x2="100" y2="90" stroke="#262626" stroke-width="0.5" />
+                        </svg></div>
+                    <h3 class="differential-title">[Inserir diferencial]</h3>
+                    <p class="differential-description">[Inserir descrição do diferencial]</p>
+                </div>
+                <div class="differential-item">
+                    <div class="differential-visual"><svg viewBox="0 0 120 120" fill="none">
+                            <circle cx="60" cy="60" r="45" stroke="#262626" stroke-width="0.5" />
+                            <path d="M30 60 C30 40 45 25 60 25 C75 25 90 40 90 60" stroke="#2A873E" stroke-width="1"
+                                fill="none" />
+                            <path d="M60 25 L60 45" stroke="#2A873E" stroke-width="1" stroke-linecap="round" />
+                            <circle cx="60" cy="60" r="15" stroke="#262626" stroke-width="0.5" />
+                            <circle cx="60" cy="60" r="5" fill="#2A873E" />
+                        </svg></div>
+                    <h3 class="differential-title">[Inserir diferencial]</h3>
+                    <p class="differential-description">[Inserir descrição do diferencial]</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- TESTIMONIALS SECTION -->
+    <section class="testimonials-section" id="testimonials" aria-label="Depoimentos">
+        <div class="testimonials-container">
+            <div class="testimonials-header">
+                <div class="section-tag-reveal"><span class="section-tag">Depoimentos</span></div>
+                <h2 class="testimonials-main-title section-title-reveal">O Que Nossos<br><span
+                        class="text-accent-green">Clientes</span> Dizem</h2>
+            </div>
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <div class="testimonial-rating"><span class="testimonial-star">★</span><span
+                            class="testimonial-star">★</span><span class="testimonial-star">★</span><span
+                            class="testimonial-star">★</span><span class="testimonial-star">★</span></div>
+                    <p class="testimonial-text">"[Inserir depoimento real do cliente]"</p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar"><svg viewBox="0 0 48 48" fill="none">
+                                <circle cx="24" cy="24" r="22" stroke="#262626" stroke-width="1" />
+                                <circle cx="24" cy="18" r="8" stroke="#262626" stroke-width="0.5" />
+                                <path d="M12 38C12 30 18 26 24 26C30 26 36 30 36 38" stroke="#262626"
+                                    stroke-width="0.5" />
+                            </svg></div>
+                        <div><span class="testimonial-name">[Inserir Nome]</span><span
+                                class="testimonial-project">[Inserir Tipo de Projeto]</span></div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-rating"><span class="testimonial-star">★</span><span
+                            class="testimonial-star">★</span><span class="testimonial-star">★</span><span
+                            class="testimonial-star">★</span><span class="testimonial-star">★</span></div>
+                    <p class="testimonial-text">"[Inserir depoimento real do cliente]"</p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar"><svg viewBox="0 0 48 48" fill="none">
+                                <circle cx="24" cy="24" r="22" stroke="#262626" stroke-width="1" />
+                                <circle cx="24" cy="18" r="8" stroke="#262626" stroke-width="0.5" />
+                                <path d="M12 38C12 30 18 26 24 26C30 26 36 30 36 38" stroke="#262626"
+                                    stroke-width="0.5" />
+                            </svg></div>
+                        <div><span class="testimonial-name">[Inserir Nome]</span><span
+                                class="testimonial-project">[Inserir Tipo de Projeto]</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CLIENTS CAROUSEL SECTION -->
+    <section class="clients-showcase-section" id="clients" aria-label="Clientes atendidos">
+        <div class="clients-container">
+            <div class="clients-header">
+                <div class="section-tag-reveal"><span class="section-tag">Clientes</span></div>
+                <h2 class="clients-main-title section-title-reveal">Empresas que<br><span
+                        class="text-accent-green">Confiam</span> na Perin</h2>
+            </div>
+            <div class="clients-carousel" role="region" aria-label="Logos de clientes">
+                <div class="clients-carousel-stage" id="clientsStage">
+                    <ul class="clients-carousel-track" id="clientsTrack" role="list">
+                        <li class="clients-carousel-slide" role="group" aria-roledescription="slide">
+                            <img data-src="assets/images/clients/client-01.png" alt="Logo cliente 1"
+                                class="clients-carousel-img">
+                        </li>
+                        <li class="clients-carousel-slide" role="group" aria-roledescription="slide">
+                            <img data-src="assets/images/clients/client-02.png" alt="Logo cliente 2"
+                                class="clients-carousel-img">
+                        </li>
+                        <li class="clients-carousel-slide" role="group" aria-roledescription="slide">
+                            <img data-src="assets/images/clients/client-03.png" alt="Logo cliente 3"
+                                class="clients-carousel-img">
+                        </li>
+                        <li class="clients-carousel-slide" role="group" aria-roledescription="slide">
+                            <img data-src="assets/images/clients/client-04.png" alt="Logo cliente 4"
+                                class="clients-carousel-img">
+                        </li>
+                        <li class="clients-carousel-slide" role="group" aria-roledescription="slide">
+                            <img data-src="assets/images/clients/client-05.png" alt="Logo cliente 5"
+                                class="clients-carousel-img">
+                        </li>
+                        <li class="clients-carousel-slide" role="group" aria-roledescription="slide">
+                            <img data-src="assets/images/clients/client-06.png" alt="Logo cliente 6"
+                                class="clients-carousel-img">
+                        </li>
+                        <li class="clients-carousel-slide" role="group" aria-roledescription="slide">
+                            <img data-src="assets/images/clients/client-07.png" alt="Logo cliente 7"
+                                class="clients-carousel-img">
+                        </li>
+                        <li class="clients-carousel-slide" role="group" aria-roledescription="slide">
+                            <img data-src="assets/images/clients/client-08.png" alt="Logo cliente 8"
+                                class="clients-carousel-img">
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CONTACT SECTION -->
+    <section class="premium-contact-experience" id="contact" aria-label="Contato">
+        <div class="contact-container">
+            <div class="contact-grid">
+                <div class="contact-info-side">
+                    <div class="section-tag-reveal"><span class="section-tag">Contato</span></div>
+                    <h2 class="contact-title section-title-reveal">Vamos<br><span
+                            class="text-accent-green">Construir</span> Juntos</h2>
+                    <p class="contact-description text-reveal">Solicite um orçamento ou tire suas dúvidas. Nossa equipe
+                        está pronta para transformar seu projeto em realidade.</p>
+                    <div class="contact-info-items">
+                        <div class="contact-info-item"><svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <rect x="2" y="3" width="16" height="14" rx="2" stroke="#2A873E" stroke-width="1.5" />
+                                <path d="M2 5L10 11L18 5" stroke="#2A873E" stroke-width="1.5" />
+                            </svg><span>[Inserir email oficial]</span></div>
+                        <div class="contact-info-item"><svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <path
+                                    d="M17.9 14.5L14.9 12.5C14.6 12.3 14.2 12.3 13.9 12.5L12.1 14.2C11.8 14.5 11.3 14.4 11.1 14.1L8.5 11.5C8.2 11.2 8.1 10.7 8.4 10.4L10.1 8.6C10.3 8.3 10.3 7.9 10.1 7.6L8.1 4.6C7.9 4.3 7.5 4.1 7.1 4.1H5C4.4 4.1 3.9 4.4 3.6 4.9C3.1 5.8 2.8 6.9 3.1 8C3.8 10.6 5.8 13.2 8.3 15.7C10.8 18.2 13.4 20.2 16 20.9C17.1 21.2 18.2 20.9 19.1 20.4C19.6 20.1 19.9 19.6 19.9 19V16.9C19.9 16.5 19.7 16.1 19.4 15.9L17.9 14.5Z"
+                                    stroke="#2A873E" stroke-width="1.5" />
+                            </svg><span>[Inserir telefone oficial]</span></div>
+                        <div class="contact-info-item"><svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <path
+                                    d="M10 10C12.2 10 14 8.2 14 6C14 3.8 12.2 2 10 2C7.8 2 6 3.8 6 6C6 8.2 7.8 10 10 10Z"
+                                    stroke="#2A873E" stroke-width="1.5" />
+                                <path d="M3 18C3 14 6 11 10 11C14 11 17 14 17 18" stroke="#2A873E" stroke-width="1.5" />
+                            </svg><span>[Inserir endereço]</span></div>
+                    </div>
+                </div>
+                <div class="contact-form-side">
+                    <form class="contact-form" id="contactForm" novalidate>
+                        <!-- Honeypot field — invisible to users, traps bots -->
+                        <div style="position:absolute;left:-9999px;opacity:0;height:0;overflow:hidden;"
+                            aria-hidden="true">
+                            <label for="formWebsite">Não preencher</label>
+                            <input type="text" id="formWebsite" name="website" tabindex="-1" autocomplete="off">
+                        </div>
+
+                        <div class="form-static-group" id="formGroupName">
+                            <label for="formName" class="form-static-label">Nome</label>
+                            <input type="text" class="form-static-input" id="formName" name="name" required
+                                placeholder="Ex.: João Silva" autocomplete="name">
+                            <span class="form-valid-icon">
+                                <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                                    <circle cx="9" cy="9" r="9" fill="#2A873E" opacity="0.1" />
+                                    <path d="M5 9.5L8 12.5L13 6" stroke="#2A873E" stroke-width="1.5"
+                                        stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                            </span>
+                            <span class="form-error-message">
+                                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                                    <circle cx="7" cy="7" r="7" fill="#D32F2F" opacity="0.15" />
+                                    <path d="M7 4V8M7 10V10.01" stroke="#D32F2F" stroke-width="1.5"
+                                        stroke-linecap="round" />
+                                </svg>
+                                Digite um nome válido (apenas letras e espaços).
+                            </span>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-static-group" id="formGroupPhone">
+                                <label for="formPhone" class="form-static-label">Telefone</label>
+                                <input type="tel" class="form-static-input" id="formPhone" name="phone"
+                                    placeholder="Ex.: (15) 99999-9999" maxlength="15" autocomplete="tel">
+                                <span class="form-valid-icon">
+                                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                                        <circle cx="9" cy="9" r="9" fill="#2A873E" opacity="0.1" />
+                                        <path d="M5 9.5L8 12.5L13 6" stroke="#2A873E" stroke-width="1.5"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </span>
+                                <span class="form-error-message">
+                                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                                        <circle cx="7" cy="7" r="7" fill="#D32F2F" opacity="0.15" />
+                                        <path d="M7 4V8M7 10V10.01" stroke="#D32F2F" stroke-width="1.5"
+                                            stroke-linecap="round" />
+                                    </svg>
+                                    Digite um telefone válido com DDD.
+                                </span>
+                            </div>
+                            <div class="form-static-group" id="formGroupEmail">
+                                <label for="formEmail" class="form-static-label">Email</label>
+                                <input type="email" class="form-static-input" id="formEmail" name="email" required
+                                    placeholder="Ex.: joao@email.com" autocomplete="email">
+                                <span class="form-valid-icon">
+                                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                                        <circle cx="9" cy="9" r="9" fill="#2A873E" opacity="0.1" />
+                                        <path d="M5 9.5L8 12.5L13 6" stroke="#2A873E" stroke-width="1.5"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </span>
+                                <span class="form-error-message">
+                                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                                        <circle cx="7" cy="7" r="7" fill="#D32F2F" opacity="0.15" />
+                                        <path d="M7 4V8M7 10V10.01" stroke="#D32F2F" stroke-width="1.5"
+                                            stroke-linecap="round" />
+                                    </svg>
+                                    Digite um email válido.
+                                </span>
+                            </div>
+                        </div>
+                        <div class="form-floating-group" id="formGroupService">
+                            <div class="custom-select-wrapper" id="customServiceWrapper">
+                                <button type="button" class="custom-select-trigger" id="customServiceTrigger"
+                                    data-label="Tipo de Serviço" aria-haspopup="listbox" aria-expanded="false"
+                                    aria-label="Selecionar tipo de serviço">
+                                    <span class="custom-select-trigger-text" id="customServiceText">Tipo de
+                                        Serviço</span>
+                                    <svg class="custom-select-arrow" width="12" height="12" viewBox="0 0 12 12"
+                                        fill="none">
+                                        <path d="M3 5L6 8L9 5" stroke="currentColor" stroke-width="1.5"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </button>
+                                <ul class="custom-select-options" id="customServiceOptions" role="listbox"
+                                    aria-label="Tipo de Serviço">
+                                    <li role="option" data-value="residencial" aria-selected="false" tabindex="0">
+                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                                            <path d="M2 14L8 2L14 14" stroke="currentColor" stroke-width="1.5"
+                                                stroke-linecap="round" stroke-linejoin="round" />
+                                        </svg>
+                                        <span>Construção Residencial</span>
+                                    </li>
+                                    <li role="option" data-value="comercial" aria-selected="false" tabindex="0">
+                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                                            <rect x="2" y="4" width="12" height="10" rx="1" stroke="currentColor"
+                                                stroke-width="1.5" />
+                                            <path d="M5 4V3C5 2.5 5.5 2 6 2H10C10.5 2 11 2.5 11 3V4"
+                                                stroke="currentColor" stroke-width="1.5" />
+                                        </svg>
+                                        <span>Construção Comercial</span>
+                                    </li>
+                                    <li role="option" data-value="industrial" aria-selected="false" tabindex="0">
+                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                                            <rect x="2" y="5" width="12" height="9" rx="1" stroke="currentColor"
+                                                stroke-width="1.5" />
+                                            <rect x="2" y="2" width="12" height="3" rx="0.5" stroke="currentColor"
+                                                stroke-width="1.5" />
+                                        </svg>
+                                        <span>Construção Industrial</span>
+                                    </li>
+                                    <li role="option" data-value="reforma" aria-selected="false" tabindex="0">
+                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                                            <rect x="3" y="4" width="10" height="8" rx="1" stroke="currentColor"
+                                                stroke-width="1.5" transform="rotate(-5, 8, 8)" />
+                                            <path d="M4 10L12 10" stroke="currentColor" stroke-width="1.5"
+                                                stroke-linecap="round" />
+                                        </svg>
+                                        <span>Reformas</span>
+                                    </li>
+                                    <li role="option" data-value="ampliacao" aria-selected="false" tabindex="0">
+                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                                            <rect x="2" y="5" width="7" height="9" rx="1" stroke="currentColor"
+                                                stroke-width="1.5" />
+                                            <rect x="9" y="7" width="5" height="7" rx="1" stroke="currentColor"
+                                                stroke-width="1.5" stroke-dasharray="2 2" />
+                                            <path d="M9 9L10.5 7" stroke="currentColor" stroke-width="1.5" />
+                                        </svg>
+                                        <span>Ampliações</span>
+                                    </li>
+                                    <li role="option" data-value="gerenciamento" aria-selected="false" tabindex="0">
+                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                                            <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5" />
+                                            <circle cx="8" cy="8" r="3" stroke="currentColor" stroke-width="1" />
+                                            <line x1="8" y1="2" x2="8" y2="4" stroke="currentColor" stroke-width="1.5"
+                                                stroke-linecap="round" />
+                                        </svg>
+                                        <span>Gerenciamento de Obras</span>
+                                    </li>
+                                    <li role="option" data-value="consultoria" aria-selected="false" tabindex="0">
+                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                                            <rect x="3" y="3" width="10" height="10" rx="1" stroke="currentColor"
+                                                stroke-width="1.5" />
+                                            <circle cx="8" cy="8" r="1.5" stroke="currentColor" stroke-width="1" />
+                                            <path d="M8 8L10 11" stroke="currentColor" stroke-width="1.5"
+                                                stroke-linecap="round" />
+                                        </svg>
+                                        <span>Consultoria Técnica</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="form-floating-group">
+                            <textarea class="form-floating-input form-floating-textarea" id="formMessage" name="message"
+                                required autocomplete="off"></textarea>
+                            <!-- Hidden input to hold the selected service value for form submission -->
+                            <input type="hidden" id="formService" name="service" value="">
+                            <label for="formMessage" class="form-floating-label">Mensagem</label>
+                        </div>
+                        <button type="submit" class="form-submit-button" id="formSubmit">
+                            <span class="form-submit-text">Enviar Mensagem</span>
+                            <svg class="form-submit-arrow" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <path d="M1 10H17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                                <path d="M10 1L17 10L10 19" stroke="currentColor" stroke-width="1.5"
+                                    stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                            <div class="form-submit-ripple"></div>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="premium-footer" role="contentinfo">
+        <div class="footer-container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <a href="#" class="footer-logo" aria-label="Perin Construções">
+                        <img src="LOGO PERIN PNG ATUAL01.png" alt="Logo da Perin Construções" class="footer-logo-image">
+                    </a>
+                    <p class="footer-tagline">[Inserir slogan da empresa]</p>
+                </div>
+                <div class="footer-links">
+                    <h4 class="footer-links-title">Navegação</h4>
+                    <a href="#about" class="footer-link">Sobre</a>
+                    <a href="#services" class="footer-link">Serviços</a>
+                    <a href="#process" class="footer-link">Processo</a>
+                    <a href="#portfolio" class="footer-link">Portfólio</a>
+                    <a href="#contact" class="footer-link">Contato</a>
+                </div>
+                <div class="footer-services">
+                    <h4 class="footer-links-title">Serviços</h4>
+                    <span class="footer-link">Construção Residencial</span>
+                    <span class="footer-link">Construção Comercial</span>
+                    <span class="footer-link">Construção Industrial</span>
+                    <span class="footer-link">Reformas e Ampliações</span>
+                    <span class="footer-link">Gerenciamento de Obras</span>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <span class="footer-copyright">© 2026 Perin Construções. Todos os direitos reservados.</span>
+                <span class="footer-made-by">Projetado com engenharia</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- SCRIPTS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>

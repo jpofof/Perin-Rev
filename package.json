@@ -1,0 +1,16 @@
+{
+  "name": "perin-construcoes",
+  "version": "1.0.0",
+  "description": "Perin Construções — Premium Carousel Test Suite",
+  "private": true,
+  "scripts": {
+    "test": "jest --verbose",
+    "test:unit": "jest --verbose tests/unit",
+    "test:regression": "jest --verbose tests/regression"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "puppeteer": "^22.0.0"
+  }
+}
