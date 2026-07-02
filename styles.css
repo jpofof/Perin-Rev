@@ -1180,7 +1180,6 @@ h6 {
     padding: var(--section-padding);
     background: var(--color-bg-secondary);
     position: relative;
-    overflow: hidden;
 }
 
 .portfolio-container {
@@ -1555,7 +1554,10 @@ h6 {
 /* Viewer sempre absolute — sobrepõe a galeria. É a nova viewport. */
 .portfolio-viewer {
     position: absolute;
-    inset: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    min-height: 100%;
     opacity: 0;
     visibility: hidden;
     pointer-events: none;

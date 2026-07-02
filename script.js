@@ -737,8 +737,12 @@ function initPortfolioGallery() {
                 portfolioState.active = true;
                 gsap.set(viewer, { y: '0%', pointerEvents: 'auto' });
                 gsap.set(gallery, { visibility: 'hidden', pointerEvents: 'none' });
-                // minHeight do stage mantido travado — viewer e gallery estão em position:absolute,
-                // liberar minHeight faria o stage colapsar para altura 0 (overflow:hidden cortaria o viewer)
+                // rAF garante que GSAP finalizou todas as escritas de estilo
+                // antes de liberar as constraints de layout (overflow e bottom)
+                requestAnimationFrame(function () {
+                    viewer.style.bottom = 'auto';
+                    stage.style.overflow = 'visible';
+                });
             }
         });
 
@@ -822,6 +826,11 @@ function initPortfolioGallery() {
         if (!portfolioState.active || !portfolioState.cardEl) return;
 
         portfolioState.transitioning = true;
+
+        // Restaura overflow:hidden no stage para clipar o viewer durante a animação de descida
+        var stage = document.getElementById('portfolioStage');
+        stage.style.overflow = 'hidden';
+
         var otherCards = Array.from(grid.querySelectorAll('.portfolio-card:not([data-project-index="' + portfolioState.currentProjectIndex + '"])'));
         var allSlides = sliderList.querySelectorAll('.cascading-slide');
 
@@ -856,6 +865,7 @@ function initPortfolioGallery() {
                 viewer.style.visibility = '';
                 viewer.style.pointerEvents = '';
                 viewer.style.y = '';
+                viewer.style.bottom = '';
                 viewer.setAttribute('aria-hidden', 'true');
 
                 viewerTitle.style.opacity = '';
@@ -875,8 +885,9 @@ function initPortfolioGallery() {
                 }
                 sliderList.innerHTML = '';
 
-                var stage = document.getElementById('portfolioStage');
-                stage.style.minHeight = '';
+                var stageClose = document.getElementById('portfolioStage');
+                stageClose.style.minHeight = '';
+                stageClose.style.overflow = '';
 
                 window.scrollTo({ top: portfolioState.savedScrollY, behavior: 'instant' });
             }
