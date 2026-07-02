@@ -477,7 +477,7 @@
         </div>
     </section>
 
-    <!-- PORTFOLIO SECTION -->
+    <!-- PORTFOLIO SECTION — Galeria + Visualizador com Transição Contínua -->
     <section class="portfolio-gallery-section" id="portfolio" aria-label="Portfólio">
         <div class="portfolio-container">
             <div class="portfolio-header">
@@ -485,87 +485,57 @@
                 <h2 class="portfolio-main-title section-title-reveal">Projetos que<br><span
                         class="text-accent-green">Definem</span> Nosso Legado</h2>
             </div>
-            <div class="cascading-slider" aria-label="Featured content" aria-roledescription="carousel">
-                <div class="cascading-slider-collection">
-                    <div class="cascading-slider-list" id="cascadingSliderList">
-                        <div class="cascading-slide" data-status="active" data-project="1">
-                            <div class="cascading-slide-inner">
-                                <div class="cascading-slide-image">
-                                    <img src="trabalhando01.jpeg" alt="Portifólio foto">
-                                    <div class="cascading-slide-overlay"></div>
-                                </div>
-                                <div class="cascading-slide-content">
-                                    <h3 class="cascading-slide-title">[Inserir nome do projeto]</h3>
-                                    <p class="cascading-slide-subtitle">[Inserir tipo]</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="cascading-slide" data-status="inactive" data-project="2">
-                            <div class="cascading-slide-inner">
-                                <div class="cascading-slide-image">
-                                    <img src="trabalhando02.jpeg" alt="Portifólio foto">
-                                    <div class="cascading-slide-overlay"></div>
-                                </div>
-                                <div class="cascading-slide-content">
-                                    <h3 class="cascading-slide-title">[Inserir nome do projeto]</h3>
-                                    <p class="cascading-slide-subtitle">[Inserir tipo]</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="cascading-slide" data-status="inactive" data-project="3">
-                            <div class="cascading-slide-inner">
-                                <div class="cascading-slide-image">
-                                    <img src="trabalhando03.jpeg" alt="Portifólio foto">
-                                    <div class="cascading-slide-overlay"></div>
-                                </div>
-                                <div class="cascading-slide-content">
-                                    <h3 class="cascading-slide-title">[Inserir nome do projeto]</h3>
-                                    <p class="cascading-slide-subtitle">[Inserir tipo]</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="cascading-slide" data-status="inactive" data-project="4">
-                            <div class="cascading-slide-inner">
-                                <div class="cascading-slide-image">
-                                    <img src="trabalhando04.jpeg" alt="Portifólio foto">
-                                    <div class="cascading-slide-overlay"></div>
-                                </div>
-                                <div class="cascading-slide-content">
-                                    <h3 class="cascading-slide-title">[Inserir nome do projeto]</h3>
-                                    <p class="cascading-slide-subtitle">[Inserir tipo]</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="cascading-slide" data-status="inactive" data-project="5">
-                            <div class="cascading-slide-inner">
-                                <div class="cascading-slide-image">
-                                    <img src="trabalhando05.jpeg" alt="Portifólio foto">
-                                    <div class="cascading-slide-overlay"></div>
-                                </div>
-                                <div class="cascading-slide-content">
-                                    <h3 class="cascading-slide-title">[Inserir nome do projeto]</h3>
-                                    <p class="cascading-slide-subtitle">[Inserir tipo]</p>
-                                </div>
-                            </div>
-                        </div>
+
+            <!-- PALCO ÚNICO — Galeria e Viewer são camadas sobrepostas, nunca empilhadas -->
+            <div class="portfolio-stage" id="portfolioStage">
+                <!-- Estado A: Galeria de Projetos -->
+                <div class="portfolio-gallery" id="portfolioGallery" aria-label="Galeria de projetos">
+                    <div class="portfolio-gallery-grid" id="portfolioGrid">
+                        <!-- Cards serão gerados dinamicamente via JS -->
                     </div>
                 </div>
-                <nav class="cascading-slider-nav" aria-label="slider navigation">
-                    <button class="cascading-slider-button cascading-slider-button-prev" aria-label="previous slide">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                            <path d="M14 19L21 12L14 5" stroke="currentColor" stroke-miterlimit="10"
-                                stroke-width="1.5" />
-                            <path d="M21 12H2" stroke="currentColor" stroke-miterlimit="10" stroke-width="1.5" />
+
+                <!-- Estado B: Visualizador do Projeto (sobrepõe a galeria) — é a nova viewport -->
+                <div class="portfolio-viewer" id="portfolioViewer" aria-hidden="true">
+                    <button class="portfolio-viewer-back" id="portfolioBackBtn" aria-label="Voltar à galeria">
+                        <svg class="portfolio-viewer-back-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M12 4L6 10L12 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                                stroke-linejoin="round" />
                         </svg>
+                        <span class="portfolio-viewer-back-text">Voltar à Galeria</span>
                     </button>
-                    <button class="cascading-slider-button cascading-slider-button-next" aria-label="next slide">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                            <path d="M14 19L21 12L14 5" stroke="currentColor" stroke-miterlimit="10"
-                                stroke-width="1.5" />
-                            <path d="M21 12H2" stroke="currentColor" stroke-miterlimit="10" stroke-width="1.5" />
-                        </svg>
-                    </button>
-                </nav>
+                    <div class="portfolio-viewer-title" id="portfolioViewerTitle"></div>
+                    <div class="portfolio-viewer-subtitle" id="portfolioViewerSubtitle"></div>
+
+                    <!-- Carrossel Premium (reutilizado) -->
+                    <div class="cascading-slider" aria-label="Fotos do projeto" aria-roledescription="carousel">
+                        <div class="cascading-slider-collection">
+                            <div class="cascading-slider-list" id="cascadingSliderList">
+                                <!-- Slides populados dinamicamente via JS -->
+                            </div>
+                        </div>
+                        <nav class="cascading-slider-nav" aria-label="slider navigation">
+                            <button class="cascading-slider-button cascading-slider-button-prev"
+                                aria-label="previous slide">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <path d="M14 19L21 12L14 5" stroke="currentColor" stroke-miterlimit="10"
+                                        stroke-width="1.5" />
+                                    <path d="M21 12H2" stroke="currentColor" stroke-miterlimit="10"
+                                        stroke-width="1.5" />
+                                </svg>
+                            </button>
+                            <button class="cascading-slider-button cascading-slider-button-next"
+                                aria-label="next slide">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <path d="M14 19L21 12L14 5" stroke="currentColor" stroke-miterlimit="10"
+                                        stroke-width="1.5" />
+                                    <path d="M21 12H2" stroke="currentColor" stroke-miterlimit="10"
+                                        stroke-width="1.5" />
+                                </svg>
+                            </button>
+                        </nav>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -700,35 +670,31 @@
                 <div class="clients-carousel-stage" id="clientsStage">
                     <ul class="clients-carousel-track" id="clientsTrack" role="list">
                         <li class="clients-carousel-slide" role="group" aria-roledescription="slide">
-                            <img data-src="assets/images/clients/client-01.png" alt="Logo cliente 1"
+                            <img src="elektro.png" alt="Logo cliente 1" class="clients-carousel-img">
+                        </li>
+                        <li class="clients-carousel-slide" role="group" aria-roledescription="slide">
+                            <img src="eldorado.png" alt="Logo cliente 2" class="clients-carousel-img">
+                        </li>
+                        <li class="clients-carousel-slide" role="group" aria-roledescription="slide">
+                            <img src="isa-energia.png" alt="Logo cliente 3" class="clients-carousel-img">
+                        </li>
+                        <li class="clients-carousel-slide" role="group" aria-roledescription="slide">
+                            <img src="state-grid.png" alt="Logo cliente 4" class="clients-carousel-img">
+                        </li>
+                        <li class="clients-carousel-slide" role="group" aria-roledescription="slide">
+                            <img src="assets/images/clients/client-05.png" alt="Logo cliente 5"
                                 class="clients-carousel-img">
                         </li>
                         <li class="clients-carousel-slide" role="group" aria-roledescription="slide">
-                            <img data-src="assets/images/clients/client-02.png" alt="Logo cliente 2"
+                            <img src="assets/images/clients/client-06.png" alt="Logo cliente 6"
                                 class="clients-carousel-img">
                         </li>
                         <li class="clients-carousel-slide" role="group" aria-roledescription="slide">
-                            <img data-src="assets/images/clients/client-03.png" alt="Logo cliente 3"
+                            <img src="assets/images/clients/client-07.png" alt="Logo cliente 7"
                                 class="clients-carousel-img">
                         </li>
                         <li class="clients-carousel-slide" role="group" aria-roledescription="slide">
-                            <img data-src="assets/images/clients/client-04.png" alt="Logo cliente 4"
-                                class="clients-carousel-img">
-                        </li>
-                        <li class="clients-carousel-slide" role="group" aria-roledescription="slide">
-                            <img data-src="assets/images/clients/client-05.png" alt="Logo cliente 5"
-                                class="clients-carousel-img">
-                        </li>
-                        <li class="clients-carousel-slide" role="group" aria-roledescription="slide">
-                            <img data-src="assets/images/clients/client-06.png" alt="Logo cliente 6"
-                                class="clients-carousel-img">
-                        </li>
-                        <li class="clients-carousel-slide" role="group" aria-roledescription="slide">
-                            <img data-src="assets/images/clients/client-07.png" alt="Logo cliente 7"
-                                class="clients-carousel-img">
-                        </li>
-                        <li class="clients-carousel-slide" role="group" aria-roledescription="slide">
-                            <img data-src="assets/images/clients/client-08.png" alt="Logo cliente 8"
+                            <img src="assets/images/clients/client-08.png" alt="Logo cliente 8"
                                 class="clients-carousel-img">
                         </li>
                     </ul>

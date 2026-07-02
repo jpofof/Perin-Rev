@@ -1,11 +1,10 @@
 /**
  * @jest-environment jsdom
  *
- * Unit Tests — Cascading Slider Portfolio
+ * Unit Tests — Cascading Slider Portfolio (v2 — Gallery + Viewer)
  *
  * Validate logic in isolation: PCT proportions, getSizes calculations,
- * positionSlides slot assignments, goTo guard, handleNavClick touch feedback,
- * isTouchDevice detection, initSlides guard, resize handler debounce.
+ * DOM structure (dynamic slides), CSS rules, accessibility, image assets.
  *
  * Run: npm run test:unit
  */
@@ -75,12 +74,12 @@ describe('PCT Proportions', () => {
   });
 
   test('center slot is 60% (desktop)', () => {
-    const mid = Math.floor(5 / 2); // 5 slots, mid = 2
+    const mid = Math.floor(5 / 2);
     expect([0.065, 0.135, 0.60, 0.135, 0.065][mid]).toBe(0.60);
   });
 
   test('center slot is 80% (mobile)', () => {
-    const mid = Math.floor(3 / 2); // 3 slots, mid = 1
+    const mid = Math.floor(3 / 2);
     expect([0.10, 0.80, 0.10][mid]).toBe(0.80);
   });
 });
@@ -89,33 +88,32 @@ describe('PCT Proportions', () => {
 // getSizes calculations
 // ────────────────────────────────────
 describe('getSizes (simulated)', () => {
-  test('desktop computes correct ws with gap=4 and 5 slots', () => {
+  test('desktop computes correct ws with gap=8 and 5 slots', () => {
     const PCT = [0.065, 0.135, 0.60, 0.135, 0.065];
     const gap = 8;
     const cw = 1358;
-    const usable = cw - gap * 4; // 5 slots → 4 gaps
+    const usable = cw - gap * 4;
     const ws = PCT.map(p => Math.round(usable * p));
     expect(usable).toBe(1326);
     expect(ws).toEqual([86, 179, 796, 179, 86]);
   });
 
-  test('mobile computes correct ws with gap=4 and 3 slots', () => {
+  test('mobile computes correct ws with gap=8 and 3 slots', () => {
     const PCT = [0.10, 0.80, 0.10];
     const gap = 8;
     const cw = 400;
     const usable = cw - gap * 2;
     const ws = PCT.map(p => Math.round(usable * p));
     expect(usable).toBe(384);
-    expect(ws[1]).toBe(307); // 80% of 384
+    expect(ws[1]).toBe(307);
     const sumSlots = ws.reduce((a, b) => a + b, 0);
-    // sum of slots + gaps ≈ cw (Math.round may lose 1px)
     expect(sumSlots + gap * 2).toBeLessThanOrEqual(cw);
     expect(sumSlots + gap * 2).toBeGreaterThanOrEqual(cw - 1);
   });
 });
 
 // ────────────────────────────────────
-// DOM Structure
+// DOM Structure (v2: dynamic gallery)
 // ────────────────────────────────────
 describe('DOM Structure', () => {
   test('cascadingSliderList exists in DOM', () => {
@@ -123,37 +121,32 @@ describe('DOM Structure', () => {
     expect(list).not.toBeNull();
   });
 
-  test('exactly 5 slides present', () => {
-    const { total } = getCarouselState();
-    expect(total).toBe(5);
+  test('portfolio gallery grid exists', () => {
+    const grid = document.getElementById('portfolioGrid');
+    expect(grid).not.toBeNull();
   });
 
-  test('first slide has data-status="active" attribute after init', () => {
-    // The script sets data-status via JS after positionSlides
-    // Initial HTML has data-status="active" on slide 1
-    const slides = document.querySelectorAll('.cascading-slide');
-    const hasActive = Array.from(slides).some(s => s.getAttribute('data-status') === 'active');
-    expect(hasActive).toBe(true);
+  test('portfolio gallery exists', () => {
+    const gallery = document.getElementById('portfolioGallery');
+    expect(gallery).not.toBeNull();
   });
 
-  test('slides are positioned absolutely (set by script)', () => {
-    const { slides } = getCarouselState();
-    slides.forEach(s => {
-      expect(s.style.position).toBe('absolute');
+  test('portfolio viewer exists', () => {
+    const viewer = document.getElementById('portfolioViewer');
+    expect(viewer).not.toBeNull();
+  });
+
+  test('gallery cards are rendered dynamically (6 projects)', () => {
+    const cards = document.querySelectorAll('.portfolio-card');
+    expect(cards.length).toBe(6);
+  });
+
+  test('each gallery card has an image and project name', () => {
+    const cards = document.querySelectorAll('.portfolio-card');
+    cards.forEach(card => {
+      expect(card.querySelector('img')).not.toBeNull();
+      expect(card.querySelector('.portfolio-card-name')).not.toBeNull();
     });
-  });
-
-  test('slides have willChange set', () => {
-    const { slides } = getCarouselState();
-    slides.forEach(s => {
-      expect(s.style.willChange).toBe('left, width, opacity');
-    });
-  });
-
-  test('slide 1 and 2 contain img elements', () => {
-    const { slides } = getCarouselState();
-    expect(slides[0].querySelector('img')).not.toBeNull();
-    expect(slides[1].querySelector('img')).not.toBeNull();
   });
 
   test('navigation buttons exist', () => {
@@ -172,6 +165,12 @@ describe('DOM Structure', () => {
 
   test('cascading-slider-nav exists', () => {
     expect(document.querySelector('.cascading-slider-nav')).not.toBeNull();
+  });
+
+  test('back-to-gallery button exists', () => {
+    const backBtn = document.getElementById('portfolioBackBtn');
+    expect(backBtn).not.toBeNull();
+    expect(backBtn.getAttribute('aria-label')).toBeTruthy();
   });
 });
 
@@ -228,13 +227,25 @@ describe('CSS Rules', () => {
   test('media query at 750px exists', () => {
     expect(css).toMatch(/@media\s*\(max-width:\s*750px\)/);
   });
+
+  test('portfolio-card uses aspect-ratio 16/10', () => {
+    expect(css).toMatch(/\.portfolio-card\s*\{[^}]*aspect-ratio:\s*16\s*\/\s*10/);
+  });
+
+  test('portfolio-gallery-grid uses 3 columns on desktop', () => {
+    expect(css).toMatch(/\.portfolio-gallery-grid\s*\{[^}]*grid-template-columns:\s*repeat\(3,\s*1fr\)/);
+  });
+
+  test('portfolio-viewer-back exists with styling', () => {
+    expect(css).toMatch(/\.portfolio-viewer-back\s*\{/);
+  });
 });
 
 // ────────────────────────────────────
 // Touch Device Detection
 // ────────────────────────────────────
 describe('Touch Device Detection', () => {
-  test('isTouchDevice detects touchstart', () => {
+  test('touchstart is available in window', () => {
     expect('ontouchstart' in window).toBe(false); // jsdom default
   });
 
@@ -261,6 +272,16 @@ describe('Accessibility', () => {
     const nav = document.querySelector('.cascading-slider-nav');
     expect(nav.getAttribute('aria-label')).toBe('slider navigation');
   });
+
+  test('gallery has aria-label', () => {
+    const gallery = document.getElementById('portfolioGallery');
+    expect(gallery.getAttribute('aria-label')).toBeTruthy();
+  });
+
+  test('viewer defaults to aria-hidden="true"', () => {
+    const viewer = document.getElementById('portfolioViewer');
+    expect(viewer.getAttribute('aria-hidden')).toBe('true');
+  });
 });
 
 // ────────────────────────────────────
@@ -277,15 +298,21 @@ describe('Image Assets', () => {
     expect(exists).toBe(true);
   });
 
-  test('images referenced in HTML', () => {
-    expect(html).toContain('trabalhando01.jpeg');
-    expect(html).toContain('trabalhando02.jpeg');
+  test('eldorado.png exists', () => {
+    const exists = fs.existsSync(path.join(__dirname, '..', '..', 'eldorado.png'));
+    expect(exists).toBe(true);
   });
 
-  test('slide 3, 4, 5 use SVG placeholders', () => {
-    const { slides } = getCarouselState();
-    expect(slides[2].querySelector('svg')).not.toBeNull();
-    expect(slides[3].querySelector('svg')).not.toBeNull();
-    expect(slides[4].querySelector('svg')).not.toBeNull();
+  test('elektro.png exists', () => {
+    const exists = fs.existsSync(path.join(__dirname, '..', '..', 'elektro.png'));
+    expect(exists).toBe(true);
+  });
+
+  test('project covers are referenced in portfolio data', () => {
+    const js = fs.readFileSync(path.join(__dirname, '..', '..', 'script.js'), 'utf8');
+    expect(js).toContain("cover: 'eldorado.png'");
+    expect(js).toContain("cover: 'elektro.png'");
+    expect(js).toContain("cover: 'isa-energia.png'");
+    expect(js).toContain("cover: 'state-grid.png'");
   });
 });

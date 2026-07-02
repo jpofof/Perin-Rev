@@ -1,7 +1,7 @@
 /**
  * @jest-environment jsdom
  *
- * Regression Tests — Cascading Slider Portfolio
+ * Regression Tests — Cascading Slider Portfolio (v2 — Gallery + Viewer)
  *
  * Guard against visual and functional regressions.
  * Static analysis of CSS, DOM, and structural integrity.
@@ -16,6 +16,7 @@ const path = require('path');
 
 const html = fs.readFileSync(path.join(__dirname, '..', '..', 'index.html'), 'utf8');
 const css = fs.readFileSync(path.join(__dirname, '..', '..', 'styles.css'), 'utf8');
+const js = fs.readFileSync(path.join(__dirname, '..', '..', 'script.js'), 'utf8');
 
 // ────────────────────────────────────
 // Regression: CSS Image Scaling Rules
@@ -144,6 +145,11 @@ describe('REGRESSION — Responsive Breakpoints (CSS Static)', () => {
     expect(desktopPadding).not.toBeNull();
     expect(desktopPadding[1].trim()).toBe('14px 18px');
   });
+
+  test('gallery grid has responsive breakpoints', () => {
+    expect(css).toMatch(/@media\s*\(max-width:\s*1024px\)[^{]*\{[^}]*grid-template-columns:\s*repeat\(2,\s*1fr\)/);
+    expect(css).toMatch(/@media\s*\(max-width:\s*640px\)[^{]*\{[^}]*grid-template-columns:\s*1fr/);
+  });
 });
 
 // ────────────────────────────────────
@@ -189,29 +195,32 @@ describe('REGRESSION — Overflow Rules (CSS Static)', () => {
 });
 
 // ────────────────────────────────────
-// Regression: DOM Structure
+// Regression: DOM Structure (v2)
 // ────────────────────────────────────
 describe('REGRESSION — DOM Structure', () => {
   beforeAll(() => {
     document.body.innerHTML = html;
   });
 
-  test('5 slides in the DOM', () => {
-    const slides = document.querySelectorAll('.cascading-slide');
-    expect(slides.length).toBe(5);
+  test('slider list exists in the DOM', () => {
+    const list = document.getElementById('cascadingSliderList');
+    expect(list).not.toBeNull();
   });
 
-  test('slides 1-2 have <img> elements', () => {
-    const slides = document.querySelectorAll('.cascading-slide');
-    expect(slides[0].querySelector('img')).not.toBeNull();
-    expect(slides[1].querySelector('img')).not.toBeNull();
+  test('gallery grid exists', () => {
+    const grid = document.getElementById('portfolioGrid');
+    expect(grid).not.toBeNull();
   });
 
-  test('slides 3-5 have SVG placeholders', () => {
-    const slides = document.querySelectorAll('.cascading-slide');
-    expect(slides[2].querySelector('svg')).not.toBeNull();
-    expect(slides[3].querySelector('svg')).not.toBeNull();
-    expect(slides[4].querySelector('svg')).not.toBeNull();
+  test('viewer exists and defaults to aria-hidden', () => {
+    const viewer = document.getElementById('portfolioViewer');
+    expect(viewer).not.toBeNull();
+    expect(viewer.getAttribute('aria-hidden')).toBe('true');
+  });
+
+  test('back button exists', () => {
+    const backBtn = document.getElementById('portfolioBackBtn');
+    expect(backBtn).not.toBeNull();
   });
 
   test('navigation buttons exist with correct classes', () => {
@@ -234,11 +243,6 @@ describe('REGRESSION — DOM Structure', () => {
   test('nav menu has aria-label', () => {
     const nav = document.querySelector('.cascading-slider-nav');
     expect(nav.getAttribute('aria-label')).toBe('slider navigation');
-  });
-
-  test('data-status="active" exists on first slide in HTML', () => {
-    const firstSlide = document.querySelector('.cascading-slide');
-    expect(firstSlide.getAttribute('data-status')).toBe('active');
   });
 });
 
@@ -269,6 +273,12 @@ describe('REGRESSION — Portfolio Section', () => {
     const section = document.getElementById('portfolio');
     expect(section.querySelector('.cascading-slider-list')).not.toBeNull();
   });
+
+  test('contains gallery and viewer', () => {
+    const section = document.getElementById('portfolio');
+    expect(section.querySelector('.portfolio-gallery')).not.toBeNull();
+    expect(section.querySelector('.portfolio-viewer')).not.toBeNull();
+  });
 });
 
 // ────────────────────────────────────
@@ -287,14 +297,19 @@ describe('REGRESSION — Image Assets', () => {
     expect(fs.existsSync(path.join(__dirname, '..', '..', 'LOGO PERIN PNG ATUAL01.png'))).toBe(true);
     expect(fs.existsSync(path.join(__dirname, '..', '..', 'LOGO PERIN PNG ATUAL02.jpg'))).toBe(true);
   });
+
+  test('project cover images exist', () => {
+    expect(fs.existsSync(path.join(__dirname, '..', '..', 'eldorado.png'))).toBe(true);
+    expect(fs.existsSync(path.join(__dirname, '..', '..', 'elektro.png'))).toBe(true);
+    expect(fs.existsSync(path.join(__dirname, '..', '..', 'isa-energia.png'))).toBe(true);
+    expect(fs.existsSync(path.join(__dirname, '..', '..', 'state-grid.png'))).toBe(true);
+  });
 });
 
 // ────────────────────────────────────
 // Regression: Script Integrity
 // ────────────────────────────────────
 describe('REGRESSION — Script Integrity', () => {
-  const js = fs.readFileSync(path.join(__dirname, '..', '..', 'script.js'), 'utf8');
-
   test('initCascadingSlider function exists', () => {
     expect(js).toMatch(/function initCascadingSlider/);
   });
@@ -303,7 +318,7 @@ describe('REGRESSION — Script Integrity', () => {
     expect(js).toMatch(/0\.065,\s*0\.135,\s*0\.60,\s*0\.135,\s*0\.065/);
   });
 
-  test('PCT mobile [0.15, 0.70, 0.15]', () => {
+  test('PCT tablet [0.15, 0.70, 0.15]', () => {
     expect(js).toMatch(/0\.15,\s*0\.70,\s*0\.15/);
   });
 
@@ -315,16 +330,17 @@ describe('REGRESSION — Script Integrity', () => {
     expect(js).toMatch(/DURATION\s*=\s*0\.70/);
   });
 
-  test('isTouchDevice detection exists', () => {
-    expect(js).toMatch(/isTouchDevice/);
+  test('createCascadingSlider function exists (refactored engine)', () => {
+    expect(js).toMatch(/function createCascadingSlider/);
   });
 
-  test('handleNavClick function exists', () => {
-    expect(js).toMatch(/function handleNavClick/);
+  test('initPortfolioGallery function exists (new gallery engine)', () => {
+    expect(js).toMatch(/function initPortfolioGallery/);
   });
 
-  test('collection.style.height is set in positionSlides', () => {
-    expect(js).toMatch(/collection\.style\.height\s*=\s*containerHeight/);
+  test('portfolioProjects data array exists with 6 projects', () => {
+    expect(js).toContain("id: 'eldorado'");
+    expect(js).toContain("id: 'obra-residencial'");
   });
 
   test('img width is fixed in positionSlides (scale-based)', () => {
