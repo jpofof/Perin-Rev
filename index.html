@@ -732,7 +732,10 @@
                     </div>
                 </div>
                 <div class="contact-form-side">
-                    <form class="contact-form" id="contactForm" novalidate>
+                    <form class="contact-form" id="contactForm" method="POST" name="contato" data-netlify="true" netlify-honeypot="website" novalidate>
+                        <!-- Netlify Forms: hidden form-name (must match form name exactly) -->
+                        <input type="hidden" name="form-name" value="contato" />
+
                         <!-- Honeypot field — invisible to users, traps bots -->
                         <div style="position:absolute;left:-9999px;opacity:0;height:0;overflow:hidden;"
                             aria-hidden="true">

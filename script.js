@@ -1166,6 +1166,7 @@ function initContactForm() {
             ? (window.getSelectedService ? window.getSelectedService() : '')
             : '';
         const message = sanitizeString(document.getElementById('formMessage').value);
+        const website = sanitizeString(document.getElementById('formWebsite').value);
 
         return {
             name,
@@ -1173,6 +1174,7 @@ function initContactForm() {
             email,
             service,
             message,
+            website,
             // Metadata for server-side validation & rate limiting
             _timestamp: Date.now(),
             _source: 'perin_contact_form_v1',
@@ -1180,56 +1182,59 @@ function initContactForm() {
     }
 
     function submitToAPI(payload) {
-        // ============================================================
-        // FUTURE: Replace this mock with actual API call:
-        //
-        // fetch('/api/contact', {
-        //     method: 'POST',
-        //     headers: { 'Content-Type': 'application/json' },
-        //     body: JSON.stringify(payload),
-        // })
-        // .then(res => { if (!res.ok) throw new Error('Server error'); })
-        // .then(showSuccess)
-        // .catch(err => showError(err.message));
-        //
-        // Server-side should validate:
-        //   - CSRF token
-        //   - Rate limit (IP, session)
-        //   - honeypot (website field filled = bot)
-        //   - Name: 2-100 chars, letters/spaces/accents only
-        //   - Phone: 10-11 digits
-        //   - Email: valid format
-        //   - Service: must be in allowed list
-        //   - Message: 1-5000 chars
-        //   - Sanitize all inputs (XSS, SQLi)
-        //   - Log attempt (correlation ID)
-        // ============================================================
-
-        // For now, simulate success with animated feedback
         const submitBtn = document.getElementById('formSubmit');
         const originalText = submitBtn.querySelector('.form-submit-text');
 
-        gsap.to(submitBtn, {
-            scale: 0.95, duration: 0.1,
-            ease: 'power2.out', yoyo: true, repeat: 1,
+        // Build x-www-form-urlencoded body for Netlify Forms
+        const params = new URLSearchParams();
+        params.append('form-name', 'contato');
+        Object.keys(payload).forEach(key => {
+            params.append(key, payload[key]);
         });
 
-        originalText.textContent = 'Mensagem Enviada!';
-        gsap.to(submitBtn, {
-            background: '#3FCC5B', duration: 0.3, ease: 'power2.out',
-        });
+        // Disable button during submission
+        submitBtn.disabled = true;
+        originalText.textContent = 'Enviando...';
 
-        // Log sanitized payload for debugging
-        console.log('[Perin Form] Payload ready for API:', JSON.stringify(payload, null, 2));
-
-        setTimeout(() => {
-            originalText.textContent = 'Enviar Mensagem';
+        fetch('/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: params.toString(),
+        })
+        .then(function (res) {
+            if (!res.ok) throw new Error('Erro no servidor. Tente novamente.');
+            // Success feedback
+            originalText.textContent = 'Mensagem Enviada!';
             gsap.to(submitBtn, {
-                background: '#2A873E', duration: 0.3, ease: 'power2.out',
+                background: '#3FCC5B', duration: 0.3, ease: 'power2.out',
             });
-            form.reset();
-            clearAllValidations();
-        }, 3000);
+            console.log('[Perin Form] Submitted to Netlify Forms:', JSON.stringify(payload, null, 2));
+
+            setTimeout(() => {
+                originalText.textContent = 'Enviar Mensagem';
+                gsap.to(submitBtn, {
+                    background: '#2A873E', duration: 0.3, ease: 'power2.out',
+                });
+                form.reset();
+                clearAllValidations();
+                submitBtn.disabled = false;
+            }, 3000);
+        })
+        .catch(function (err) {
+            console.error('[Perin Form] Submission error:', err);
+            originalText.textContent = 'Erro ao enviar';
+            gsap.to(submitBtn, {
+                background: '#D32F2F', duration: 0.3, ease: 'power2.out',
+            });
+
+            setTimeout(() => {
+                originalText.textContent = 'Enviar Mensagem';
+                gsap.to(submitBtn, {
+                    background: '#2A873E', duration: 0.3, ease: 'power2.out',
+                });
+                submitBtn.disabled = false;
+            }, 3000);
+        });
     }
 
     // --- Form submit ---
@@ -1527,7 +1532,7 @@ function initClientsCarousel() {
     // Physics state
     let currentX = -setWidth;          // start at first original set
     let velocity = 0;
-    let baseSpeed = -2.8;              // px per frame, leftward (right-to-left) — negative = ← ← ←
+    let baseSpeed = 2.8;               // px per frame, rightward (left-to-right) — positive = → → →
     const FRICTION = 0.95;             // inertia deceleration (higher = slides longer)
     const RETURN_SPRING = 0.025;       // how fast velocity returns to baseSpeed
     const MAX_SPEED = 22;              // max momentum on release

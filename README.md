@@ -366,14 +366,15 @@ Nenhum servidor, build ou instalação de dependências é necessária.
 | 01/07/2026 | Correção de layout do viewer: reduzidos espaçamentos internos (back button `mb:28→14px`, subtitle `mb:32→18px`, nav `mt:48→30px`). Carrossel centralizado visualmente na seção. 107 testes passando | `styles.css` |
 | 01/07/2026 | **Bugfix crítico**: viewer fechava automaticamente ~1s após abrir. Causa: `stage.style.minHeight=''` no `onComplete` do `openProject` colapsava o stage (altura 0) porque gallery (`.staged`) e viewer são `position:absolute` (fora do fluxo). Com `overflow:hidden` no stage, viewer com `inset:0` ficava com altura 0 e todo conteúdo desaparecia. Correção: removido `minHeight=''` do `onComplete` — minHeight travado mantém a altura. `minHeight` só é liberado no `onComplete` do `closeProject` (quando gallery volta ao fluxo normal e stage retorna altura natural do grid). 107 testes passando | `script.js` |
 | 02/07/2026 | **Bugfix definitivo**: botões de navegação (← →) do carrossel no viewer não apareciam. Causa dupla: (1) `inset:0` no CSS do viewer incluía `bottom:0`, prendendo-o à altura do stage (~500px) e cortando o nav (82px abaixo do slider de 420px); (2) `overflow:hidden` na `.portfolio-gallery-section` (seção pai) também clipava o nav. Solução: (A) CSS — viewer usa `top/left/right` sem `bottom`, com `min-height:100%` para crescer com o conteúdo; removido `overflow:hidden` da section pai. (B) JS — `requestAnimationFrame` no `onComplete` de `openProject` libera `viewer.style.bottom='auto'` e `stage.style.overflow='visible'` após GSAP finalizar estilos. No `closeProject`: restaura `overflow:hidden` no início e limpa `bottom`/`overflow` no `onComplete`. Nenhuma animação ou carrossel foi alterado. 107 testes passando | `styles.css`, `script.js` |
+| 06/07/2026 | **Integração Netlify Forms**: adicionados atributos `data-netlify="true"`, `method="POST"`, `name="contato"`, campo hidden `form-name` ao formulário de contato. Substituído mock `submitToAPI` por `fetch()` real para `/` com `Content-Type: application/x-www-form-urlencoded`, `URLSearchParams` e campo `form-name` no payload. Honeypot mantido como anti-spam adicional ao Netlify. 107 testes passando | `index.html`, `script.js` |
 
 ---
 
 ## 📌 Observabilidade (Logs)
 
-- Não há `console.log` no código de produção
-- O formulário de contato não envia dados reais (apenas feedback visual)
-- Nenhuma PII (informação pessoal) é coletada ou processada
+- Não há `console.log` no código de produção (apenas logs de diagnóstico e submissão do formulário)
+- O formulário de contato envia dados para o Netlify Forms via `POST` com `Content-Type: application/x-www-form-urlencoded`
+- Nenhuma PII (informação pessoal) é coletada ou processada além do que o usuário preenche no formulário
 
 ---
 
