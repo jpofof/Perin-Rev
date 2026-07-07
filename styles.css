@@ -2824,3 +2824,140 @@ h6 {
 .row {
     margin: 0;
 }
+
+/* ============================================= */
+/* ABOUT — BADGES (substitui contadores zerados até termos números reais) */
+/* Adicionado sem alterar nenhuma regra existente */
+/* ============================================= */
+.about-badges-row {
+    display: flex;
+    gap: 12px;
+    margin-top: 32px;
+    flex-wrap: wrap;
+}
+
+.about-badge {
+    font-family: var(--font-secondary);
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: 999px;
+    padding: 8px 18px;
+    background: var(--color-bg-surface);
+}
+
+/* ============================================= */
+/* SEGMENTS SECTION — nova seção (adição, não substitui nada) */
+/* ============================================= */
+.segments-section {
+    padding: var(--section-padding);
+    background: var(--color-bg-secondary);
+}
+
+.segments-container {
+    max-width: var(--container-max);
+    margin: 0 auto;
+}
+
+.segments-header {
+    margin-bottom: 56px;
+}
+
+.segments-main-title {
+    font-family: var(--font-primary);
+    font-size: clamp(32px, 4vw, 52px);
+    font-weight: 800;
+    color: var(--color-text-primary);
+    line-height: 1.1;
+}
+
+.segments-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 40px;
+    border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.segment-tab {
+    font-family: var(--font-secondary);
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--color-text-muted);
+    background: none;
+    border: none;
+    padding: 16px 24px;
+    cursor: pointer;
+    position: relative;
+    transition: color var(--transition-fast);
+}
+
+.segment-tab::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: var(--color-accent-primary);
+    transform: scaleX(0);
+    transition: transform var(--transition-medium);
+}
+
+.segment-tab.active {
+    color: var(--color-text-primary);
+}
+
+.segment-tab.active::after {
+    transform: scaleX(1);
+}
+
+.segments-panels {
+    position: relative;
+    min-height: 280px;
+}
+
+.segment-panel {
+    display: none;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 48px;
+    align-items: center;
+}
+
+.segment-panel.active {
+    display: grid;
+}
+
+.segment-panel-title {
+    font-family: var(--font-primary);
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--color-text-primary);
+    margin-bottom: 16px;
+}
+
+.segment-panel-text {
+    font-family: var(--font-secondary);
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--color-text-secondary);
+}
+
+.segment-panel-visual {
+    aspect-ratio: 4/3;
+    border: 1px solid var(--color-border-subtle);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-bg-surface);
+}
+
+@media (max-width: 768px) {
+    .segment-panel {
+        grid-template-columns: 1fr;
+    }
+
+    .segments-tabs {
+        overflow-x: auto;
+    }
+}

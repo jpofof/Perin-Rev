@@ -1711,6 +1711,7 @@ function initPage() {
     initCounters();
     initServicesReveal();
     initDifferentialsAnimation();
+    initSegmentsTabs();
     initValuesReveal();
     initTestimonialsReveal();
     initServicesInteraction();
@@ -1732,4 +1733,28 @@ if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initPage);
 } else {
     initPage();
+}
+
+// === SEGMENTS SECTION — TAB SWITCHER (nova seção, adicionado sem alterar código existente) ===
+function initSegmentsTabs() {
+    const tabs = document.querySelectorAll('.segment-tab');
+    if (!tabs.length) return;
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const target = tab.dataset.segment;
+            const panel = document.querySelector(`[data-segment-panel="${target}"]`);
+            if (!panel) return;
+
+            document.querySelectorAll('.segment-tab').forEach(t => {
+                t.classList.remove('active');
+                t.setAttribute('aria-selected', 'false');
+            });
+            document.querySelectorAll('.segment-panel').forEach(p => p.classList.remove('active'));
+
+            tab.classList.add('active');
+            tab.setAttribute('aria-selected', 'true');
+            panel.classList.add('active');
+        });
+    });
 }
