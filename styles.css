@@ -1987,10 +1987,6 @@ h6 {
     height: 48px;
 }
 
-.testimonial-avatar svg circle {
-    stroke: var(--color-border-subtle);
-}
-
 .testimonial-name {
     display: block;
     font-family: var(--font-primary);
