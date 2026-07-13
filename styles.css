@@ -75,6 +75,15 @@ body {
     line-height: 1.6;
 }
 
+h1,
+h2 {
+    text-wrap: balance;
+}
+
+p {
+    text-wrap: pretty;
+}
+
 ::selection {
     background: var(--color-accent-primary);
     color: #FFFFFF;
@@ -100,6 +109,10 @@ body {
 img {
     max-width: 100%;
     height: auto;
+}
+
+svg text {
+    font-family: var(--font-primary);
 }
 
 a {
