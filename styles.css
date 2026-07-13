@@ -2800,15 +2800,6 @@ h6 {
     }
 }
 
-/* === BOOTSTRAP OVERRIDES === */
-.container-fluid {
-    padding: 0;
-}
-
-.row {
-    margin: 0;
-}
-
 /* ============================================= */
 /* ABOUT — BADGES (substitui contadores zerados até termos números reais) */
 /* Adicionado sem alterar nenhuma regra existente */
