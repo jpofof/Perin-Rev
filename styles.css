@@ -1661,27 +1661,6 @@ h6 {
     transform: translateY(0);
 }
 
-/* Card de expansão (clone flutuante durante a transição) */
-.portfolio-expanding-card {
-    position: fixed;
-    z-index: 1000;
-    border-radius: 8px;
-    overflow: hidden;
-    pointer-events: none;
-    background: var(--color-bg-surface);
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.40);
-    will-change: top, left, width, height;
-    backface-visibility: hidden;
-}
-
-.portfolio-expanding-card img {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center center;
-}
-
 /* Responsivo: Galeria */
 @media (max-width: 1024px) {
     .portfolio-gallery-grid {
@@ -2768,10 +2747,6 @@ h6 {
         flex-direction: column;
         gap: 12px;
         text-align: center;
-    }
-
-    .portfolio-swiper-nav {
-        gap: 20px;
     }
 
     .process-step {

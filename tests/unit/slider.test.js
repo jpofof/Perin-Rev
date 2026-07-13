@@ -288,31 +288,31 @@ describe('Accessibility', () => {
 // Image assets
 // ────────────────────────────────────
 describe('Image Assets', () => {
-  test('trabalhando01.jpeg exists', () => {
-    const exists = fs.existsSync(path.join(__dirname, '..', '..', 'trabalhando01.jpeg'));
+  test('placeholder-obra-01.webp exists', () => {
+    const exists = fs.existsSync(path.join(__dirname, '..', '..', 'assets', 'images', 'placeholders', 'placeholder-obra-01.webp'));
     expect(exists).toBe(true);
   });
 
-  test('trabalhando02.jpeg exists', () => {
-    const exists = fs.existsSync(path.join(__dirname, '..', '..', 'trabalhando02.jpeg'));
+  test('placeholder-obra-02.webp exists', () => {
+    const exists = fs.existsSync(path.join(__dirname, '..', '..', 'assets', 'images', 'placeholders', 'placeholder-obra-02.webp'));
     expect(exists).toBe(true);
   });
 
-  test('eldorado.png exists', () => {
-    const exists = fs.existsSync(path.join(__dirname, '..', '..', 'eldorado.png'));
+  test('eldorado.webp exists', () => {
+    const exists = fs.existsSync(path.join(__dirname, '..', '..', 'assets', 'images', 'clients', 'eldorado.webp'));
     expect(exists).toBe(true);
   });
 
-  test('elektro.png exists', () => {
-    const exists = fs.existsSync(path.join(__dirname, '..', '..', 'elektro.png'));
+  test('elektro.webp exists', () => {
+    const exists = fs.existsSync(path.join(__dirname, '..', '..', 'assets', 'images', 'clients', 'elektro.webp'));
     expect(exists).toBe(true);
   });
 
   test('project covers are referenced in portfolio data', () => {
     const js = fs.readFileSync(path.join(__dirname, '..', '..', 'script.js'), 'utf8');
-    expect(js).toContain("cover: 'eldorado.png'");
-    expect(js).toContain("cover: 'elektro.png'");
-    expect(js).toContain("cover: 'isa-energia.png'");
-    expect(js).toContain("cover: 'state-grid.png'");
+    expect(js).toContain("cover: 'assets/images/clients/eldorado.webp'");
+    expect(js).toContain("cover: 'assets/images/clients/elektro.webp'");
+    expect(js).toContain("cover: 'assets/images/clients/isa-energia.webp'");
+    expect(js).toContain("cover: 'assets/images/clients/state-grid.webp'");
   });
 });

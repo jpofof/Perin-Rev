@@ -370,26 +370,28 @@ Antes de entregar qualquer código, responda mentalmente:
 ## Carrossel de Projetos — Implementação Oficial
 
 > **Status:** Aprovada. Esta é a referência definitiva do componente.
-> **Arquivos:** `index.html` (portfolio-section), `styles.css` (cascading-slider), `script.js` (`initCascadingSlider()`)
+> **Arquivos:** `index.html` (portfolio-section), `styles.css` (cascading-slider), `script.js` (`createCascadingSlider()` / `initCascadingSlider()`)
 > **Data de aprovação:** 23/06/2026
+> **Última sincronização com o código:** 07/07/2026 — valores abaixo conferidos linha a linha contra `script.js:293-546` e `tests/regression/slider.regression.test.js`.
 
 ### Estrutura visual
 
-O carrossel exibe **5 slides** com distribuição fixa baseada em porcentagem da largura do container:
+O carrossel tem **4 tiers de largura** conforme `getBreakpoint()`/`getPCT()` (`script.js:349-365`), cada um com distribuição fixa em porcentagem da largura útil do container (descontados os gaps de 8px entre slides, `gap = 8` em `script.js:310`):
 
-| Posição | Largura |
-|---|---|
-| Extrema esquerda | 14% |
-| Esquerda | 18% |
-| **Centro (principal)** | **36%** |
-| Direita | 18% |
-| Extrema direita | 14% |
+| Tier | Breakpoint | Slots visíveis | Proporções |
+|---|---|---|---|
+| **Desktop** | `window.innerWidth > 1200` | 5 | `6.5% / 13.5% / 60% / 13.5% / 6.5%` |
+| **Notebook** | `1024px < largura ≤ 1200px` | 5 | `8% / 16% / 52% / 16% / 8%` |
+| **Tablet** | `750px < largura ≤ 1024px` | 3 | `15% / 70% / 15%` |
+| **Mobile** | `largura ≤ 750px` | 3 | `10% / 80% / 10%` (slots extremos ocultos, sem gap) |
 
 ```
-[ 6,5% ] [ 13,5% ] [      60%      ] [ 13,5% ] [ 6,5% ]
+Desktop:  [ 6,5% ] [ 13,5% ] [      60%      ] [ 13,5% ] [ 6,5% ]
+Notebook: [  8%  ] [  16%  ] [      52%      ] [  16%  ] [  8%  ]
+Tablet/Mobile (3 slots): [ 15 ou 10% ] [ 70 ou 80% ] [ 15 ou 10% ]
 ```
 
-A soma totaliza 100% da largura disponível (descontados os gaps de 4px entre slides).
+A soma totaliza 100% da largura útil do container em qualquer tier.
 
 ### Comportamento de navegação
 
@@ -405,11 +407,11 @@ A soma totaliza 100% da largura disponível (descontados os gaps de 4px entre sl
 
 | Propriedade | Valor |
 |---|---|
-| Duração | `0.60s` |
-| Curva | `cubic-bezier(0.6, 0.03, 0.15, 1)` |
-| Início | Ultra-suave (~3% de progresso nos primeiros 20% do tempo) |
-| Final | Aceleração progressiva, conclusão ágil |
-| Sensação | "Desliza suavemente" — sem impacto, sem tranco |
+| Duração | `0.70s` (`DURATION`, `script.js:302`) |
+| Curva | `cubic-bezier(0.40, 0.00, 0.30, 1.00)` (`CURVE`, `script.js:303`) |
+| Sensação | Aceleração progressiva suave, sem impacto, sem tranco |
+
+Valores confirmados também em `tests/regression/slider.regression.test.js:325-330` (`CURVE is cubic-bezier(0.40, 0.00, 0.30, 1.00)` e `DURATION is 0.70`) — qualquer alteração futura de duração/curva deve atualizar **os três lugares** (código, este documento e o teste) juntos.
 
 ### Regras de animação aprovadas
 
@@ -436,19 +438,18 @@ A soma totaliza 100% da largura disponível (descontados os gaps de 4px entre sl
 
 ### Responsividade
 
-| Breakpoint | Comportamento |
-|---|---|
-| **Desktop** (>1200px) | Experiência completa, 5 slides visíveis |
-| **Ultrawide** | Slides mantêm proporções; imagens escalam proporcionalmente |
-| **Tablet** (≤1024px) | Espaçamento reduzido, altura adaptada via `clamp(280px, 42vw, 420px)` |
-| **Mobile** (< 750px) | **3 slides visíveis** (10% / 80% / 10%), slides extremos ocultos (0% de largura) |
-| **Small** (≤480px) | Fonte ainda menor nos textos |
+| Breakpoint (`getBreakpoint()`, `script.js:349-355`) | Slots | Comportamento |
+|---|---|---|
+| **Desktop** (`> 1200px`) | 5 | Experiência completa, proporções 6.5/13.5/60/13.5/6.5% |
+| **Notebook** (`1024px–1200px`) | 5 | Mesma lógica de 5 slots, proporções mais compactas: 8/16/52/16/8% |
+| **Tablet** (`750px–1024px`) | 3 | 3 slides visíveis, proporções 15/70/15% |
+| **Mobile** (`≤ 750px`) | 3 | 3 slides visíveis, proporções 10/80/10% |
+| **Small** (`≤ 480px`) | 3 (mesmo tier "mobile") | Mesmas proporções do mobile; só a fonte dos textos reduz via CSS |
 
-- **Desktop (≥750px):** proporções fixas 6.5/13.5/60/13.5/6.5%.
-- **Mobile (<750px):** proporções 0 / 10 / 80 / 10 / 0. Apenas 3 slides visíveis. Os slides ocultos (slot 0 e slot 4) não ocupam espaço visual nem geram gaps. Conforme o usuário navega, os slides entram e saem naturalmente das extremidades — sem aparecimento ou desaparecimento brusco.
-- O `getProportions()` retorna dinamicamente `pct`, `slots` (3 ou 5) e `hidden` (array de booleanos) com base em `window.innerWidth < 750`.
-- A altura do container usa `clamp(280px, 42vw, 420px)` — responsiva, mas com mínimos e máximos.
-- As imagens são redimensionadas proporcionalmente a cada `positionSlides()`, garantindo que sempre cubram o slide.
+- Nos tiers de 3 slots, apenas as distâncias `-1, 0, 1` em relação ao slide ativo são exibidas; os demais slides ficam com `opacity: 0` e `pointer-events: none` (`script.js:426-436`) — não existe um array `hidden` separado, o efeito é obtido simplesmente não atribuindo slot a essas distâncias.
+- `getPCT()` (`script.js:357-365`) mapeia o breakpoint para `{ pct, slots }`; não há um `getProportions()` nem um parâmetro `hidden` no código atual.
+- **Altura do container:** o CSS define `.cascading-slider-collection { height: clamp(280px, 42vw, 420px); }` (`styles.css:1208`), mas o JavaScript sobrescreve isso com um valor **fixo de 420px** em todos os breakpoints via inline style (`const ch = 420;`, `script.js:370`, aplicado em `script.js:384-387`) — como estilo inline tem precedência sobre a regra de classe, **a altura não é responsiva na prática hoje**, apesar do clamp existir no CSS. Qualquer mudança futura que queira reativar a altura responsiva do CSS precisa remover essa sobrescrita fixa em `getSizes()`/`positionSlides()`.
+- As imagens são redimensionadas proporcionalmente a cada `positionSlides()`, garantindo que sempre cubram o slide (ver "Comportamento das imagens" acima).
 
 ### Posicionamento
 

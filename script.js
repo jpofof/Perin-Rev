@@ -249,43 +249,43 @@ const portfolioProjects = [
         id: 'eldorado',
         name: 'Eldorado Brasil',
         subtitle: 'Obra Industrial • 2024',
-        cover: 'eldorado.png',
-        photos: ['eldorado.png', 'trabalhando01.jpeg', 'trabalhando02.jpeg', 'trabalhando03.jpeg', 'trabalhando04.jpeg']
+        cover: 'assets/images/clients/eldorado.webp',
+        photos: ['assets/images/clients/eldorado.webp', 'assets/images/placeholders/placeholder-obra-01.webp', 'assets/images/placeholders/placeholder-obra-02.webp', 'assets/images/placeholders/placeholder-obra-03.webp', 'assets/images/placeholders/placeholder-obra-04.webp']
     },
     {
         id: 'elektro',
         name: 'Elektro Redes',
         subtitle: 'Infraestrutura Elétrica • 2023',
-        cover: 'elektro.png',
-        photos: ['elektro.png', 'trabalhando02.jpeg', 'trabalhando03.jpeg', 'trabalhando04.jpeg', 'trabalhando05.jpeg']
+        cover: 'assets/images/clients/elektro.webp',
+        photos: ['assets/images/clients/elektro.webp', 'assets/images/placeholders/placeholder-obra-02.webp', 'assets/images/placeholders/placeholder-obra-03.webp', 'assets/images/placeholders/placeholder-obra-04.webp', 'assets/images/placeholders/placeholder-obra-05.webp']
     },
     {
         id: 'isa-energia',
         name: 'ISA Energia',
         subtitle: 'Subestação • 2023',
-        cover: 'isa-energia.png',
-        photos: ['isa-energia.png', 'trabalhando03.jpeg', 'trabalhando04.jpeg', 'trabalhando05.jpeg', 'trabalhando01.jpeg']
+        cover: 'assets/images/clients/isa-energia.webp',
+        photos: ['assets/images/clients/isa-energia.webp', 'assets/images/placeholders/placeholder-obra-03.webp', 'assets/images/placeholders/placeholder-obra-04.webp', 'assets/images/placeholders/placeholder-obra-05.webp', 'assets/images/placeholders/placeholder-obra-01.webp']
     },
     {
         id: 'state-grid',
         name: 'State Grid',
         subtitle: 'Linha de Transmissão • 2022',
-        cover: 'state-grid.png',
-        photos: ['state-grid.png', 'trabalhando04.jpeg', 'trabalhando05.jpeg', 'trabalhando01.jpeg', 'trabalhando02.jpeg']
+        cover: 'assets/images/clients/state-grid.webp',
+        photos: ['assets/images/clients/state-grid.webp', 'assets/images/placeholders/placeholder-obra-04.webp', 'assets/images/placeholders/placeholder-obra-05.webp', 'assets/images/placeholders/placeholder-obra-01.webp', 'assets/images/placeholders/placeholder-obra-02.webp']
     },
     {
         id: 'perin-sede',
         name: 'Sede Perin',
         subtitle: 'Construção Comercial • 2021',
-        cover: 'LOGO PERIN PNG ATUAL01.png',
-        photos: ['LOGO PERIN PNG ATUAL01.png', 'trabalhando05.jpeg', 'trabalhando01.jpeg', 'trabalhando02.jpeg', 'trabalhando03.jpeg']
+        cover: 'assets/images/brand/logo-perin-principal.webp',
+        photos: ['assets/images/brand/logo-perin-principal.webp', 'assets/images/placeholders/placeholder-obra-05.webp', 'assets/images/placeholders/placeholder-obra-01.webp', 'assets/images/placeholders/placeholder-obra-02.webp', 'assets/images/placeholders/placeholder-obra-03.webp']
     },
     {
         id: 'obra-residencial',
         name: 'Residencial Villaggio',
         subtitle: 'Construção Residencial • 2024',
-        cover: 'trabalhando01.jpeg',
-        photos: ['trabalhando01.jpeg', 'trabalhando02.jpeg', 'trabalhando03.jpeg', 'trabalhando04.jpeg', 'trabalhando05.jpeg']
+        cover: 'assets/images/placeholders/placeholder-obra-01.webp',
+        photos: ['assets/images/placeholders/placeholder-obra-01.webp', 'assets/images/placeholders/placeholder-obra-02.webp', 'assets/images/placeholders/placeholder-obra-03.webp', 'assets/images/placeholders/placeholder-obra-04.webp', 'assets/images/placeholders/placeholder-obra-05.webp']
     }
 ];
 
@@ -1208,7 +1208,6 @@ function initContactForm() {
             gsap.to(submitBtn, {
                 background: '#3FCC5B', duration: 0.3, ease: 'power2.out',
             });
-            console.log('[Perin Form] Submitted to Netlify Forms:', JSON.stringify(payload, null, 2));
 
             setTimeout(() => {
                 originalText.textContent = 'Enviar Mensagem';
@@ -1651,53 +1650,6 @@ function initClientsCarousel() {
 
     // Start
     start();
-}
-
-// === DIAGNÓSTICO — Hero State Inspector ===
-// Loga estado de todos os elementos da Hero para identificar o bug de reload
-function diagnoseHeroState(label) {
-    const els = {
-        canvas: document.querySelector('.hero-canvas'),
-        overlay: document.querySelector('.hero-overlay-gradient'),
-        badge: document.querySelector('.hero-badge'),
-        title1: document.querySelector('.hero-title-line-1'),
-        title2: document.querySelector('.hero-title-line-2'),
-        title3: document.querySelector('.hero-title-line-3'),
-        subtitle: document.querySelector('.hero-subtitle'),
-        actions: document.querySelector('.hero-actions'),
-        geometries: document.querySelector('.hero-geometries'),
-        grid: document.querySelector('.hero-grid-layer'),
-        lighting: document.querySelector('.hero-lighting-layer'),
-    };
-
-    console.log(`%c[Hero DIAG ${label}]`, 'font-weight:bold;color:#2A873E;');
-
-    Object.entries(els).forEach(([name, el]) => {
-        if (!el) return;
-        const cs = getComputedStyle(el);
-        console.log(`  ${name}:`, {
-            opacity: cs.opacity,
-            transform: cs.transform,
-            visibility: cs.visibility,
-            display: cs.display,
-            height: cs.height,
-            // If transform is applied, show parsed values
-            hasScale: cs.transform !== 'none' && cs.transform.includes('scale'),
-            hasTranslate: cs.transform !== 'none' && (cs.transform.includes('translateY') || cs.transform.includes('translateX')),
-            hasRotate: cs.transform !== 'none' && cs.transform.includes('rotate'),
-        });
-    });
-
-    // Hero scroll position context
-    const hero = document.querySelector('.hero-architectural-scene');
-    if (hero) {
-        const rect = hero.getBoundingClientRect();
-        const heroH = hero.offsetHeight;
-        const progress = Math.max(0, Math.min(1, -rect.top / heroH));
-        console.log(`  heroProgress: ${progress.toFixed(3)} (rect.top=${rect.top}, height=${heroH}, scrollY=${window.scrollY})`);
-    }
-
-    console.log('---');
 }
 
 // === INIT ALL ===

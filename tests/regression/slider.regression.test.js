@@ -285,24 +285,24 @@ describe('REGRESSION — Portfolio Section', () => {
 // Regression: Image Assets
 // ────────────────────────────────────
 describe('REGRESSION — Image Assets', () => {
-  test('trabalhando01.jpeg file exists', () => {
-    expect(fs.existsSync(path.join(__dirname, '..', '..', 'trabalhando01.jpeg'))).toBe(true);
+  test('placeholder-obra-01.webp file exists', () => {
+    expect(fs.existsSync(path.join(__dirname, '..', '..', 'assets', 'images', 'placeholders', 'placeholder-obra-01.webp'))).toBe(true);
   });
 
-  test('trabalhando02.jpeg file exists', () => {
-    expect(fs.existsSync(path.join(__dirname, '..', '..', 'trabalhando02.jpeg'))).toBe(true);
+  test('placeholder-obra-02.webp file exists', () => {
+    expect(fs.existsSync(path.join(__dirname, '..', '..', 'assets', 'images', 'placeholders', 'placeholder-obra-02.webp'))).toBe(true);
   });
 
-  test('logo PNG files exist', () => {
-    expect(fs.existsSync(path.join(__dirname, '..', '..', 'LOGO PERIN PNG ATUAL01.png'))).toBe(true);
-    expect(fs.existsSync(path.join(__dirname, '..', '..', 'LOGO PERIN PNG ATUAL02.jpg'))).toBe(true);
+  test('logo files exist', () => {
+    expect(fs.existsSync(path.join(__dirname, '..', '..', 'assets', 'images', 'brand', 'logo-perin-principal.webp'))).toBe(true);
+    expect(fs.existsSync(path.join(__dirname, '..', '..', 'assets', 'images', 'brand', 'logo-perin-navbar.webp'))).toBe(true);
   });
 
   test('project cover images exist', () => {
-    expect(fs.existsSync(path.join(__dirname, '..', '..', 'eldorado.png'))).toBe(true);
-    expect(fs.existsSync(path.join(__dirname, '..', '..', 'elektro.png'))).toBe(true);
-    expect(fs.existsSync(path.join(__dirname, '..', '..', 'isa-energia.png'))).toBe(true);
-    expect(fs.existsSync(path.join(__dirname, '..', '..', 'state-grid.png'))).toBe(true);
+    expect(fs.existsSync(path.join(__dirname, '..', '..', 'assets', 'images', 'clients', 'eldorado.webp'))).toBe(true);
+    expect(fs.existsSync(path.join(__dirname, '..', '..', 'assets', 'images', 'clients', 'elektro.webp'))).toBe(true);
+    expect(fs.existsSync(path.join(__dirname, '..', '..', 'assets', 'images', 'clients', 'isa-energia.webp'))).toBe(true);
+    expect(fs.existsSync(path.join(__dirname, '..', '..', 'assets', 'images', 'clients', 'state-grid.webp'))).toBe(true);
   });
 });
 
