@@ -81,6 +81,19 @@
     <!-- HERO SECTION -->
     <section class="hero-architectural-scene" id="hero" aria-label="Hero principal">
         <div class="hero-canvas" id="heroCanvas">
+            <div class="hero-video-background" id="heroVideoBackground" aria-hidden="true">
+                <video class="hero-video-element hero-video-forward" id="heroVideoForward" muted playsinline
+                    preload="auto" poster="assets/images/hero-fundo/hero-timelapse-poster.webp" aria-hidden="true">
+                    <source src="assets/videos/construction-timelapse.webm" type="video/webm">
+                    <source src="assets/videos/construction-timelapse.mp4" type="video/mp4">
+                </video>
+                <video class="hero-video-element hero-video-reverse" id="heroVideoReverse" muted playsinline
+                    preload="none" aria-hidden="true">
+                    <source src="assets/videos/construction-timelapse-reverse.webm" type="video/webm">
+                    <source src="assets/videos/construction-timelapse-reverse.mp4" type="video/mp4">
+                </video>
+            </div>
+            <div class="hero-video-overlay" id="heroVideoOverlay" aria-hidden="true"></div>
             <div class="hero-grid-layer" id="heroGrid"></div>
             <div class="hero-geometries" id="heroGeometries">
                 <div class="geometry-shape geometry-shape-1" data-depth="0.3">

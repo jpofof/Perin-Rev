@@ -23,6 +23,51 @@ function createParticles() {
     }
 }
 
+// === HERO VIDEO BACKGROUND (time-lapse forward/reverse loop) ===
+function initHeroVideoBackground() {
+    const wrapper = document.getElementById('heroVideoBackground');
+    const forward = document.getElementById('heroVideoForward');
+    const reverse = document.getElementById('heroVideoReverse');
+    if (!wrapper || !forward || !reverse) return;
+
+    const prefersReducedMotion = typeof window.matchMedia === 'function'
+        && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const connection = navigator.connection || navigator.webkitConnection || navigator.mozConnection;
+    const isSlowConnection = connection && ['slow-2g', '2g'].includes(connection.effectiveType);
+
+    if (prefersReducedMotion || isSlowConnection) {
+        return;
+    }
+
+    let currentClip = forward;
+    let nextClip = reverse;
+
+    function handleEnded() {
+        currentClip.classList.remove('is-visible');
+        nextClip.currentTime = 0;
+        nextClip.play().catch(() => {});
+        nextClip.classList.add('is-visible');
+        const swap = currentClip;
+        currentClip = nextClip;
+        nextClip = swap;
+    }
+
+    forward.addEventListener('ended', handleEnded);
+    reverse.addEventListener('ended', handleEnded);
+
+    function revealForward() {
+        forward.classList.add('is-visible');
+        forward.play().catch(() => {});
+        reverse.load();
+    }
+
+    if (forward.readyState >= 4) {
+        revealForward();
+    } else {
+        forward.addEventListener('canplaythrough', revealForward, { once: true });
+    }
+}
+
 // === HERO MOUSE PARALLAX ===
 function initHeroParallax() {
     const geometries = document.querySelector('.hero-geometries');
@@ -1655,6 +1700,7 @@ function initClientsCarousel() {
 // === INIT ALL ===
 function initPage() {
     createParticles();
+    initHeroVideoBackground();
     initHeroParallax();
     initHeroEntrance();
     initHeroAnimations();
