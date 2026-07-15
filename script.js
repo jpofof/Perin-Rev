@@ -39,23 +39,32 @@ function initHeroVideoBackground() {
         return;
     }
 
+    const HELD_MOMENT_MS = 260;
+    const FIRST_PLAY_OFFSET_S = 2;
     let currentClip = forward;
     let nextClip = reverse;
+    let isFirstPlay = true;
 
     function handleEnded() {
-        currentClip.classList.remove('is-visible');
-        nextClip.currentTime = 0;
-        nextClip.play().catch(() => {});
-        nextClip.classList.add('is-visible');
-        const swap = currentClip;
-        currentClip = nextClip;
-        nextClip = swap;
+        setTimeout(() => {
+            nextClip.currentTime = 0;
+            nextClip.play().catch(() => {});
+            nextClip.classList.add('is-visible');
+            currentClip.classList.remove('is-visible');
+            const swap = currentClip;
+            currentClip = nextClip;
+            nextClip = swap;
+        }, HELD_MOMENT_MS);
     }
 
     forward.addEventListener('ended', handleEnded);
     reverse.addEventListener('ended', handleEnded);
 
     function revealForward() {
+        if (isFirstPlay && forward.duration > FIRST_PLAY_OFFSET_S * 2) {
+            forward.currentTime = FIRST_PLAY_OFFSET_S;
+        }
+        isFirstPlay = false;
         forward.classList.add('is-visible');
         forward.play().catch(() => {});
         reverse.load();
