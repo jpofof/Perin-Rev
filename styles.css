@@ -92,6 +92,15 @@ body {
     line-height: 1.6;
 }
 
+h1,
+h2 {
+    text-wrap: balance;
+}
+
+p {
+    text-wrap: pretty;
+}
+
 ::selection {
     background: var(--color-accent-primary);
     color: #FFFFFF;
@@ -117,6 +126,10 @@ body {
 img {
     max-width: 100%;
     height: auto;
+}
+
+svg text {
+    font-family: var(--font-primary);
 }
 
 a {
@@ -2084,10 +2097,6 @@ h6 {
     height: 48px;
 }
 
-.testimonial-avatar svg circle {
-    stroke: var(--color-border-subtle);
-}
-
 .testimonial-name {
     display: block;
     font-family: var(--font-primary);
@@ -2886,15 +2895,6 @@ h6 {
     .mobile-link-highlight {
         font-size: 28px;
     }
-}
-
-/* === BOOTSTRAP OVERRIDES === */
-.container-fluid {
-    padding: 0;
-}
-
-.row {
-    margin: 0;
 }
 
 /* ============================================= */
