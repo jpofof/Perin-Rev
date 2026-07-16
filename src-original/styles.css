@@ -383,47 +383,6 @@ h6 {
     height: 100%;
 }
 
-.hero-video-background {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 0;
-    overflow: hidden;
-    background: var(--color-bg-primary) url('assets/images/hero-fundo/hero-timelapse-poster.webp') center/cover no-repeat;
-}
-
-.hero-video-element {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 100%;
-    height: 100%;
-    transform: translate(-50%, -50%);
-    object-fit: cover;
-    object-position: center center;
-    opacity: 0;
-    transition: opacity 0.7s var(--ease-premium);
-}
-
-.hero-video-element.is-visible {
-    opacity: 1;
-}
-
-.hero-video-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 1;
-    background:
-        radial-gradient(ellipse at center, rgba(4, 10, 6, 0.15), rgba(4, 10, 6, 0.55) 75%),
-        linear-gradient(180deg, rgba(6, 12, 8, 0.74) 0%, rgba(8, 16, 10, 0.6) 45%, rgba(6, 12, 8, 0.76) 100%);
-    pointer-events: none;
-}
-
 .hero-grid-layer {
     position: absolute;
     top: 0;
@@ -684,7 +643,7 @@ h6 {
 }
 
 .hero-button-primary:hover {
-    background: var(--cor-verde-brilhante);
+    background: var(--color-accent-hover);
     transform: translateY(-2px) scale(1.02);
     box-shadow: 0 20px 60px rgba(42, 135, 62, 0.3);
 }
@@ -695,6 +654,7 @@ h6 {
     left: 50%;
     width: 0;
     height: 0;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.3), transparent);
     border-radius: 50%;
     transform: translate(-50%, -50%);
     transition: all 0.6s ease;
@@ -747,40 +707,6 @@ h6 {
     letter-spacing: 3px;
     text-transform: uppercase;
     color: var(--color-text-muted);
-}
-
-/* Hero text/CTA colors overridden for legibility against the video background + dark overlay */
-.hero-architectural-scene .hero-title-line {
-    color: #F5F5F5;
-}
-
-.hero-architectural-scene .hero-subtitle {
-    color: rgba(245, 245, 245, 0.82);
-}
-
-.hero-architectural-scene .hero-button-secondary {
-    color: #F5F5F5;
-    border-color: rgba(245, 245, 245, 0.4);
-    background: rgba(10, 16, 12, 0.25);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-}
-
-.hero-architectural-scene .hero-button-secondary:hover {
-    border-color: var(--cor-cinza-acastanhado);
-    background: rgba(245, 245, 245, 0.1);
-}
-
-.hero-architectural-scene .hero-badge {
-    padding: 6px 16px;
-    border-radius: 100px;
-    background: rgba(10, 16, 12, 0.25);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-}
-
-.hero-architectural-scene .hero-scroll-text {
-    color: rgba(245, 245, 245, 0.6);
 }
 
 .hero-scroll-line {
@@ -1776,12 +1702,6 @@ h6 {
 
     .portfolio-viewer-subtitle {
         margin-bottom: 24px;
-    }
-}
-
-@media (max-width: 750px) {
-    .hero-video-element {
-        object-position: 62% center;
     }
 }
 
