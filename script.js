@@ -243,9 +243,13 @@ function initHeroEntrance() {
         gsap.set('.hero-subtitle', { opacity: 0, y: 30 });
         gsap.set('.hero-actions', { opacity: 0, y: 30 });
 
-        // Animate entrance — NO delay, immediate
+        // Delay reduzido de 0.4 para 0.15: nao sincronizava com nenhum recurso
+        // real (poster/fonte chegam antes em rede rapida, chegam muito depois
+        // em rede lenta de qualquer forma) — era puro ritmo estetico. 0.15
+        // mantem uma pequena pausa antes do badge sem o atraso de quase meio
+        // segundo que se somava a percepcao de lentidao em rede rapida.
         const tl = gsap.timeline({
-            delay: 0.4,
+            delay: 0.15,
             defaults: { ease: 'power3.out' }
         });
 
@@ -1907,6 +1911,15 @@ function initPage() {
     // terminarem de carregar — evita marcadores calculados para uma página
     // ainda curta (causa raiz do bug de conteúdo não revelar em mobile).
     window.addEventListener('load', () => ScrollTrigger.refresh());
+
+    // Gap encontrado no diagnostico de carregamento inicial: com font-display:swap,
+    // a troca da fonte (reflow de metricas/quebra de linha) pode terminar DEPOIS do
+    // evento 'load' em rede lenta — o refresh acima roda cedo demais nesse caso e a
+    // primeira secao apos o hero fica com marcadores desatualizados de novo. Refresh
+    // adicional quando document.fonts.ready resolver cobre esse caso especifico.
+    if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(() => ScrollTrigger.refresh());
+    }
 }
 
 // Initialize page immediately

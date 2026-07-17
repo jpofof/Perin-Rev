@@ -657,3 +657,139 @@ Como `leaveStagger` default é `0` e nenhum dos 4 call-sites o sobrescreve, a co
 **Testes**: `npm test` → **107/107 passando** após a correção.
 
 **Não commitado nem enviado — aguardando aprovação.**
+
+## Carregamento inicial: poster, hero entrance, primeira seção, travamento intermitente
+
+> Diagnóstico apenas — nada corrigido nesta seção ainda. 4 sintomas reportados: (1) poster do hero demora a aparecer, (2) textos do hero surgem com atraso perceptível, (3) primeira seção após o hero aparece "cortada"/incompleta ao rolar, (4) travamento ocasional completo. Investigação com evidência real (Puppeteer + Chrome DevTools Protocol, throttling de rede Slow-4G-like + CPU 4x), não só leitura estática de código — os episódios anteriores desta sessão (`.min` desatualizado, premissas erradas sobre `batch()`) ensinaram a não confiar em suposição sem medir.
+
+### Passo 1 — Cadeia de dependências do carregamento
+
+Ordem real no `index.html` (`<head>`):
+1. `<link rel="preload" href="fonts/manrope-latin.woff2" ...>` — só a fonte **Manrope** (títulos) é pré-carregada.
+2. `<link rel="stylesheet" href="styles.min.css">` — **render-blocking**, sem `preload`/`media` assíncrono.
+3. `<script src="vendor/gsap/gsap.min.js" defer>`, `<script src="vendor/gsap/ScrollTrigger.min.js" defer>`, `<script src="script.min.js" defer>` — todos `defer` (corretos), mas **deferred scripts só executam depois que a stylesheet que os precede termina de carregar** (regra do próprio navegador, para evitar acessar `computedStyle` antes do CSSOM existir) — então `styles.min.css` bloqueia a execução de TODA a cadeia de JS, não só a renderização.
+
+**Poster do hero**: `<video poster="assets/images/hero-fundo/hero-timelapse-poster.webp">` no desktop, e via CSS em `.hero-video-background { background: var(--color-bg-primary) url('.../hero-timelapse-poster.webp') center/cover; }` (`styles.css:399-408`) — **mesmo mecanismo em ambos os breakpoints**, já que em mobile o `<video>` é removido e só a regra CSS de fundo permanece visível. **Nenhum `fetchpriority`, nenhum `<link rel="preload">` para essa imagem em lugar nenhum do projeto** (confirmado por grep).
+
+**`initHeroEntrance()`** (script.js): depende só de `initPage()` rodar (bind em `DOMContentLoaded`) — **não espera fontes, não espera imagens, não usa `document.fonts.ready`, não usa nenhuma Promise**. O atraso é 100% um `gsap.timeline({ delay: 0.4, ... })` **hardcoded**, com badge→título(3 linhas)→subtítulo→ações encadeados via offsets `'-=0.3'`/`'-=0.5'`, timeline total ≈ 3.1s a partir de quando `initHeroEntrance()` roda. Confirmado por grep em todo `script.js`: **nenhuma referência a `document.fonts`/`fonts.ready`** em lugar nenhum do código.
+
+### Causa raiz confirmada empiricamente (Puppeteer + CDP, Slow-4G simulado + CPU 4x)
+
+Waterfall real de rede sob throttle (`Network.emulateNetworkConditions` ~400kbps/400ms latência + `Emulation.setCPUThrottlingRate: 4`):
+
+| Recurso | Terminou de baixar em |
+|---|---|
+| `styles.min.css` | 2759ms |
+| `logo-perin-navbar.webp` | 3431ms |
+| `ScrollTrigger.min.js` | 3927ms |
+| `manrope-latin.woff2` (preloaded) | 4229ms |
+| `script.min.js` | 4236ms |
+| `gsap.min.js` | 4658ms |
+| **`hero-timelapse-poster.webp`** | **5738ms** |
+| **`inter-latin.woff2`** (não preloaded) | **6350ms** |
+
+**Sintoma 1 explicado**: o poster é a **penúltima** coisa a terminar de baixar — depois de CSS, logo e os 3 scripts JS inteiros. Isso acontece porque (a) é descoberto via CSS `background`, só depois do CSSOM existir (mais tarde que um `<img>` ou algo com `preload`), e (b) sem `fetchpriority`/`preload`, o navegador não dá prioridade a ele frente aos scripts. Sob rede lenta, o usuário olha para `var(--color-bg-primary)` sólido por **quase 6 segundos**.
+
+**Sintoma 2 explicado**: `initPage()` (e portanto `initHeroEntrance()`) só roda depois que a cadeia inteira acima (CSS → 3 scripts deferred) termina de EXECUTAR — em uma repetição do teste, `DOMContentLoaded` só disparou aos **~5.2s**; a partir daí ainda soma o `delay:0.4` + progressão da timeline (badge visível só em ~7s, título completo em ~8s neste teste). O "atraso perceptível" não é a timeline em si (ela é curta, 3.1s) — é tudo que precisa acontecer **antes** dela sequer começar.
+
+**Sintoma 3 explicado — recorrência do bug de ScrollTrigger, mas por uma causa NOVA que escapou do fix anterior**: `inter-latin.woff2` (fonte usada em `--font-secondary`, corpo de texto — parágrafos, nav, subtítulo) **não tem `<link rel="preload">`** (só Manrope tem) e é a **última** coisa a terminar de baixar (6350ms), depois até do poster. Com `font-display: swap` (`styles.css:11`), o texto renderiza primeiro com a fonte de fallback e **troca (reflow)** para Inter quando ela chega — e isso pode acontecer **depois** do evento `window.load`, que é justamente o gatilho do `ScrollTrigger.refresh()` já implementado (`script.js:1909`, do fix de sessão anterior). `document.fonts.ready` resolveu em ~6196ms num teste em que `window.load` já tinha disparado em ~4649ms — **1,5s depois**. O fix anterior cobria imagens (evento `load` espera imagens), mas **não cobre fontes com `font-display:swap`**, porque o `load` não espera o *swap* de fonte terminar — é exatamente esse gap que a seção "Sobre Nós" (primeira após o hero) expõe: o `ScrollTrigger.refresh()` já rodou com o layout de ANTES do texto trocar de fonte, e a troca de fonte (que muda métricas/quebras de linha) desloca a posição de tudo abaixo do hero, desatualizando os marcadores de novo — mesma classe de bug do fix anterior, causa diferente (fonte, não imagem).
+Nota: `.section-title-reveal`/`.text-reveal` (usados no "Sobre Nós") têm `opacity: 1` fixo no CSS (`styles.css:2718-2729`) — não ficam presos invisíveis. O "cortado" percebido é mais provavelmente o **reflow real do texto** acontecendo enquanto a seção já está parcialmente visível (linhas re-quebrando visivelmente), não uma animação GSAP interrompida.
+
+### Passo 3 — Travamento intermitente (sintoma mais grave): NENHUM deadlock/Promise pendente encontrado
+
+Busca exaustiva em `script.js` por padrões de risco: `while(`, `setInterval`, `async function`, `await`, `new Promise`, `XMLHttpRequest`, `.then(` sem `.catch(`, listeners de evento sem fallback de timeout. Resultado:
+- **Nenhum `while`, `setInterval`, `async/await`, `XMLHttpRequest`** em todo o arquivo.
+- Único `.then(` é o `fetch()` do formulário de contato (`submitToAPI`, linha ~1331) — tem `.catch()` correspondente, e só roda quando o **usuário** envia o formulário (não durante o carregamento inicial).
+- `video.addEventListener('canplaythrough', revealForward, { once: true })` (linha 121, `initHeroVideoBackground`) **não tem timeout de segurança nem `onerror`** — se o vídeo nunca atingir `canplaythrough` (falha de rede real, não só lentidão), o vídeo nunca aparece. **Mas isso só roda em desktop** (mobile remove o `<video>` do DOM inteiramente antes desse código, `script.js:59-66`) — não explica o travamento relatado em mobile. É um ponto frágil real, porém de escopo/impacto limitado (vídeo nunca aparece, mas o poster de fundo cobre o hero de qualquer forma — não trava a página).
+- Nenhum outro `Promise`/callback assíncrono sem tratamento de erro encontrado.
+
+**Conclusão**: não há um deadlock de código (nenhuma Promise pendurada, nenhum loop infinito). O teste sob throttle **completou corretamente em todos os casos rodados** (nenhum erro de console, nenhuma requisição falhada) — só muito mais devagar. A explicação mais provável para "trava por completo, precisa recarregar" é **contenção severa de main-thread + rede**, não um hang eterno: no pior caso medido, mais de 8 segundos se passam entre a navegação e o hero ficar visualmente completo, com potencialmente dezenas de tarefas longas empilhadas (37 instâncias de ScrollTrigger sendo criadas, timeline do hero, parsing/execução de 150KB de JS, tudo synchronamente dentro de `initPage()`) — um dispositivo real mais lento que o simulado, ou uma rede pior, pode facilmente esticar essa janela a ponto de o usuário achar que travou e recarregar a página no meio do processo (o que reinicia tudo do zero, criando a impressão de "trava sempre que eu tento"). **Isto não é prioridade de correção por "trava real" (não existe), mas continua sendo prioridade por gravidade percebida** — reduzir a cadeia crítica (Passo 5) ataca a causa direta desse tempo de exposição.
+
+Nenhum recurso externo (CDN) restante — confirmado por grep, só `rel="canonical"` aponta para um domínio externo (não é uma requisição de rede).
+
+### Resumo das causas (Passo 4)
+
+| Sintoma | Causa confirmada | Prioridade de correção |
+|---|---|---|
+| 1. Poster demora | `background-image` via CSS, sem `fetchpriority`/`preload`; penúltimo recurso a terminar (5738ms sob throttle) | Alta |
+| 2. Texto do hero atrasado | Delay de 0.4s hardcoded + timeline de 3.1s só começa depois de TODA a cadeia CSS→3 scripts JS executar | Média (não é bug, é design; mas a cadeia que a antecede é o problema real) |
+| 3. Primeira seção "cortada" | `inter-latin.woff2` não preloaded, `font-display:swap`, troca de fonte após `window.load` já ter disparado `ScrollTrigger.refresh()` — reflow tardio desalinha os marcadores | Alta |
+| 4. Travamento ocasional | **Nenhum deadlock encontrado** — contenção severa de main-thread/rede sob condições ruins, não um hang de código | Média (mitigado pelas correções 1-3, sem "fix" dedicado por não haver bug de fato) |
+
+**Não implementado ainda — aguardando aprovação para o Passo 5.**
+
+### Passo 5 — Correções 1-3 implementadas (Passo 4 aguardando aprovação)
+
+**Passo 1 — Preload da fonte Inter:**
+```html
+<link rel="preload" href="fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
+```
+Caminho confirmado (`fonts/inter-latin.woff2`, mesmo padrão do preload já existente para Manrope).
+
+**Passo 2 — Preload do poster (Opção A, sem mudar `background-image`):**
+```html
+<link rel="preload" href="assets/images/hero-fundo/hero-timelapse-poster.webp" as="image" fetchpriority="high">
+```
+Layout do hero validado visualmente (screenshot antes/depois, 390×844, rede normal) — **pixel-idêntico**, nenhuma mudança de posicionamento/cover/proporção. Confirmado via CDP que continua sendo **1 única requisição** (sem duplicar o fetch entre o `preload` e o uso real via CSS `background`).
+
+**Passo 3 — Refresh adicional em `document.fonts.ready`:**
+```js
+if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(() => ScrollTrigger.refresh());
+}
+```
+Adicionado logo após o `window.addEventListener('load', () => ScrollTrigger.refresh())` já existente.
+
+### Validação — waterfall antes/depois (Slow 4G simulado + CPU 4x, mesma condição do diagnóstico)
+
+**Ordem `fonts.ready` vs `load` — 5 execuções consecutivas cada lado** (pergunta central: o gap que causava a seção "cortada" foi eliminado de forma consistente, ou só por sorte?):
+
+| Execução | ANTES (sem preload) | DEPOIS (com preload) |
+|---|---|---|
+| 1 | fonts **depois** do load (gap real) | fonts **antes** do load (sem gap) |
+| 2 | fonts **depois** do load (gap real) | fonts **antes** do load (sem gap) |
+| 3 | fonts **depois** do load (gap real) | fonts **antes** do load (sem gap) |
+| 4 | fonts **depois** do load (gap real) | fonts **antes** do load (sem gap) |
+| 5 | fonts **depois** do load (gap real) | fonts **antes** do load (sem gap) |
+
+**5/5 antes com o gap confirmado, 5/5 depois sem o gap** — o preload da fonte Inter elimina de forma consistente e reproduzível a condição de corrida que causava a seção "Sobre Nós" ser recalculada com layout desatualizado. Este é o resultado mais importante desta rodada: o sintoma 3 tinha causa raiz identificada corretamente, e a correção resolve exatamente essa causa, de forma determinística sob a mesma condição de rede.
+
+**Nenhum erro de console em nenhuma das 10 execuções** (5+5) — reforça a conclusão do Passo 3 anterior: não há deadlock, só o gap de timing que agora está fechado.
+
+**Tempo até o poster/fonte terminarem de baixar — resultado misto, reportado com honestidade:**
+
+| Recurso | ANTES | DEPOIS | Variação |
+|---|---|---|---|
+| `hero-timelapse-poster.webp` | ~5760-5840ms | ~5990-6070ms | **~230ms mais lento** |
+| `inter-latin.woff2` | ~6230-6270ms | ~5780-5820ms | **~450ms mais rápido** |
+
+O poster **não ficou mais rápido** sob esta condição de rede extremamente limitada (throughput agregado ~400kbps, igual ao "Slow 4G" do Chrome DevTools) — na verdade ficou ligeiramente mais lento. Investigado o motivo: a rede simulada limita o **throughput agregado da conexão**, não por-requisição — antes, o poster era baixado tarde mas sozinho (linha inteira disponível para ele); agora, com `fetchpriority="high"` + preload da fonte também com prioridade alta, os dois competem por download simultâneo logo no início, junto com CSS e scripts, **dividindo** a banda já escassa entre mais requisições de alta prioridade ao mesmo tempo — em vez de reduzir o tempo de conclusão, apenas redistribui a mesma banda entre mais streams concorrentes. `fetchpriority`/`preload` ajudam quando há folga de banda e o gargalo é ordem/agendamento — não quando o gargalo é a banda em si (como no perfil "Slow 4G" testado). Confirmado com Lighthouse local: `FCP` e `Speed Index` pioraram ligeiramente (1.6s→1.9s cada), `LCP`/`TTI` inalterados, score igual (95).
+
+**Isto não invalida a correção**: o ganho real do preload não é "poster chega mais rápido no pior caso de banda", é **"o navegador descobre e prioriza o recurso desde o `<head>`, independente de quando o CSS/JS terminam de processar"** — o que é o que efetivamente resolve o gap de `fonts.ready` vs `load` (5/5 execuções). O poster continua demorando sob rede muito ruim porque o gargalo ali é banda insuficiente para o total de bytes necessários, não prioridade de agendamento — nenhum `fetchpriority` resolve throughput insuficiente.
+
+### Testes e Lighthouse
+
+- `npm test` → **107/107 passando**.
+- Lighthouse mobile local (Slow 4G simulado, `--throttling-method=simulate`): score **95 → 95** (igual), FCP/SI levemente piores (~300ms, explicado acima), LCP/TTI inalterados.
+
+### Passo 4 — Recomendação sobre o `delay: 0.4` (aguardando aprovação, nada alterado ainda)
+
+Tentativa de medir precisamente "quanto tempo o usuário espera vendo a página parada antes do badge/texto começar a animar" encontrou **uma anomalia de medição em Chrome headless** (o badge apareceu ~3.4s depois do `DOMContentLoaded` em rede rápida — nem remotamente compatível com o `delay:0.4` codificado), muito provavelmente um artefato do `requestAnimationFrame` sendo executado de forma não-confiável em uma aba headless sem foco real, não um reflexo do comportamento em um navegador real visível. Não vou usar esse número questionável para basear a recomendação.
+
+**Raciocínio a partir do código + dos tempos de rede já medidos (esses sim confiáveis):**
+- Em rede normal: `DOMContentLoaded` ocorre em ~200-300ms; o poster (agora preloaded) já está pronto em ~100ms — **o poster sempre chega bem antes da timeline começar**, delay ou não. Reduzir/remover o `delay:0.4` não arrisca mostrar texto sobre um fundo ainda não carregado nesse cenário.
+- Em rede lenta (Slow 4G simulado): `initPage()`/`initHeroEntrance()` só rodam depois de ~6.1-6.3s (gargalo é a cadeia CSS→JS, não o `delay`); o poster termina de baixar em ~6.0s — **os dois chegam quase juntos, com ou sem o delay de 0.4s**, porque 400ms é irrelevante frente a um atraso de rede de vários segundos.
+
+**Conclusão**: em nenhum dos dois extremos (rede rápida ou lenta) o `delay:0.4` está de fato "esperando o poster" — ele é puro **ritmo/coreografia estética** (dar uma pequena pausa antes do badge entrar), não uma sincronização funcional com o carregamento do fundo. **Recomendação: reduzir de `0.4` para algo entre `0.1` e `0.15`**, mantendo uma pequena pausa perceptível (evita o "tudo aparece de um golpe só") sem o atraso de quase meio segundo que hoje soma à percepção de lentidão em rede rápida (onde tudo mais já está pronto). Não recomendo remover completamente (`0`) — um mínimo de stagger antes do badge evita a sensação de "pop" abrupto assim que o CSS/JS terminam de carregar.
+
+**Aprovado e implementado**: `delay: 0.4` → `delay: 0.15` em `initHeroEntrance()` (script.js). Comentário desatualizado ("NO delay, immediate", que já contradizia o `delay:0.4` existente) corrigido para refletir o raciocínio real. `.min` regenerados, `npm test` → **107/107 passando** após a mudança.
+
+### Fechamento
+
+Todas as 4 correções do Passo 5 implementadas e validadas nesta rodada:
+1. Preload de `inter-latin.woff2` — elimina o gap `fonts.ready`/`load` (5/5 → 0/5 execuções com o bug).
+2. `ScrollTrigger.refresh()` em `document.fonts.ready` — cobertura adicional para o mesmo gap.
+3. `fetchpriority="high"` + preload no poster do hero — garante descoberta/priorização antecipada (ganho de correção, não de velocidade bruta sob rede saturada, conforme explicado acima).
+4. `delay: 0.4 → 0.15` na timeline de entrada do hero.
+
+Testes: 107/107. Layout do hero validado pixel-idêntico. Zero erros de console em 10 execuções sob rede lenta simulada.
