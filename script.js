@@ -52,6 +52,13 @@ function initHeroVideoBackground() {
         return;
     }
 
+    // Em desktop, preload="none" no HTML não deve virar preload="auto" fixo
+    // (isso reintroduziria o preload scanner buscando o vídeo em mobile antes
+    // do JS decidir o breakpoint). Em vez disso, disparamos forward.load()
+    // manualmente aqui, o mais cedo possível dentro do branch desktop, para
+    // minimizar o atraso até canplaythrough em relação ao preload="auto" original.
+    forward.load();
+
     const HELD_MOMENT_MS = 260;
     const FIRST_PLAY_OFFSET_S = 2;
     let currentClip = forward;
@@ -115,8 +122,6 @@ function initHeroVideoBackground() {
     } else {
         heroIsVisible = true;
     }
-
-    forward.load();
 }
 
 // === HERO MOUSE PARALLAX ===
