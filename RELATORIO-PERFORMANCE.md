@@ -210,3 +210,62 @@ npx serve -l 8080 .                # sobe o site local
 ```
 
 Relatórios brutos do Lighthouse (antes/depois) disponíveis em `audit/lighthouse-antes.report.html` e `audit/lighthouse-depois.report.html` — abra direto no navegador para o breakdown completo.
+
+## Hero: vídeo + correções
+
+Branch anterior de vídeo de fundo (`hero-video-background`, ver `implementation-notes.md`) foi mesclada com a branch de redesign do hero baseado em canvas/SVG (`heroGrid`/`heroGeometries`/`heroLighting`/`heroParticles`). Nota da seção "Lazy loading e prioridade" acima ("Não há `<img>`/`<video>` no hero nesta branch") ficou desatualizada por esse merge — agora há ambos os sistemas coexistindo no `#heroCanvas`.
+
+### Decisão de design
+
+Opção **B** (vídeo como fundo + formas geométricas por cima com opacidade reduzida) confirmada pelo usuário. É essencialmente o resultado natural pós-correção dos bugs abaixo — as geometrias já ficam sutis o bastante sobre o overlay escuro do vídeo, sem precisar de ajuste fino adicional.
+
+### Bug 1 — `styles.min.css` desatualizado (causa do conflito visual)
+
+`index.html` carrega `styles.min.css`, não `styles.css`. O `.min.css` servido havia sido gerado **antes** do merge da branch de vídeo — não continha nenhuma regra para `.hero-video-background`/`.hero-video-element`/`.hero-video-overlay`. Resultado: o vídeo caía em `position: static` (fluxo normal do documento, tamanho intrínseco 1024×576 no canto superior esquerdo), enquanto o sistema antigo (`hero-grid-layer` z-index:1, `hero-geometries` z-index:2, `hero-lighting-layer` z-index:3, `hero-particles` z-index:4) permanecia com posicionamento absoluto completo e cobria o resto do hero.
+
+**Correção**: `npx cleancss -o styles.min.css styles.css` (66,8 KB → 47,3 KB). Confirmado via `getComputedStyle` que `.hero-video-background` passou a `position: absolute; z-index: 0` como esperado.
+
+### Bug 2 — vídeo não tocava sozinho (`play()`/`is-visible` nunca disparavam) — BLOQUEANTE, corrigido
+
+Mesma classe de problema do Bug 1: `index.html` carrega `script.min.js`, que também havia sido minificado antes do merge — **não continha `initHeroVideoBackground`**, nem qualquer referência a `heroVideoForward`/`canplaythrough`. Sem esse código, nenhum listener era anexado ao vídeo e `.play()` nunca era chamado, apesar do `<video>` carregar normalmente (`readyState: 4`) e o autoplay mudo não estar bloqueado pelo navegador (confirmado chamando `.play()` manualmente via DevTools).
+
+**Correção**: `npx terser script.js -o script.min.js -c -m` (66,2 KB → 32,0 KB). Confirmado em Chrome real e via Puppeteer que o vídeo agora inicia sozinho (`is-visible` adicionada, `paused: false`, offset de 2s da Fase 3 aplicado).
+
+**Causa raiz comum aos dois bugs**: os `.min` deste projeto são gerados manualmente (não há `npm run build`) e não foram regenerados após o merge das branches. Risco recorrente — recomendo considerar um script `build` versionado (`clean-css-cli` + `terser` já são devDependencies) para eliminar essa classe de bug em merges futuros. Não implementado nesta rodada por não ter sido solicitado.
+
+### Contraste do texto (validação Opção B)
+
+Testado em 3 pontos do loop do vídeo (início — terreno vazio, meio — escavação em andamento, fim — obra pronta). Overlay atual (`radial-gradient` + `linear-gradient` verde-preto, opacidade mínima ≥0,6, ver `implementation-notes.md` Fase 3) mantém título/subtítulo/CTAs legíveis nos 3 pontos, sem necessidade de escurecer mais.
+
+### Recompressão de vídeo
+
+| Arquivo | Antes | Depois | Redução |
+|---|---|---|---|
+| construction-timelapse.mp4 | 5,26 MB | 2,68 MB | −49% |
+| construction-timelapse.webm | 6,41 MB | 2,20 MB | −66% |
+| construction-timelapse-reverse.mp4 | 5,36 MB | 2,72 MB | −49% |
+| construction-timelapse-reverse.webm | 6,42 MB | 2,18 MB | −66% |
+| **Total** | **23,46 MB** | **9,79 MB** | **−58%** |
+
+Parâmetros: MP4/H.264 recomprimido a ~1,5 Mbps (`-b:v 1.5M -maxrate 1.8M -bufsize 3M`), mantendo resolução 1024×576. WebM/VP9 recomprimido com `-crf 32 -b:v 1.5M` — antes desta rodada o WebM não tinha bitrate/CRF controlado explicitamente, por isso ficava maior que o MP4 equivalente (comportamento invertido do esperado para VP9); o CRF acabou dominando sobre o teto de bitrate, resultando em arquivos menores que a estimativa inicial de ~4-4,5 MB, sem perda de qualidade perceptível (comparação frame a frame no mesmo timestamp, original vs. recomprimido, sem blocos/banding visíveis). Validado visualmente e aprovado pelo usuário antes da substituição dos arquivos originais.
+
+### Vídeo órfão removido
+
+`assets/images/hero-fundo/hero-section-fundo.mp4` (3,2 MB, arquivo-fonte usado só na geração via ffmpeg dos clipes finais, nunca referenciado em HTML/CSS/JS) movido para `img-originais/hero-section-fundo.mp4`, seguindo o padrão de backup já usado para as demais imagens (`img-originais/brand/`, `img-originais/clients/`, `img-originais/placeholders/`).
+
+### Lighthouse — antes vs. depois das correções
+
+| Métrica | Pós-merge (bugado) | Pós-correção (hero funcionando) | Variação |
+|---|---|---|---|
+| Performance Score | 95 | 92 | −3 |
+| LCP | 2.7 s | 2.8 s | +0.1 s |
+| CLS | 0 | 0 | — |
+| TBT | 100 ms | 180 ms | +80 ms |
+| FCP | 1.3 s | 1.4 s | +0.1 s |
+| Speed Index | 2.9 s | 3.4 s | +0.5 s |
+
+**Leitura honesta desse resultado**: o score caiu porque o hero "bugado" nunca decodificava/tocava o vídeo (o bug do Bug 2 fazia o Lighthouse medir uma página essencialmente estática). Com o vídeo realmente rodando, há custo real de decode/paint que a versão quebrada não pagava — é o preço de ter a feature funcionando de verdade, não uma regressão a corrigir. Ainda assim, o vídeo recomprimido (9,79 MB no total vs. 23,46 MB antes) compensa parte desse custo em rede/payload, mesmo que não apareça nas métricas de tempo do Lighthouse (que já rodam contra servidor local, sem gargalo de rede). Relatório completo em `audit/lighthouse-hero-fix-final.report.html`.
+
+### Testes
+
+`npm run test:unit` (42/42) e `npm run test:regression` (65/65) rodados após cada mudança relevante (rebuild dos `.min`, troca dos vídeos, remoção do órfão) — sempre 107/107, carrossel intacto em todas as rodadas.
