@@ -573,6 +573,11 @@ h6 {
     animation: particleFloat 3s ease-in-out infinite;
 }
 
+/* Pausa via JS (IntersectionObserver) quando o hero sai da viewport */
+.hero-particles.is-paused .particle {
+    animation-play-state: paused;
+}
+
 @keyframes particleFloat {
     0% {
         opacity: 0;

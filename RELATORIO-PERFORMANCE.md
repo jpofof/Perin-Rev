@@ -416,3 +416,46 @@ Todas as seções revelam corretamente em ambos os viewports — nenhum elemento
 - **Desktop não regrediu**: comportamento de reveal idêntico ao mobile na tabela acima — a correção não alterou nada que já funcionava.
 
 Não commitado nem enviado — aguardando aprovação.
+
+## Mobile: travamento por sobrecarga de main thread
+
+> Reportado após a correção acima: o site trava no carregamento inicial, o **próprio hero** trava ao rolar (não só as seções abaixo), e ao passar do hero o restante do conteúdo demora e trava também. Sintoma de "tudo fica lento", não "algo não dispara" — main thread sobrecarregado, não uma animação que falha em iniciar.
+
+### Limitação do ambiente
+
+Sem Chrome DevTools nem Safari real disponíveis no sandbox de CLI — não foi possível gravar um profile de Performance real (Passo 2 do pedido do usuário). Toda a análise a seguir é **estática**, verificada linha a linha contra `script.js`/`index.html`/`styles.css`, não medição em runtime. Passo a passo de validação real no Safari/iPhone documentado abaixo, para o usuário executar.
+
+### Inventário de `initPage()` (script.js:1821-1853, antes desta correção)
+
+22 funções de inicialização, todas síncronas, todas disparadas juntas na `DOMContentLoaded`, sem escalonamento. Total de instâncias GSAP ScrollTrigger criadas no load: **≥ 57** (10 `.section-title-reveal` + 4 `.text-reveal` + 24 `.process-step` via `ScrollTrigger.create` + 7 `.service-mosaic-item` + 6 `.differential-item` + 4 `.value-item` + 2 `.testimonial-card`; número exato confirmável via `ScrollTrigger.getAll().length` no console real).
+
+### Causas identificadas (evidência, não suposição)
+
+1. **`createParticles()` (script.js:11-24)** — 50 `<div>` com `animation: particleFloat 3s ease-in-out infinite` (`styles.css:566-573`), sem `IntersectionObserver`: rodava para sempre, mesmo com o hero fora da viewport. Individualmente barato (compositável via `transform`/`opacity`), mas somado ao resto.
+2. **`initHeroAnimations()` (script.js:151-197) — causa mais provável do próprio hero travar ao rolar.** O listener `window.addEventListener('scroll', ...)` chamava, em **todo evento nativo de scroll sem throttle**, `hero.getBoundingClientRect()` (força layout read) e depois escrevia `canvas.style.transform`, `canvas.style.opacity` e `overlay.style.height` (força layout write). Isso é layout thrashing clássico (read→write repetido) disparando em alta frequência durante momentum scrolling no iOS Safari — exatamente enquanto o usuário rola o hero.
+3. **`initClientsCarousel()` (script.js:1611-1792) — dois problemas simultâneos:**
+   - `start()` do loop `requestAnimationFrame` do marquee de clientes era chamado incondicionalmente no load, sem `IntersectionObserver` — rodava para sempre mesmo com o carrossel (no fim da página) fora da tela.
+   - `window.addEventListener('touchmove', onPointerMove, { passive: false })` — listener de touch **não-passivo registrado no `window` inteiro**, não no elemento do carrossel. Isso desativa o scroll-ahead do navegador para a página inteira, obrigando esperar a thread JS a cada touchmove — mesmo que o usuário nunca tenha tocado o carrossel. Coerente com "ao passar do hero, o resto trava".
+
+### Correções aplicadas (Direções 1 e 2 do plano; Direção 3 — `ScrollTrigger.batch()` — adiada para depois da validação real)
+
+1. **Throttle via `requestAnimationFrame` no scroll do hero** (`initHeroAnimations`, script.js): flag `heroScrollTicking` agrupa múltiplos eventos de scroll do mesmo frame em uma única leitura+escrita de layout, eliminando o thrashing.
+2. **`touchmove` do clients carousel escopado ao `track`**, não mais ao `window`: eventos de touch continuam disparando no elemento de origem mesmo com o dedo fora dele, então não há perda de funcionalidade — só deixou de degradar o scroll-ahead da página inteira.
+3. **`IntersectionObserver` pausando `hero-particles` fora da viewport**: classe `.hero-particles.is-paused .particle { animation-play-state: paused; }` (styles.css) alternada via observer no `createParticles()`.
+4. **`IntersectionObserver` pausando/retomando o RAF do clients carousel** (`stop()`/`start()`) conforme visibilidade do `track` — mesmo padrão já usado para o vídeo do hero.
+
+### Validação
+
+- `npm test` → **107/107 passando**, nenhuma regressão nos 65 testes de regressão do carrossel.
+- Validação visual pendente: passo a passo abaixo para o usuário confirmar em Safari real do iPhone.
+- **Não commitado/enviado** — aguardando validação do usuário no iPhone antes de decidir sobre a Direção 3 (`ScrollTrigger.batch()`, reduzir as ≥57 instâncias).
+
+### Como validar no Safari real do iPhone (Web Inspector remoto, aba Timelines)
+
+1. iPhone conectado por cabo ao Mac, Web Inspector habilitado (Ajustes → Safari → Avançado → Web Inspector).
+2. No Mac: Safari → menu Develop → [seu iPhone] → aba do site.
+3. Na janela do Web Inspector, aba **Timelines** (não Network).
+4. Gravar (círculo vermelho) → no iPhone recarregar a página, esperar estabilizar, rolar continuamente pelo hero e pelo resto da página por ~5-8s → parar a gravação.
+5. Na timeline **Layout & Rendering**: procurar barras repetidas de forced layout/recalculate style sincronizadas com o gesto de scroll — se sumirem/diminuírem comparado ao comportamento relatado, confirma a correção do item 2 acima.
+6. Na timeline **Scripting**: verificar se `applyHeroState`/`animate` (clients carousel) deixaram de aparecer como as funções mais chamadas durante o scroll.
+7. Comparar o tempo até o primeiro frame estável (da navegação até a timeline assentar) antes/depois.

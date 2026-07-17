@@ -21,6 +21,18 @@ function createParticles() {
         particle.style.animationDuration = (3 + Math.random() * 4) + 's';
         container.appendChild(particle);
     }
+
+    // Pausa a animação CSS infinita quando o hero sai da viewport — sem isso
+    // as 50 partículas continuam consumindo o main thread mesmo com o usuário
+    // rolado até o fim da página.
+    if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                container.classList.toggle('is-paused', !entry.isIntersecting);
+            });
+        }, { threshold: 0 });
+        observer.observe(container);
+    }
 }
 
 // === HERO VIDEO BACKGROUND (time-lapse forward/reverse loop) ===
@@ -185,9 +197,17 @@ function initHeroAnimations() {
     // Apply imediatamente com o progresso atual
     applyHeroState(getHeroProgress());
 
-    // Atualiza no scroll — sempre recalcula do zero, sem acumular
+    // Atualiza no scroll — throttle via rAF: agrupa múltiplos eventos de
+    // scroll do mesmo frame em uma única leitura+escrita de layout, evitando
+    // layout thrashing durante momentum scrolling em mobile.
+    let heroScrollTicking = false;
     window.addEventListener('scroll', () => {
-        applyHeroState(getHeroProgress());
+        if (heroScrollTicking) return;
+        heroScrollTicking = true;
+        requestAnimationFrame(() => {
+            applyHeroState(getHeroProgress());
+            heroScrollTicking = false;
+        });
     }, { passive: true });
 
     // Recalcula no resize (hero height muda)
@@ -1678,6 +1698,13 @@ function initClientsCarousel() {
         rafId = requestAnimationFrame(animate);
     }
 
+    function stop() {
+        if (rafId) {
+            cancelAnimationFrame(rafId);
+            rafId = null;
+        }
+    }
+
     function start() {
         if (rafId) return;
         velocity = baseSpeed;
@@ -1743,10 +1770,13 @@ function initClientsCarousel() {
     window.addEventListener('mousemove', onPointerMove);
     window.addEventListener('mouseup', onPointerUp);
 
-    // Touch events
+    // Touch events — registrados no track (não no window): eventos de touch
+    // continuam disparando no elemento de origem mesmo com o dedo fora dele,
+    // então escopar aqui evita um listener não-passivo na página inteira,
+    // que desativaria o scroll-ahead do navegador globalmente.
     track.addEventListener('touchstart', onPointerDown, { passive: true });
-    window.addEventListener('touchmove', onPointerMove, { passive: false });
-    window.addEventListener('touchend', onPointerUp);
+    track.addEventListener('touchmove', onPointerMove, { passive: false });
+    track.addEventListener('touchend', onPointerUp);
 
     // Prevent text selection while dragging
     track.addEventListener('dragstart', (e) => e.preventDefault());
@@ -1757,8 +1787,20 @@ function initClientsCarousel() {
     });
     resizeObserver.observe(track);
 
-    // Start
-    start();
+    // Pausa o loop de rAF quando o carrossel sai da viewport — este carrossel
+    // fica no fim da página e, sem isso, o loop rodava para sempre desde o
+    // load, mesmo com o usuário lendo o hero no topo.
+    if ('IntersectionObserver' in window) {
+        const visibilityObserver = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) start();
+                else stop();
+            });
+        }, { threshold: 0 });
+        visibilityObserver.observe(track);
+    } else {
+        start();
+    }
 }
 
 // === SCROLL REVEAL FALLBACK — segurança contra ScrollTrigger nunca disparar ===
