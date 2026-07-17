@@ -269,3 +269,50 @@ Parâmetros: MP4/H.264 recomprimido a ~1,5 Mbps (`-b:v 1.5M -maxrate 1.8M -bufsi
 ### Testes
 
 `npm run test:unit` (42/42) e `npm run test:regression` (65/65) rodados após cada mudança relevante (rebuild dos `.min`, troca dos vídeos, remoção do órfão) — sempre 107/107, carrossel intacto em todas as rodadas.
+
+## Mobile: vídeo condicional + correção de download prematuro
+
+> Investigação prévia (diagnóstico, sem mudança de código) confirmou que o hero baixava ~5,4 MB de vídeo (`construction-timelapse.mp4` forward + reverse) em **qualquer** dispositivo, incluindo iPhone real via Safari — a única checagem existente (`navigator.connection`) nunca funciona no WebKit/iOS, que não implementa a Network Information API. Detalhes completos dessa investigação estão registrados na conversa; esta seção documenta a correção implementada a partir dela.
+
+### Peso do hero — antes vs. depois (mobile)
+
+| Cenário | Antes | Depois |
+|---|---|---|
+| Requisições a `.mp4`/`.webm` em viewport mobile (≤768px) | 2 (forward + reverse, ~5,4 MB) | **0** |
+| Peso do hero em mobile | ~5,4 MB de vídeo + ~163 KB de CSS/JS/font/logo | apenas `hero-timelapse-poster.webp` (57,7 KB), já usado como `background-image` do container |
+| Peso total da página (Lighthouse, mobile) | não medido isoladamente antes | **375 KiB** (total-byte-weight, servidor local) |
+
+Confirmado via Puppeteer com emulação de iPhone 14 (viewport 390×844, `isMobile: true`, User-Agent Safari iOS 17) interceptando todas as requisições de rede: **zero** requisições para `.mp4` ou `.webm` em mobile. Em desktop (1440×900), o forward (`construction-timelapse.webm`) carrega normalmente.
+
+### Lógica do breakpoint
+
+- Reaproveitado o breakpoint **768px** já usado em todo o CSS do projeto (`@media (max-width: 768px)` aparece em `styles.css:1900,2769,3027`), sem introduzir um novo valor.
+- Em `script.js`, `initHeroVideoBackground()` agora verifica `window.matchMedia('(max-width: 768px)').matches` logo no início. Se verdadeiro (ou `prefers-reduced-motion: reduce`, ou conexão lenta detectável), as duas tags `<video>` são **removidas do DOM** via `forward.remove()` / `reverse.remove()` — nenhuma delas chega a ter `.load()` ou `.play()` chamados.
+- Para garantir **zero requisição de rede em qualquer browser** (não só nos que respeitam `remove()` a tempo), o atributo `preload="auto"` do vídeo forward foi trocado para `preload="none"` no HTML (`index.html`). Antes, `preload="auto"` fazia o *preload scanner* do browser começar a buscar o vídeo assim que a tag era parseada, **antes mesmo do JavaScript rodar** — ou seja, remover a tag via JS depois não teria evitado esse download inicial em navegadores que respeitam `auto` de forma agressiva. Com `preload="none"` como padrão em HTML e o carregamento explícito feito só via `forward.load()` em JS (e só no branch desktop), a garantia de zero-download em mobile deixa de depender do timing entre parsing e execução do script.
+- O poster (`hero-timelapse-poster.webp`) já era usado como `background-image` do container `.hero-video-background` (`styles.css:407`) independente do vídeo — por isso não foi necessário nenhum elemento novo nem CSS adicional para exibi-lo em mobile: a ausência do `<video>` simplesmente revela o fundo que já estava lá. As formas geométricas (`.hero-geometries`) são uma camada separada, renderizada sempre, e continuam aparecendo por cima do poster exatamente como aparecem por cima do vídeo em desktop.
+
+### Correção do download prematuro do reverse (desktop + mobile)
+
+Investigando a causa do reverse carregar cedo demais, a causa raiz **não era o listener de `ended`** (que só troca os clipes) — era a chamada `reverse.load()` dentro de `revealForward()`, disparada no instante em que o **forward começa a tocar**, muito antes do reverse ser necessário (`script.js:70` na versão anterior).
+
+Correção aplicada:
+- `reverse.load()` só é chamado agora dentro de `handleEnded()`, e só se um `IntersectionObserver` (`threshold: 0.25`) confirmar que o hero **ainda está na viewport** no momento em que o forward termina. Se o usuário já rolou a página para além do hero, o download do reverse (2,7 MB) simplesmente não acontece — nem o `play()` do próximo clipe é disparado.
+- Isso beneficia tanto mobile (onde o vídeo mobile não existe mais, então o cenário nem se aplica) quanto **desktop**: hoje, se o visitante rola a página antes do primeiro ciclo do time-lapse terminar, o reverse deixa de ser baixado sem necessidade — comportamento que antes acontecia sempre, incondicionalmente, apenas alguns segundos após o carregamento da página.
+- Não foi usada a alternativa de "carregar após a primeira interação de scroll" porque a visibilidade real do hero (via `IntersectionObserver`) é um sinal mais preciso do que "o usuário rolou alguma vez" — um usuário pode rolar e voltar ao hero antes do forward terminar, e nesse caso ainda faz sentido carregar o reverse.
+
+### Validação
+
+- **Rede (Puppeteer, emulação iPhone 14):** 0 requisições a `.mp4`/`.webm` em mobile; confirmado programaticamente (script descartável, não versionado).
+- **Visual (screenshot mobile 390×844):** poster estático cobre o hero corretamente, grid/formas geométricas sobrepostas, texto "Role para explorar" legível, sem salto de layout perceptível.
+- **Testes:** `npm test` → **107/107 passando** (42 unit + 65 regressão), carrossel não tocado, sem regressões.
+- **Lighthouse — ressalva importante:** o ambiente onde esta rodada foi executada **não tem acesso à internet** (falha ao buscar `https://cdnjs.cloudflare.com/.../gsap.min.js`, usado via CDN pelo projeto). Isso invalida a comparação direta dos scores de Performance com o baseline de produção (92–98) registrado nas seções anteriores deste relatório — o GSAP não carrega neste ambiente e penaliza o score independentemente da mudança feita aqui. Os números abaixo servem como referência de tendência (peso de página, LCP relativo mobile vs. desktop), não como comparação válida antes/depois:
+
+| Métrica (servidor local, sem CDN) | Mobile | Desktop |
+|---|---|---|
+| Performance Score | 73 | 71 |
+| LCP | 5.1 s | 2.9 s |
+| TBT | 100 ms | 0 ms |
+| Speed Index | 4.0 s | 2.2 s |
+| Peso total da página | 375 KiB | 1.991 KiB |
+
+O dado que **é** confiável e representa o ganho real desta mudança, por não depender do CDN: o peso de página mobile caiu de ~5,4 MB de vídeo (+163 KB de assets críticos) para 375 KiB no total — reflexo direto da remoção do `<video>` em mobile. Recomenda-se rodar novamente o Lighthouse em ambiente com acesso à internet (ou contra o deploy real) antes de considerar os scores absolutos como validação final.

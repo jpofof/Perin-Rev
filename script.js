@@ -24,18 +24,31 @@ function createParticles() {
 }
 
 // === HERO VIDEO BACKGROUND (time-lapse forward/reverse loop) ===
+// Mobile (<=768px, mesmo breakpoint usado no restante do CSS) nunca recebe o
+// <video>: o poster estatico (ja definido como background-image em
+// .hero-video-background) cobre o hero sozinho, evitando ~5,4MB de MP4 em
+// conexoes moveis onde o ganho visual do time-lapse nao compensa o custo.
+const HERO_VIDEO_MOBILE_QUERY = '(max-width: 768px)';
+
 function initHeroVideoBackground() {
     const wrapper = document.getElementById('heroVideoBackground');
     const forward = document.getElementById('heroVideoForward');
     const reverse = document.getElementById('heroVideoReverse');
     if (!wrapper || !forward || !reverse) return;
 
+    const isMobile = typeof window.matchMedia === 'function'
+        && window.matchMedia(HERO_VIDEO_MOBILE_QUERY).matches;
     const prefersReducedMotion = typeof window.matchMedia === 'function'
         && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const connection = navigator.connection || navigator.webkitConnection || navigator.mozConnection;
     const isSlowConnection = connection && ['slow-2g', '2g'].includes(connection.effectiveType);
 
-    if (prefersReducedMotion || isSlowConnection) {
+    if (isMobile || prefersReducedMotion || isSlowConnection) {
+        // preload="none" nas duas tags garante que nenhum byte de video seja
+        // baixado; removê-las do DOM evita qualquer chance de um browser
+        // decidir buscar metadata por conta própria.
+        forward.remove();
+        reverse.remove();
         return;
     }
 
@@ -44,8 +57,21 @@ function initHeroVideoBackground() {
     let currentClip = forward;
     let nextClip = reverse;
     let isFirstPlay = true;
+    let reverseLoadRequested = false;
+    let heroIsVisible = false;
+
+    function requestReverseLoad() {
+        if (reverseLoadRequested) return;
+        reverseLoadRequested = true;
+        reverse.load();
+    }
 
     function handleEnded() {
+        // Só busca/toca o próximo clipe se o hero ainda estiver na viewport
+        // neste momento — evita baixar 2,7MB de reverse para quem já rolou
+        // a página passado do hero antes do forward terminar.
+        if (!heroIsVisible) return;
+        requestReverseLoad();
         setTimeout(() => {
             nextClip.currentTime = 0;
             nextClip.play().catch(() => {});
@@ -67,7 +93,6 @@ function initHeroVideoBackground() {
         isFirstPlay = false;
         forward.classList.add('is-visible');
         forward.play().catch(() => {});
-        reverse.load();
     }
 
     if (forward.readyState >= 4) {
@@ -75,6 +100,23 @@ function initHeroVideoBackground() {
     } else {
         forward.addEventListener('canplaythrough', revealForward, { once: true });
     }
+
+    // Rastreia visibilidade do hero para handleEnded() decidir se vale a
+    // pena buscar o reverse (2,7MB) — em vez de baixá-lo automaticamente
+    // no instante em que o forward começa a tocar, como antes.
+    const heroSection = document.querySelector('.hero-architectural-scene');
+    if (typeof IntersectionObserver === 'function' && heroSection) {
+        const visibilityObserver = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                heroIsVisible = entry.isIntersecting;
+            });
+        }, { threshold: 0.25 });
+        visibilityObserver.observe(heroSection);
+    } else {
+        heroIsVisible = true;
+    }
+
+    forward.load();
 }
 
 // === HERO MOUSE PARALLAX ===
