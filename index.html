@@ -31,7 +31,6 @@
     <link rel="icon" type="image/png" sizes="32x32" href="assets/images/brand/favicon-32.png">
     <link rel="icon" type="image/png" sizes="48x48" href="assets/images/brand/favicon-48.png">
     <link rel="apple-touch-icon" sizes="180x180" href="assets/images/brand/apple-touch-icon.png">
-    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <link rel="preload" href="fonts/manrope-latin.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="stylesheet" href="styles.min.css">
 </head>
@@ -1069,8 +1068,12 @@
     </footer>
 
     <!-- SCRIPTS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
+    <!-- GSAP vendorizado localmente (v3.12.5, baixado em 17/07/2026) — elimina dependência
+         de cdnjs.cloudflare.com e a variabilidade de latência de CDN externo. Para atualizar
+         a versão no futuro, baixar os novos .min.js e substituir em vendor/gsap/ manualmente
+         (sem pipeline de build automatizado para isso). -->
+    <script src="vendor/gsap/gsap.min.js" defer></script>
+    <script src="vendor/gsap/ScrollTrigger.min.js" defer></script>
     <script src="script.min.js" defer></script>
 </body>
 

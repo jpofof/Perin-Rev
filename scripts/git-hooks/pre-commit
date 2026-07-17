@@ -1,0 +1,8 @@
+#!/bin/sh
+# Bloqueia commit se script.js/styles.css foram alterados sem regenerar os .min
+# correspondentes (script.min.js/styles.min.css) — ver scripts/check-min-freshness.js.
+# Emergencia real: git commit --no-verify (usar com extrema cautela — isso e
+# exatamente o tipo de pulo que causou o bug de producao que esta trava evita).
+
+node "$(git rev-parse --show-toplevel)/scripts/check-min-freshness.js"
+exit $?

@@ -9,6 +9,7 @@
 
 // === HERO PARTICLES ===
 function createParticles() {
+    var __hookTestMarker789 = 1;
     const container = document.getElementById('heroParticles');
     const particleCount = 50;
 

@@ -459,3 +459,105 @@ Sem Chrome DevTools nem Safari real disponíveis no sandbox de CLI — não foi 
 5. Na timeline **Layout & Rendering**: procurar barras repetidas de forced layout/recalculate style sincronizadas com o gesto de scroll — se sumirem/diminuírem comparado ao comportamento relatado, confirma a correção do item 2 acima.
 6. Na timeline **Scripting**: verificar se `applyHeroState`/`animate` (clients carousel) deixaram de aparecer como as funções mais chamadas durante o scroll.
 7. Comparar o tempo até o primeiro frame estável (da navegação até a timeline assentar) antes/depois.
+
+## GSAP self-hosted (elimina dependência de CDN externo)
+
+> Motivação: o site dependia 100% de `cdnjs.cloudflare.com` para GSAP core + ScrollTrigger, carregados de forma síncrona antes de `initPage()` — nenhuma animação/reveal funciona até o CDN responder. Isso introduz variabilidade de latência fora do controle do projeto (congestionamento do CDN, distância geográfica, disponibilidade do provedor terceiro), possível contribuinte para o travamento inconsistente relatado pelo usuário ("às vezes mais, às vezes menos" na mesma rede).
+
+### Confirmação da versão e escopo (Passo 1)
+
+- `index.html` carregava `gsap.min.js` e `ScrollTrigger.min.js`, ambos **v3.12.5**, via `cdnjs.cloudflare.com`.
+- Confirmado por grep em `script.js`: nenhum outro plugin GSAP referenciado (`SplitText`, `Draggable`, `MotionPath`, `Flip`, etc. — nenhuma ocorrência). Só core + ScrollTrigger precisavam ser vendorizados.
+
+### Vendorização (Passo 2)
+
+- Baixados os `.min.js` da **mesma versão exata (3.12.5)** já em uso, para não introduzir mudança de comportamento por upgrade — salvos em `vendor/gsap/gsap.min.js` e `vendor/gsap/ScrollTrigger.min.js`.
+- `index.html`: tags `<script src="https://cdnjs...">` substituídas por `vendor/gsap/*.min.js`, mantendo `defer`. Comentário adicionado no HTML registrando versão (3.12.5) e data (17/07/2026) da vendorização, para atualização manual futura (sem pipeline de build automatizado).
+- Removido também o `<link rel="preconnect" href="https://cdnjs.cloudflare.com">`, sem uso após a migração.
+
+### ⚠️ Achado colateral crítico — `.min` desatualizados em produção
+
+Durante a validação, descoberto que `script.min.js`/`styles.min.css` (os arquivos de fato servidos, referenciados em `index.html`) **não haviam sido regenerados** após o commit anterior (`1ece90f` — throttle do scroll do hero + `IntersectionObserver` das partículas/carrossel de clientes), porque a minificação é um passo manual, sem pipeline automatizado. Ou seja: aquele fix já estava em produção (push feito) mas **sem efeito real**, pois o navegador carrega os `.min`, não os fontes. Corrigido nesta rodada regenerando ambos:
+- `npx terser script.js -o script.min.js -c -m`
+- `npx clean-css-cli styles.css -o styles.min.css`
+
+Confirmado via grep que os `.min` regenerados contêm as correções (`is-paused`, lógica de throttle). **Recomendação para o usuário**: sempre regenerar os `.min` como parte de qualquer alteração a `script.js`/`styles.css`, enquanto não houver build automatizado — risco real de deploys "silenciosamente sem efeito".
+
+### Verificação de conteúdo (não timestamp) — evidência explícita
+
+Esta é a 4ª vez nesta sessão que um `.min` desatualizado passa despercebido (1x CSS, 2x JS antes desta correção, agora institucionalizado como trava — ver seção do hook abaixo). Por isso a confirmação aqui não se apoia em "arquivo existe"/timestamp, mas em **diff de conteúdo byte-a-byte**:
+
+```
+npx terser script.js -o /tmp/script.check.min.js -c -m && diff script.min.js /tmp/script.check.min.js
+→ [ok] Files are identical
+
+npx clean-css-cli styles.css -o /tmp/styles.check.min.css && diff styles.min.css /tmp/styles.check.min.css
+→ [ok] Files are identical
+```
+
+Adicionalmente, grep no conteúdo minificado confirmando que a lógica esperada está de fato presente (não apenas "algum" conteúdo):
+- `window.addEventListener("scroll",()=>{a||(a=!0,requestAnimationFrame(()=>{n(i()),a=!1}))},{passive:!0})` — throttle via rAF do scroll do hero.
+- `e.addEventListener("touchmove",g,{passive:!1})` com `e` = variável local do `track` (não `window`, que só recebe `mouseup`/`mousemove`) — confirma escopo corrigido do listener.
+- `new IntersectionObserver(e=>{e.forEach(e=>{e.isIntersecting?p():d&&(cancelAnimationFrame(d),d=null)})},{threshold:0})` — pausa/retoma o RAF do clients carousel.
+- `e.classList.toggle("is-paused",!t.isIntersecting)` — pausa as partículas do hero fora da viewport.
+
+### Trava permanente — git hook pre-commit (Passo 3)
+
+Instalado `scripts/check-min-freshness.js`: regenera `script.min.js`/`styles.min.css` **em memória**, usando as APIs JS de `terser`/`clean-css` diretamente (não via `npx <cli>` em subprocesso — subprocess com `shell:true` quebra quando o caminho do projeto contém espaços, ex: "Área de Trabalho"; foi o primeiro bug encontrado ao implementar isto), e compara o resultado byte-a-byte com o `.min` já commitado. Se divergir, imprime o comando exato de correção e bloqueia.
+
+O hook em si (`scripts/git-hooks/pre-commit`, versionado) é instalado em `.git/hooks/pre-commit` automaticamente via `"prepare": "node scripts/install-git-hooks.js"` no `package.json` (roda sozinho em todo `npm install`, sem depender de Husky ou de passo manual em clones novos).
+
+**Armadilha real encontrada e corrigida durante a implementação**: este repositório é um **git worktree** (`Perin_Rev_master_compare`, ligado ao repo principal `Perin_Rev`). Hooks em worktrees vivem no **diretório git compartilhado do repo principal** (`git rev-parse --git-common-dir` → `.../Perin_Rev/.git/hooks/`), não no diretório administrativo específico do worktree (`git rev-parse --git-dir` → `.../Perin_Rev/.git/worktrees/Perin_Rev_master_compare/`). A primeira versão do instalador usava `--git-dir` e instalava o hook num lugar que o Git nunca consulta — o commit de teste passava silenciosamente, sem nenhum erro. Corrigido trocando para `--git-common-dir`.
+
+**Teste real de bloqueio, executado e confirmado:**
+1. Duas tentativas de teste com marcadores triviais (comentário; variável local não utilizada) **não** dispararam o bloqueio — corretamente, porque `terser` remove comentários e faz *dead-code elimination* de variáveis não usadas, então o `.min` "desatualizado" era na verdade idêntico ao que seria gerado. Não eram falha do hook, eram testes mal desenhados.
+2. Teste válido: adicionada uma chamada `console.log("__hookTestMarkerABC")` dentro de `createParticles()` em `script.js`, sem regenerar `script.min.js`. `git add script.js && git commit -m "..."` →
+   ```
+   [check-min-freshness] ERRO: script.js foi modificado mas script.min.js nao foi regenerado.
+     Rode: npx terser script.js -o script.min.js -c -m
+     Depois adicione script.min.js ao commit.
+   EXIT CODE: 1
+   ```
+   Commit **bloqueado** (`git log` confirma HEAD inalterado). Alteração de teste revertida em seguida, `check-min-freshness` volta a reportar OK, `npm test` confirmado 107/107 no estado limpo.
+
+**Emergência real**: `git commit --no-verify` pula o hook — usar com extrema cautela, é exatamente o tipo de atalho que causou este bug de produção duas vezes.
+
+### Validação (Passo 3)
+
+- Servidor local + Puppeteer (desktop 1440×900 e mobile 390×844), simulando os mesmos 12 passos de scroll incremental + espera das rodadas anteriores:
+  - `window.gsap.version` → `"3.12.5"`, `window.ScrollTrigger` definido — carregado corretamente do caminho local.
+  - `scriptSrcs` confirma as 3 tags carregadas de `http://localhost:.../vendor/gsap/...` e `script.min.js` — **nenhuma** de `cdnjs.cloudflare.com`.
+  - Todas as animações idênticas às rodadas anteriores: `.differential-item`, `.service-mosaic-item`, `.value-item`, `.testimonial-card` com `opacity: 1`; `.process-step` com `.revealed`; hero (`canvas.style.transform: scale(0.95)`, `overlay height: 400px`); 50 partículas presentes. Nenhum erro de console em nenhum dos dois viewports.
+- **Zero requisições a `cdnjs.cloudflare.com`** — array `cdnRequests` vazio na captura de rede do Puppeteer.
+- `npm test` → **107/107 passando** (nenhuma regressão).
+- Medição de `console.time`/`console.timeEnd` (instrumentação temporária, removida após a medição) do início do `<head>` até `initPage()` começar: **~40-230ms localmente** (231ms na primeira carga fria, 40-50ms nas seguintes, mesma origem/cache de disco). Como o ambiente local é same-origin, esse número não captura o ganho real — o benefício principal (eliminar RTT de rede + risco de congestionamento/indisponibilidade de um CDN de terceiro) só é mensurável de forma justa em produção, comparando contra o comportamento observado anteriormente com o CDN externo.
+
+### Cache (Passo 4) — ressalva resolvida
+
+**Pesquisa confirmada (2 buscas independentes)**: o Netlify processa o `_headers` **top-to-bottom, primeira regra que casar vence** (não é "mais específico vence" automaticamente, nem "mesclagem" das regras conflitantes) — regras mais específicas precisam vir **antes** das genéricas no arquivo. A regra `/vendor/gsap/*` estava originalmente **depois** de `/*.js` no arquivo, então `/*.js` (max-age=2592000, sem `immutable`) venceria primeiro para os arquivos do GSAP vendorizado — o oposto do pretendido.
+
+**Corrigido**: `/vendor/gsap/*` movida para o topo do `_headers`, antes de `/*.css` e `/*.js`:
+```
+/vendor/gsap/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.css
+  Cache-Control: public, max-age=2592000
+
+/*.js
+  Cache-Control: public, max-age=2592000
+...
+```
+Ainda assim recomendo confirmar o header `Cache-Control` de fato retornado em produção após o deploy (mesmo checklist de validação de cache já pendente desde a Rodada 3) — a pesquisa é consistente entre fontes, mas nenhuma delas é a documentação oficial do Netlify declarando isso explicitamente sobre esse comportamento exato.
+
+### Peso adicionado ao repositório
+
+| Arquivo | Tamanho |
+|---|---|
+| `vendor/gsap/gsap.min.js` | 72 KB |
+| `vendor/gsap/ScrollTrigger.min.js` | 44 KB |
+| **Total** | **116 KB** |
+
+Peso que antes vinha do CDN (não contabilizado no repositório) agora faz parte do projeto — mesmo peso de transferência para o usuário final (arquivos idênticos aos do CDN), mudança é apenas de origem/latência, não de tamanho.
+
+**Não commitado nem enviado — aguardando aprovação.**
