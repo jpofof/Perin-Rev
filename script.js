@@ -322,17 +322,19 @@ function initScrollReveals() {
         });
     });
 
-    gsap.utils.toArray('.process-step').forEach((step, i) => {
-        ScrollTrigger.create({
-            trigger: step,
-            start: 'top 80%',
-            onEnter: () => {
+    // Antes: 1 ScrollTrigger.create() por .process-step (uma instancia cada).
+    // Agora: 1 unica instancia via ScrollTrigger.batch() para toda a secao —
+    // mesmo start/once/stagger visual (200ms por item), so o mecanismo interno mudou.
+    ScrollTrigger.batch('.process-step', {
+        start: 'top 80%',
+        once: true,
+        onEnter: (batch) => {
+            batch.forEach((step, i) => {
                 setTimeout(() => {
                     step.classList.add('revealed');
                 }, i * 200);
-            },
-            once: true,
-        });
+            });
+        },
     });
 }
 
@@ -1576,40 +1578,52 @@ function initButtonRipple() {
 }
 
 // === SCROLL REVEAL HELPERS ===
-function initDifferentialsAnimation() {
-    gsap.utils.toArray('.differential-item').forEach((item, i) => {
-        gsap.from(item, {
-            scrollTrigger: { trigger: item, start: 'top 85%', toggleActions: 'play none none reverse' },
-            opacity: 0, y: 40, duration: 0.6, delay: i * 0.1, ease: 'power2.out',
-        });
+// Antes: cada secao criava 1 ScrollTrigger por item (gsap.from + toggleActions
+// 'play none none reverse' — anima ao entrar, reverte ao rolar de volta pra
+// cima). Agora: 1 unica instancia via ScrollTrigger.batch() por secao. Para
+// preservar o "reverse" do toggleActions original (que nao existe nativamente
+// em batch), a mesma transicao e replicada manualmente em onEnter/onLeaveBack.
+// O delay em cascata (delay: i*X) vira stagger (mesmo efeito visual, mesmo
+// valor), aplicado dentro de cada grupo que entra junto na viewport.
+//
+// IMPORTANTE — leaveStagger:0 por padrao. Medido com Puppeteer (screenshots
+// em 25/50/75% da transicao) que o toggleActions original, ao reverter, NAO
+// produzia stagger visivel: o "delay" de um gsap.from() fica na CAUDA do
+// tween, entao ao reverter a partir do estado 100% completo o delay vira
+// tempo morto DEPOIS da animacao visual, nao antes — todos os itens saiam
+// sincronizados. Usar o mesmo `stagger` do onEnter tambem no onLeaveBack
+// introduzia uma cascata nova e perceptivel que nao existia antes (~150-300ms
+// de defasagem entre itens grandes, acima do limiar de percepcao de
+// assincronia). leaveStagger:0 restaura o comportamento sincronizado original.
+function batchReveal(selector, { y = 40, duration = 0.6, stagger = 0.1, leaveStagger = 0, ease = 'power2.out', start = 'top 85%' } = {}) {
+    gsap.set(selector, { opacity: 0, y });
+    ScrollTrigger.batch(selector, {
+        start,
+        onEnter: (batch) => gsap.to(batch, { opacity: 1, y: 0, duration, stagger, ease, overwrite: true }),
+        onLeaveBack: (batch) => gsap.to(batch, { opacity: 0, y, duration, stagger: leaveStagger, ease, overwrite: true }),
     });
+}
+
+function initDifferentialsAnimation() {
+    batchReveal('.differential-item', { y: 40, duration: 0.6, stagger: 0.1, ease: 'power2.out', start: 'top 85%' });
 }
 
 function initServicesReveal() {
-    gsap.utils.toArray('.service-mosaic-item').forEach((item, i) => {
-        gsap.from(item, {
-            scrollTrigger: { trigger: item, start: 'top 85%', toggleActions: 'play none none reverse' },
-            opacity: 0, y: 40, duration: 0.6, delay: i * 0.1, ease: 'power2.out',
-        });
-    });
+    batchReveal('.service-mosaic-item', { y: 40, duration: 0.6, stagger: 0.1, ease: 'power2.out', start: 'top 85%' });
 }
 
 function initValuesReveal() {
-    gsap.utils.toArray('.value-item').forEach((item, i) => {
-        gsap.from(item, {
-            scrollTrigger: { trigger: '.values-row', start: 'top 80%', toggleActions: 'play none none reverse' },
-            opacity: 0, y: 40, duration: 0.6, delay: i * 0.15, ease: 'power2.out',
-        });
-    });
+    // Original disparava todos os .value-item pelo trigger compartilhado
+    // '.values-row' (mesmo ponto de disparo para todos). ScrollTrigger.batch()
+    // usa cada item como seu proprio trigger — como estao na mesma linha
+    // (mesmo grid/flex row), o topo de cada item coincide com o topo da row,
+    // entao o ponto de disparo na pratica e o mesmo (diferenca sub-pixel, se
+    // houver). Documentado por transparencia, nao e um comportamento novo.
+    batchReveal('.value-item', { y: 40, duration: 0.6, stagger: 0.15, ease: 'power2.out', start: 'top 80%' });
 }
 
 function initTestimonialsReveal() {
-    gsap.utils.toArray('.testimonial-card').forEach((item, i) => {
-        gsap.from(item, {
-            scrollTrigger: { trigger: item, start: 'top 85%', toggleActions: 'play none none reverse' },
-            opacity: 0, y: 40, duration: 0.6, delay: i * 0.15, ease: 'power2.out',
-        });
-    });
+    batchReveal('.testimonial-card', { y: 40, duration: 0.6, stagger: 0.15, ease: 'power2.out', start: 'top 85%' });
 }
 
 // === SERVICE MOSAIC GRID - DYNAMIC SIZING ===

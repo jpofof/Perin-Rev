@@ -32,7 +32,7 @@ global.gsap = {
 };
 
 // Inject window helpers
-global.ScrollTrigger = { refresh: jest.fn(), config: jest.fn() };
+global.ScrollTrigger = { refresh: jest.fn(), config: jest.fn(), batch: jest.fn(), create: jest.fn() };
 Object.defineProperty(window, 'innerWidth', { writable: true, value: 1440 });
 Object.defineProperty(window, 'innerHeight', { writable: true, value: 900 });
 Object.defineProperty(navigator, 'maxTouchPoints', { writable: true, value: 0 });

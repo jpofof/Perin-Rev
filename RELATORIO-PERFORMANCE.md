@@ -561,3 +561,99 @@ Ainda assim recomendo confirmar o header `Cache-Control` de fato retornado em pr
 Peso que antes vinha do CDN (não contabilizado no repositório) agora faz parte do projeto — mesmo peso de transferência para o usuário final (arquivos idênticos aos do CDN), mudança é apenas de origem/latência, não de tamanho.
 
 **Não commitado nem enviado — aguardando aprovação.**
+
+## ScrollTrigger.batch() — redução de instâncias
+
+> Motivação: diagnóstico contra produção real (`audit/diagnostico-producao-real.md`) mostrou site limpo (deploy correto, GSAP self-hosted, Lighthouse mobile 93), mas identificou uma long task de 165ms atribuída a `ScrollTrigger.min.js` durante o carregamento — coerente com a hipótese, já levantada em rodadas anteriores, de que o alto número de instâncias individuais de `ScrollTrigger` (uma por item, em 5 seções) sobrecarrega o main-thread. Tentativa: consolidar via `ScrollTrigger.batch()`.
+
+### Passo 1 — Mapeamento e correção de uma contagem anterior incorreta
+
+Nesta rodada, a contagem real de `ScrollTrigger.getAll().length` em runtime (Puppeteer, GSAP real) é **37**, não "≥57" como reportado em rodadas anteriores. A causa da discrepância: o grep usado antes (`class="[^"]*process-step[^"]*"`) capturava também classes irmãs que contêm a substring `process-step` (`process-step-number`, `process-step-content`, `process-step-title`, `process-step-description`, `process-step-visual`), inflando a contagem de `.process-step` de 4 (real) para 24 (aparente). Correção registrada aqui por transparência — a estimativa estática anterior estava errada, o número real sempre foi 37.
+
+As 5 funções que criam 1 ScrollTrigger por item via `.forEach()`:
+
+| Função | Seletor | Itens reais | Padrão original |
+|---|---|---|---|
+| `initScrollReveals` (bloco `.process-step`) | `.process-step` | 4 | `ScrollTrigger.create()` por item, `once:true`, `onEnter` com `classList.add('revealed')` após `setTimeout(i*200)` — reveal 100% CSS-driven (`styles.css:1215-1219`), sem tween GSAP |
+| `initServicesReveal` | `.service-mosaic-item` | 7 | `gsap.from()` por item, `toggleActions: 'play none none reverse'`, `delay: i*0.1` |
+| `initDifferentialsAnimation` | `.differential-item` | 6 | idêntico ao acima, `delay: i*0.1` |
+| `initValuesReveal` | `.value-item` | 4 | idêntico, mas `trigger: '.values-row'` (compartilhado entre os 4 itens, não o próprio item), `delay: i*0.15` |
+| `initTestimonialsReveal` | `.testimonial-card` | 2 | idêntico, `delay: i*0.15` |
+
+Todos os itens dentro de cada seção têm comportamento **idêntico** (mesmo `opacity`/`y`/`duration`/`ease`), variando só o `delay` em cascata por índice — compatível com `stagger` do `batch()`, sem perda de efeito visual.
+
+**Não incluídos no escopo** (conforme pedido): `.section-title-reveal` (10 instâncias) e `.text-reveal` (4 instâncias) continuam com ScrollTrigger individual — ficam de fora por decisão explícita do usuário nesta rodada.
+
+### Passo 2 — Implementação
+
+Criada função helper `batchReveal()` em `script.js`, usada por `initDifferentialsAnimation`, `initServicesReveal`, `initValuesReveal` e `initTestimonialsReveal`:
+```js
+function batchReveal(selector, { y = 40, duration = 0.6, stagger = 0.1, ease = 'power2.out', start = 'top 85%' } = {}) {
+    gsap.set(selector, { opacity: 0, y });
+    ScrollTrigger.batch(selector, {
+        start,
+        onEnter: (batch) => gsap.to(batch, { opacity: 1, y: 0, duration, stagger, ease, overwrite: true }),
+        onLeaveBack: (batch) => gsap.to(batch, { opacity: 0, y, duration, stagger, ease, overwrite: true }),
+    });
+}
+```
+`ScrollTrigger.batch()` não tem um `toggleActions` nativo — o `'play none none reverse'` original (anima ao entrar, reverte ao rolar de volta para cima) foi replicado manualmente: `onEnter` toca a animação para frente, `onLeaveBack` toca a reversão. O `delay: i*X` em cascata virou `stagger` (mesmo efeito visual).
+
+`.process-step` usa `ScrollTrigger.batch()` sem tween GSAP — só reproduz o `onEnter` com `classList.add('revealed')` escalonado por `setTimeout`, preservando o mecanismo 100% CSS.
+
+**Nuance documentada para `.value-item`**: o original usava `trigger: '.values-row'` (um único elemento compartilhado por todos os 4 itens — todos disparavam no mesmo ponto de scroll). `ScrollTrigger.batch()` usa cada item como seu próprio trigger. Como os 4 itens estão na mesma linha (mesmo grid/flex row), o topo de cada item coincide com o topo da row — na prática o ponto de disparo é o mesmo (diferença sub-pixel, se houver). Não é um comportamento novo, mas o mecanismo por trás mudou; registrado por transparência.
+
+**Carrossel não tocado** — nenhuma alteração em `createCascadingSlider`/`initCascadingSlider`/`initClientsCarousel`, conforme instruído.
+
+### ⚠️ Achado importante — a premissa "batch() reduz o número de instâncias" está incorreta
+
+O pedido presumia que `ScrollTrigger.getAll().length` cairia de "57+ para um número bem menor". **Medido em runtime (Puppeteer, GSAP real, antes/depois em servidores paralelos): 37 → 37 — nenhuma redução na contagem.**
+
+Investigado o motivo: `ScrollTrigger.batch()` **continua criando uma instância de `ScrollTrigger` por elemento internamente** — o que ele consolida é a **invocação do callback** (agrupa elementos que cruzam o threshold dentro do mesmo intervalo curto em uma única chamada de `onEnter`/`onLeaveBack`, com um único tween via `stagger`), não o número de triggers rastreados. Confirmado inspecionando `ScrollTrigger.getAll()[i].trigger.className` após a conversão: os elementos `.process-step`, `.service-mosaic-item`, `.differential-item`, `.value-item`, `.testimonial-card` continuam aparecendo individualmente na lista.
+
+**O ganho real de `batch()` não é "menos triggers", é "menos tweens GSAP criados antecipadamente"**: antes, cada `gsap.from()` criava uma tween própria já no load (mesmo que sua animação só rodasse quando o ScrollTrigger disparasse); agora, o tween só é criado dentro do `onEnter`/`onLeaveBack`, quando o grupo de fato entra/sai da viewport — e um único tween anima todos os elementos do grupo via `stagger`, em vez de N tweens independentes. Isso reduz trabalho de setup no load e o número de tweens simultâneos ativos durante o scroll, sem reduzir a contagem de triggers observáveis.
+
+### Passo 3 — Validação
+
+- **`ScrollTrigger.getAll().length`**: **37 → 37** (sem mudança — ver achado acima; a expectativa original do pedido estava tecnicamente incorreta sobre o que `batch()` reduz).
+- **Testes automatizados**: `npm test` → **107/107 passando**. 1 ajuste necessário: `tests/unit/slider.test.js` mockava `global.ScrollTrigger` só com `refresh`/`config` — adicionados `batch`/`create` ao mock (infra de teste, não o carrossel).
+- **Validação visual** (Puppeteer, 390×844, GSAP real, servidores locais em paralelo — commit anterior vs. código atual):
+  - Scroll progressivo completo: `.differential-item`, `.service-mosaic-item`, `.value-item`, `.testimonial-card` → `opacity: 1` em todos os itens, `.process-step` → `.revealed` em todos, **idêntico antes/depois**.
+  - Scroll de volta ao topo (reversão): comportamento equivalente antes/depois — todos os itens revertem para próximo de `opacity: 0`, com uma variação menor na dinâmica *intermediária* do stagger (a ordem exata de qual item termina de reverter primeiro difere ligeiramente entre `delay` implícito no tween original e `stagger` explícito no batch), mas o estado de repouso final é o mesmo em ambas as versões. Nenhum erro de console em nenhum dos dois.
+- **Lighthouse local, antes vs. depois** (mesmo host, `--throttling-method=simulate`, mobile):
+
+| Métrica | Antes (sem batch) | Depois (com batch) | Variação |
+|---|---|---|---|
+| Performance Score | 95 | 96 | +1 |
+| Total Blocking Time | 110ms | 70ms | **-40ms (-36%)** |
+| Main-thread work breakdown | 2.7s | 2.6s | -0.1s |
+| Long task em `script.min.js` | 129ms | 84ms | **-45ms (-35%)** |
+| Long task em `vendor/gsap/gsap.min.js` | 79ms | 81ms | +2ms (ruído) |
+
+A long task de 165ms atribuída a `ScrollTrigger.min.js` observada no diagnóstico de produção real não se reproduziu neste teste local (nem antes, nem depois) — variação de ambiente/timing, não comparável 1:1. Mas a redução real e reproduzível da long task de `script.min.js` (129→84ms) e do TBT total (110→70ms) é uma melhoria genuína, mensurável, coerente com a explicação técnica acima (menos tweens criados no load).
+
+### Correção — `leaveStagger: 0` no `onLeaveBack`
+
+Após esclarecimento pedido pelo usuário sobre a dinâmica intermediária da reversão (ver troca anterior), medição real (Puppeteer, screenshots em 25/50/75% da transição) confirmou que `stagger` no `onLeaveBack` introduzia uma cascata nova e perceptível (~150-300ms de defasagem entre itens) que **não existia no código original** — o `toggleActions: 'play none none reverse'` de antes revertia sincronizado (o `delay` de um `gsap.from()` fica na cauda do tween, não na cabeça; ao reverter a partir do estado 100% completo, o delay vira tempo morto depois da animação visual, não antes).
+
+**Correção**: `batchReveal()` passou a aceitar `leaveStagger` (default `0`), usado só no `onLeaveBack`. O `onEnter` permanece **byte-a-byte idêntico**:
+```diff
+ onEnter:     (batch) => gsap.to(batch, { opacity: 1, y: 0, duration, stagger,              ease, overwrite: true }),
+-onLeaveBack: (batch) => gsap.to(batch, { opacity: 0, y,    duration, stagger,              ease, overwrite: true }),
++onLeaveBack: (batch) => gsap.to(batch, { opacity: 0, y,    duration, stagger: leaveStagger, ease, overwrite: true }),
+```
+Como `leaveStagger` default é `0` e nenhum dos 4 call-sites o sobrescreve, a correção se aplica automaticamente às 4 seções que usam `batchReveal()` — incluindo `.differential-item` (mesmo mecanismo, mesmo problema, não estava no pedido explícito de re-teste, mas corrigida como efeito colateral natural do default).
+
+**Validação repetida (mesmos 3 pontos, 150/300/450ms, agora com scroll gradual em 20 passos — mais realista que o salto abrupto do teste anterior):**
+
+| Seção | Reversão após o fix |
+|---|---|
+| `.testimonial-card` (2 itens) | **Totalmente sincronizada** — os 2 itens idênticos em cada instante amostrado, ambos em `opacity: 0` no repouso. Igual ao original. |
+| `.service-mosaic-item` (7 itens) | **Sincronizada, com ruído desprezível** — 6 de 7 itens em `opacity: 0` no repouso, 1 item em `0.035` (diferença imperceptível). |
+| `.value-item` (4 itens) | **Melhorou substancialmente, mas não 100% idêntico ao original**: no repouso, 1 item ficou em `opacity ~0.38` enquanto os outros 3 ficaram em `~0.21` — um resíduo de 2 grupos, não mais a cascata de 4 passos distintos que o `stagger` introduzia, mas também não a sincronização perfeita do código antigo (que usava 1 único trigger compartilhado `.values-row` para os 4 itens). Causa: `ScrollTrigger.batch()` usa cada item como seu próprio trigger — mesmo com `stagger:0`, o agrupamento interno de callbacks do `batch()` pode dividir os 4 itens em 2 chamadas de `onLeaveBack` levemente distintas no tempo. Isso não é ajustável via `stagger` — é inerente à troca de "1 trigger compartilhado" por "4 triggers individuais". Resíduo pequeno (dezenas de ms, não mais 150-300ms), provavelmente no limiar ou abaixo da percepção — registrado com honestidade em vez de declarado "idêntico".
+
+`onEnter` confirmado intacto por inspeção de diff (não por medição dinâmica — uma tentativa de medir via Puppeteer nesta rodada teve um problema metodológico de pré-posicionamento de scroll e foi descartada em vez de reportada como evidência).
+
+**Testes**: `npm test` → **107/107 passando** após a correção.
+
+**Não commitado nem enviado — aguardando aprovação.**
