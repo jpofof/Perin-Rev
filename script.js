@@ -1761,6 +1761,62 @@ function initClientsCarousel() {
     start();
 }
 
+// === SCROLL REVEAL FALLBACK — segurança contra ScrollTrigger nunca disparar ===
+// Causa raiz do bug original: initPage() roda em DOMContentLoaded, antes de
+// imagens (portfolio, mosaico de serviços, avatares) terminarem de carregar.
+// Os marcadores de start do ScrollTrigger são calculados com a página ainda
+// curta; em mobile (rede mais lenta, ignoreMobileResize:true suprime o resize
+// do endereço do Safari) esses marcadores nunca são recalculados, e o
+// scroll do usuário não atinge o ponto onde o ScrollTrigger acha que deveria
+// disparar — o elemento fica com opacity:0 (aplicado inline pelo gsap.from())
+// para sempre. window.load + ScrollTrigger.refresh() corrige a causa raiz;
+// este fallback é a rede de segurança caso, por qualquer motivo futuro, um
+// elemento ainda fique retido perto da viewport sem revelar.
+function initScrollRevealFallback() {
+    const GRACE_PERIOD_MS = 1500;
+    const selector = '.differential-item, .service-mosaic-item, .value-item, .testimonial-card, .process-step';
+    const elements = document.querySelectorAll(selector);
+    if (!elements.length) return;
+
+    function isHidden(el) {
+        if (el.classList.contains('process-step')) {
+            return !el.classList.contains('revealed');
+        }
+        return parseFloat(window.getComputedStyle(el).opacity) < 1;
+    }
+
+    function forceReveal(el) {
+        if (!isHidden(el)) return;
+        if (el.classList.contains('process-step')) {
+            el.classList.add('revealed');
+        } else {
+            gsap.set(el, { opacity: 1, x: 0, y: 0 });
+        }
+    }
+
+    if (typeof IntersectionObserver !== 'function') {
+        elements.forEach(forceReveal);
+        return;
+    }
+
+    // Observa continuamente (não é um disparo único pós-load): cobre também
+    // elementos que o usuário só alcança rolando bem mais tarde.
+    const fallbackObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            const el = entry.target;
+            // Dá tempo do ScrollTrigger legítimo disparar primeiro — só força
+            // a revelação se, depois da folga, o elemento ainda estiver preso.
+            setTimeout(() => {
+                if (isHidden(el)) forceReveal(el);
+            }, GRACE_PERIOD_MS);
+            fallbackObserver.unobserve(el);
+        });
+    }, { rootMargin: '200px 0px', threshold: 0 });
+
+    elements.forEach(el => fallbackObserver.observe(el));
+}
+
 // === INIT ALL ===
 function initPage() {
     createParticles();
@@ -1784,10 +1840,16 @@ function initPage() {
     initCascadingSlider();
     initPortfolioGallery();
     initClientsCarousel();
+    initScrollRevealFallback();
 
     // ScrollTrigger refresh on resize
     window.addEventListener('resize', () => ScrollTrigger.refresh());
     ScrollTrigger.config({ ignoreMobileResize: true });
+
+    // Recalcula os marcadores de start depois que TODAS as imagens/fontes
+    // terminarem de carregar — evita marcadores calculados para uma página
+    // ainda curta (causa raiz do bug de conteúdo não revelar em mobile).
+    window.addEventListener('load', () => ScrollTrigger.refresh());
 }
 
 // Initialize page immediately

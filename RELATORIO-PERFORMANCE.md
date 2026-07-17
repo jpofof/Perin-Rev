@@ -316,3 +316,103 @@ Correção aplicada:
 | Peso total da página | 375 KiB | 1.991 KiB |
 
 O dado que **é** confiável e representa o ganho real desta mudança, por não depender do CDN: o peso de página mobile caiu de ~5,4 MB de vídeo (+163 KB de assets críticos) para 375 KiB no total — reflexo direto da remoção do `<video>` em mobile. Recomenda-se rodar novamente o Lighthouse em ambiente com acesso à internet (ou contra o deploy real) antes de considerar os scores absolutos como validação final.
+
+### Deploy
+
+Commit `0d2a153` — push feito para `origin master` em 16/07/2026, fast-forward (`3d75059..0d2a153`), sem conflito. Publicado via Netlify a partir de `master` (mesmo fluxo dos deploys anteriores).
+
+## Validação pendente: iPhone real
+
+O sandbox onde este trabalho foi feito não tem acesso à internet real (ver ressalva de Lighthouse acima) — a única forma de confirmar o ganho de verdade é em dispositivo físico, contra o deploy publicado. Checklist para rodar manualmente:
+
+### 1. Velocidade percebida
+
+- [ ] Abrir `https://perinconstrucoes.netlify.app` no Safari do iPhone, em **Wi-Fi**.
+- [ ] Observar se o hero aparece imediatamente com o poster estático + formas geométricas, **sem** qualquer tela em branco ou salto esperando vídeo carregar.
+- [ ] Repetir em **4G/5G** (desligar Wi-Fi ou usar modo avião + dados móveis) — a diferença deve ser ainda mais perceptível, já que antes o hero competia por banda com CSS/JS/fonte no exato momento do LCP.
+
+### 2. Confirmação técnica via Web Inspector
+
+Conectar o iPhone ao Mac e inspecionar o tráfego real:
+
+1. No iPhone: **Ajustes → Safari → Avançado → Web Inspector** (ativar).
+2. Conectar o iPhone ao Mac via cabo e, se solicitado, confiar no computador.
+3. No Mac: Safari → menu **Desenvolver** (ativar em Preferências → Avançado → "Mostrar menu Desenvolver", se ainda não aparecer) → selecionar o nome do iPhone → selecionar a aba do site aberta no iPhone.
+4. Na aba **Network** do Web Inspector remoto, recarregar a página no iPhone.
+5. **Confirmar que nenhuma requisição para `.mp4` ou `.webm` aparece** — esse é o critério de sucesso desta correção. Qualquer requisição desse tipo em viewport de iPhone (largura ≤768px) indica que o `matchMedia` não disparou como esperado (verificar se é um caso de orientação/redimensionamento, ver item 4 abaixo).
+6. Para referência, também vale observar o tempo até o primeiro byte e o padrão de download (completo vs. chunks) das imagens do poster, para comparação futura.
+
+### 3. Teste visual
+
+- [ ] No **iPhone 14**: confirmar poster + formas geométricas aparecendo corretamente, sem salto de layout, texto do hero ("Role para explorar" e títulos) legível sobre o fundo.
+- [ ] No **iPhone 16**: repetir a mesma checagem — telas e densidades de pixel diferentes podem revelar recortes de imagem distintos.
+
+### 4. Rotação / redimensionamento (borda do breakpoint)
+
+- [ ] Girar o iPhone entre retrato e paisagem com a página do hero aberta e observar se o comportamento do vídeo/poster muda de forma inesperada ao cruzar os 768px (em retrato a maioria dos iPhones fica bem abaixo do breakpoint; em paisagem alguns modelos passam de 768px de largura lógica — nesse caso é **esperado** que o vídeo passe a carregar, já que a lógica é por largura de viewport, não por tipo de dispositivo).
+- [ ] Se disponível, testar em iPad (breakpoint tablet, ainda acima de 768px) para confirmar que o vídeo continua carregando normalmente ali.
+
+### 5. Cache real (pendente desde a Rodada 3, aproveitar o deploy atual)
+
+```bash
+curl -I https://perinconstrucoes.netlify.app/styles.min.css
+```
+
+- [ ] Confirmar o header `cache-control` retornado. Ver critérios completos e demais arquivos a testar na seção **"Parte 2 — Validação de cache"** acima (linhas 113–149) — este item apenas reaproveita esse checklist já documentado, que segue pendente desde a Rodada 3.
+
+## Resumo consolidado — jornada completa de otimização
+
+| Etapa | O que foi feito | Métrica-chave |
+|---|---|---|
+| **Fase 1** (pré-otimização, baseline) | Ponto de partida antes de qualquer otimização desta branch | Performance Score 81, LCP 3.3s, peso 312 KiB |
+| **Rodada 1** — imagens, defer, cache (`_headers`) | Otimização de imagens, defer de scripts, política de cache por tipo de asset | Performance Score 81→89 (+8), LCP 3.3s→2.9s, TBT 220ms→100ms, peso 312→274 KiB (-12%) |
+| **Rodada 2** — remoção do Bootstrap | Confirmado 0% de uso real (nenhuma classe/componente) via investigação; removido por completo, sem vendorizar | Validado visualmente sem nenhuma diferença (screenshots antes/depois idênticos); 107/107 testes |
+| **Rodada 3** — logos superdimensionados | Redimensionamento de logos para o tamanho real de exibição | Detalhado na seção própria; checklist de validação de cache em produção deixado pendente (ainda não executado) |
+| **Hero: vídeo + correções** | Corrigido `styles.min.css` desatualizado (Bug 1) e vídeo que não tocava sozinho (Bug 2, bloqueante); recompressão de vídeo (23,46 MB → 9,79 MB, -58%); remoção de vídeo órfão | Performance Score 92 (com vídeo de fato funcionando — leitura honesta: score de 95 anterior era artefato do bug, não medição real) |
+| **Mobile: vídeo condicional + reverse sob demanda** (esta rodada, commit `0d2a153`) | Vídeo removido do DOM em mobile (≤768px), servindo só o poster já existente; `preload="none"` no forward; `reverse.load()` condicionado a `IntersectionObserver` em vez de disparado no início do forward | Peso do hero em mobile: ~5,4 MB de vídeo → **0 requisições de vídeo**, 375 KiB de página total; 107/107 testes; **push feito, aguardando validação em iPhone real** |
+
+**Pendências em aberto ao final desta jornada:**
+1. Validação de cache em produção (Rodada 3) — checklist pronto, nunca executado.
+2. Validação desta correção mobile em iPhone real (14 e 16) — checklist acima, nunca executado.
+3. Lighthouse contra ambiente com internet real (ou produção) para ter scores comparáveis de verdade — os números locais desta última rodada foram penalizados pela ausência de CDN no sandbox e não devem ser lidos como regressão real.
+
+## Mobile: conteúdo não revelava ao rolar
+
+> Reportado após os deploys `0d2a153`/`b4b2cda`: em mobile real, ao rolar a página, o conteúdo abaixo do hero (Diferenciais, Serviços, Valores, Depoimentos, "Como Trabalhamos") ficava em branco. Rolar de volta ao topo mostrava o hero normalmente — sintoma consistente com uma animação de revelação que nunca dispara, não com falha de carregamento de dados.
+
+### Causa raiz confirmada
+
+O mecanismo de revelação dessas seções é **GSAP ScrollTrigger** (não `IntersectionObserver` — esse só é usado na feature de vídeo do hero). Duas famílias de comportamento:
+
+- `.section-title-reveal` / `.text-reveal` / `.section-tag-reveal`: têm `opacity: 1` fixo no CSS (`styles.css:2713-2723`) — **não são afetados**, sempre visíveis independente do JS.
+- `.differential-item`, `.service-mosaic-item`, `.value-item`, `.testimonial-card` (via `gsap.from()`) e `.process-step` (via `ScrollTrigger.create({onEnter})`) — **dependem inteiramente do ScrollTrigger disparar** para sair de `opacity:0`.
+
+Causa raiz: `initPage()` roda em `DOMContentLoaded` (script.js, antes desta correção), **antes** das imagens (portfólio injetado via JS, mosaico de serviços, avatares) terminarem de carregar. O ScrollTrigger calcula os marcadores de `start` (`top 85%`, `top 80%`) com base no layout daquele instante — mais curto do que o real. Nenhuma imagem do site tem `width`/`height`/`aspect-ratio` reservados, então o layout cresce depois que elas carregam. A única forma de recalcular era um listener de `resize` (`ScrollTrigger.refresh()`), mas `ScrollTrigger.config({ ignoreMobileResize: true })` — configuração correta para evitar recálculos durante o "resize" que o Safari mobile dispara ao esconder/mostrar a barra de endereço — também suprimia o único sinal de resize que mobile normalmente geraria. Resultado: em mobile (rede mais lenta, folga maior entre `DOMContentLoaded` e imagens carregadas) os marcadores ficavam desatualizados e nunca eram recalculados — o scroll do usuário nunca atingia o ponto que o ScrollTrigger (desatualizado) considerava o gatilho, e o `opacity:0` aplicado inline pelo `gsap.from()` nunca era revertido.
+
+### Correção implementada
+
+Duas camadas, ambas em `script.js`, dentro de `initPage()`:
+
+1. **Correção da causa raiz** — `window.addEventListener('load', () => ScrollTrigger.refresh())`. Recalcula todos os marcadores de `start` assim que todas as imagens e fontes terminam de carregar (evento `load`, não `DOMContentLoaded`), eliminando o desalinhamento entre os marcadores calculados cedo e o layout final.
+2. **Fallback de segurança** — `initScrollRevealFallback()` (nova função). Um `IntersectionObserver` com `rootMargin: '200px 0px'` observa os mesmos elementos (`.differential-item`, `.service-mosaic-item`, `.value-item`, `.testimonial-card`, `.process-step`). Quando um elemento entra na proximidade da viewport, aguarda uma folga de **1.500ms** (dando prioridade ao ScrollTrigger legítimo disparar primeiro) e só então verifica se o elemento ainda está oculto — se estiver, força `opacity:1`/`.revealed`. Não é um timer cego: só age em elementos que realmente estão perto/dentro da viewport, e continua observando indefinidamente (cobre também quem rola até uma seção muito depois do carregamento inicial, não só o primeiro segundo pós-load).
+
+### Validação
+
+Desta vez o GSAP carregou normalmente no sandbox (diferente das rodadas anteriores, em que `cdnjs.cloudflare.com` estava inacessível — a conectividade deste ambiente parece intermitente; recomenda-se sempre reconfirmar antes de assumir online/offline). Isso permitiu testar o comportamento real do ScrollTrigger, não só análise estática:
+
+- **Simulação de scroll real** (Puppeteer, `window.scrollTo` em 12 passos incrementais + 2,5s de espera para o fallback) em mobile (390×844) e desktop (1440×900):
+
+| Seção | Mobile — opacity de cada item | Desktop — opacity de cada item |
+|---|---|---|
+| `.differential-item` | `[1,1,1,1,1,1]` | `[1,1,1,1,1,1]` |
+| `.service-mosaic-item` | `[1,1,1,1,1,1,1]` | `[1,1,1,1,1,1,1]` |
+| `.value-item` | `[1,1,1,1]` | `[1,1,1,1]` |
+| `.testimonial-card` | `[1,1]` | `[1,1]` |
+| `.process-step` (`.revealed`) | `[true,true,true,true]` | `[true,true,true,true]` |
+
+Todas as seções revelam corretamente em ambos os viewports — nenhum elemento ficou preso em `opacity:0`.
+- **Console**: nenhum erro de JS introduzido pela mudança, em nenhum dos dois viewports.
+- **Testes**: `npm test` → **107/107 passando** (42 unit + 65 regressão), carrossel intacto.
+- **Desktop não regrediu**: comportamento de reveal idêntico ao mobile na tabela acima — a correção não alterou nada que já funcionava.
+
+Não commitado nem enviado — aguardando aprovação.
