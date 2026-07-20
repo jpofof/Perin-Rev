@@ -1929,11 +1929,14 @@ function runWhenIdle(fn, timeout) {
 
 // Roda cada funcao da lista em seu proprio requestIdleCallback, encadeados
 // (a proxima so e agendada depois que a anterior termina) — nao agrupa tudo
-// num unico callback. Uma primeira tentativa fez isso (1 callback grande com
-// ~15 funcoes dentro) e piorou o travamento: sob CPU throttled, o browser
-// atrasa o idle callback ate perto do timeout e entao roda o bloco inteiro de
-// uma vez do mesmo jeito, so que mais tarde — fatiar em callbacks individuais
-// deixa o thread respirar (pintar/avancar o rAF do hero) entre cada funcao.
+// num unico callback. Motivo historico: numa tentativa anterior a esta,
+// quando a fila inteira comecava logo apos DOMContentLoaded (sem esperar o
+// hero terminar), fatiar evitava competir com a ANIMACAO do hero por CPU sob
+// throttle. Isso ainda vale para funcoes que nao tem urgencia de conteudo —
+// ver runBatchWhenIdle() abaixo para o caso em que a fila so comeca DEPOIS
+// que o hero ja terminou (aqui o espacamento entre itens deixou de proteger
+// nada e so atrasa desnecessariamente conteudo que o usuario pode rolar ate
+// ver a qualquer momento).
 function runQueueWhenIdle(fns) {
     let i = 0;
     function next() {
@@ -1945,6 +1948,28 @@ function runQueueWhenIdle(fns) {
         });
     }
     next();
+}
+
+// Roda todas as funcoes da lista em UM UNICO requestIdleCallback, uma logo
+// apos a outra, sem espacamento entre elas. So faz sentido chamar isto DEPOIS
+// que o hero ja terminou de animar (ver startIdleQueue()) — nesse ponto nao
+// ha mais nenhuma animacao critica competindo por frame, entao nao ha motivo
+// para in fatiar essas funcoes em idle callbacks separados: medido nesta
+// sessao, juntas elas somam so ~140ms de trabalho sincrono (ScrollReveals
+// 60ms + ClientsCarousel 27ms + ValuesReveal 14ms + resto), mas encadeadas
+// via requestIdleCallback individual (200ms de timeout cada) o navegador
+// espacava a execucao em rajadas de ~100ms entre si, levando quase 2s
+// (~3.26s a ~5.3s medido em producao via WebPageTest) para a fila terminar —
+// tempo real o suficiente para o usuario rolar ate uma secao ou olhar o
+// carrossel de clientes antes do ScrollTrigger/inicializacao correspondente
+// ter rodado, reproduzindo os sintomas de "corta"/"carrossel parado" mesmo
+// com as correcoes de ordem (Correcao 2) e touchcancel (Correcao 3) ja
+// presentes — o problema nao era mais logica errada, era so demorar demais
+// pra rodar.
+function runBatchWhenIdle(fns) {
+    runWhenIdle(() => {
+        fns.forEach(fn => fn());
+    });
 }
 
 // === INIT ALL ===
@@ -1978,22 +2003,38 @@ function initPage() {
     function startIdleQueue() {
         if (queueStarted) return;
         queueStarted = true;
-        runQueueWhenIdle([
-            createParticles,
+        // Grupo A — afeta o que o usuario pode ver ao rolar ou interagir logo
+        // apos o hero terminar (ScrollTrigger de reveal de secao, carrossel de
+        // clientes, grade do portfolio). initCounters (ScrollTrigger de numeros
+        // animados) e initServiceGridAdjust (rearranjo de grid da secao de
+        // servicos em mobile) nao estavam na lista original pedida, mas
+        // compartilham o mesmo risco — conteudo/layout visivel ao rolar — entao
+        // foram incluidas aqui tambem. Roda tudo em UM idle callback, sem
+        // espacamento entre itens.
+        runBatchWhenIdle([
             initScrollReveals,
             initCounters,
             initServicesReveal,
             initDifferentialsAnimation,
-            initSegmentsTabs,
             initValuesReveal,
             initTestimonialsReveal,
+            initServiceGridAdjust,
+            initPortfolioGallery,
+            initClientsCarousel,
+        ]);
+
+        // Grupo B — decorativo ou sem urgencia de estar pronto ao rolar
+        // (particulas do hero, handlers de clique/hover/form, o carrossel
+        // cascata do portfolio que nunca tem slides no load, e o fallback de
+        // seguranca que so importa como rede depois que o Grupo A ja rodou).
+        // Mantido no scheduling individual encadeado original.
+        runQueueWhenIdle([
+            createParticles,
+            initSegmentsTabs,
             initServicesInteraction,
             initContactForm,
             initCustomSelect,
-            initServiceGridAdjust,
             initCascadingSlider,
-            initPortfolioGallery,
-            initClientsCarousel,
             initScrollRevealFallback,
         ]);
     }

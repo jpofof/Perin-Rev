@@ -920,4 +920,72 @@ Cascata completa na ordem correta, do início ao fim em **~1,48s** — bate com 
 
 Nenhuma alteração foi commitada ou enviada. Aguardando aprovação final do usuário.
 
-**Não commitado nem enviado — aguardando aprovação.**
+## Correção: fila de inicializações em lote (não mais sequencial via idle individual)
+
+> Data: 20/07/2026. Commit `ab2b2ae` (as três correções anteriores) foi publicado no Netlify e verificado byte-a-byte idêntico ao código local (`audit/verificacao-producao-ab2b2ae.md`), mas os 3 sintomas persistiam idênticos em dispositivo real. Dado real de produção (WebPageTest, Chrome, sem CPU throttle) revelou a causa: `TotalBlockingTime: 0` (não é mais contenção de main thread) — o problema é que `runQueueWhenIdle` espaça as ~16 funções não-críticas em rajadas de ~100ms entre si (cada uma esperando seu próprio `requestIdleCallback`), levando quase 2s inteiros (medido em produção: ~3,26s a ~5,3s) para a fila terminar. O carrossel de clientes, por exemplo, só começava a carregar imagens em ~4,6s — tempo real o suficiente para o usuário rolar até uma seção ou olhar o carrossel antes da inicialização correspondente ter rodado.
+
+### Passo 1 — Confirmação antes de mudar
+
+Releitura de `runQueueWhenIdle` (`script.js`, antes desta correção): confirmado que cada função da fila aguardava seu **próprio** `requestIdleCallback`, encadeado via `next()` chamado de dentro do callback anterior — não um lote único.
+
+Lista das 16 funções na ordem original: `createParticles`, `initScrollReveals`, `initCounters`, `initServicesReveal`, `initDifferentialsAnimation`, `initSegmentsTabs`, `initValuesReveal`, `initTestimonialsReveal`, `initServicesInteraction`, `initContactForm`, `initCustomSelect`, `initServiceGridAdjust`, `initCascadingSlider`, `initPortfolioGallery`, `initClientsCarousel`, `initScrollRevealFallback`.
+
+### Passo 2 — Reorganização em dois grupos
+
+**Grupo A** (lote único, sem espaçamento) — as 7 funções pedidas (`initScrollReveals`, `initServicesReveal`, `initDifferentialsAnimation`, `initValuesReveal`, `initTestimonialsReveal`, `initPortfolioGallery`, `initClientsCarousel`) **mais duas adicionadas por compartilharem o mesmo risco** ("afeta o que o usuário vê ao rolar"): `initCounters` (cria `ScrollTrigger` para números animados — mesmo padrão de reveal das outras) e `initServiceGridAdjust` (rearranja o grid da seção de serviços em mobile, `window.innerWidth <= 768` — layout visível ao rolar até lá). Total: 9 funções.
+
+**Grupo B** (scheduling individual mantido) — as 7 restantes: `createParticles` (decorativo, partículas do hero), `initSegmentsTabs`/`initServicesInteraction`/`initContactForm`/`initCustomSelect` (handlers de clique/hover/form, sem gate de visibilidade), `initCascadingSlider` (nunca tem slides no load — guard sempre retorna cedo, irrelevante para timing), `initScrollRevealFallback` (o próprio watchdog de 1,5s, cuja utilidade é ser rede de segurança **depois** que o Grupo A já rodou).
+
+**Implementação** (`script.js`):
+- Nova função `runBatchWhenIdle(fns)`: roda todas as funções passadas dentro de **um único** `requestIdleCallback`, uma logo após a outra (`fns.forEach(fn => fn())`), sem encadeamento entre elas.
+- `runQueueWhenIdle` (mecanismo antigo, encadeado) mantido intacto para o Grupo B.
+- `startIdleQueue()` agora chama `runBatchWhenIdle(grupoA)` seguido de `runQueueWhenIdle(grupoB)`. O fallback de segurança do `onComplete` do hero (`setTimeout(startIdleQueue, 3500)`, implementado na correção anterior) não foi alterado — continua cobrindo o caso da timeline nunca completar.
+- Nenhuma lógica interna das funções foi alterada, só o agrupamento/momento de execução.
+
+### Passo 3 — Validação com medição real de timing
+
+**Metodologia:** Chrome real via Puppeteer (não headless simulado em jsdom) com viewport mobile (390×844, touch habilitado), servindo os arquivos locais via servidor HTTP próprio, instrumentando `window.<nomeDaFuncao>` com `performance.now()` antes de `script.min.js` carregar (monkey-patch por nome de função global). **Limitação de ambiente já documentada nesta sessão:** o `onComplete` da timeline GSAP do hero **não dispara neste Chrome headless específico** (sem compositor real, o ticker baseado em `requestAnimationFrame` não avança) — confirmado instrumentando `initHeroEntrance` diretamente e observando que só o fallback de 3,5s aciona `startIdleQueue`, nunca o callback `onComplete`. Isso não invalida a medição do **espaçamento entre funções dentro da fila** (que é idêntico independente de qual gatilho iniciou a fila) — mas significa que a medição "tempo entre fim da animação do hero e fim do Grupo A" não pôde ser feita via este método; o que foi medido é "tempo entre o início do Grupo A e seu término", que é a métrica que a mudança realmente afeta.
+
+**Comparação antes/depois, mesmo ambiente (elimina a limitação acima do cálculo, já que afeta os dois igualmente):**
+
+| | Antes (commit `ab2b2ae`) | Depois (esta correção) |
+|---|---|---|
+| `initScrollReveals` (1º item do que virou o Grupo A) | 4184,7ms | 3992,3ms |
+| `initClientsCarousel` (último item do Grupo A) | 5440,0ms | 4014,9ms |
+| **Span do Grupo A** | **1255,3ms** | **22,6ms** |
+
+Redução de ~98% no espaçamento entre o primeiro e o último item do Grupo A — bem abaixo da meta de <200-300ms pedida (que já era generosa frente aos ~140ms de trabalho síncrono total medido anteriormente nesta sessão).
+
+**10 execuções do span do Grupo A** (Chrome real, viewport mobile, uma carga de página por execução):
+
+```
+24.9ms, 16.8ms, 15.7ms, 22.3ms, 23.3ms, 19.1ms, 22.9ms, 16.8ms, 22.5ms, 20.3ms
+```
+
+Média ≈ 20,5ms, mínimo 15,7ms, máximo 24,9ms — consistente, sem outliers, bem dentro da meta em todas as 10 execuções.
+
+**Confirmação do carrossel de clientes:** antes, `initClientsCarousel` rodava em 5440,0ms (relativo ao início da navegação); depois, em 4014,9ms — a diferença de ~1,4s equivale exatamente à redução do span do Grupo A, confirmando que o carrossel agora inicializa (e começa a carregar suas imagens) assim que a fila começa a rodar, não ~1,4s depois.
+
+**Verificação de que "Sobre Nós"/seções abaixo não ficam presas em `opacity:0`:** com o Grupo A rodando em lote, `.differential-item[0]` (primeiro item da seção logo após o portfólio, rolado para a viewport via `scrollIntoView`) foi medido em opacidade `0.605` — em transição ativa, não travado em `0`. Isso confirma que o `ScrollTrigger` correspondente disparou (a correção anterior do `ScrollTrigger.refresh()` em `initPortfolioGallery()` já garantia o marcador correto; esta correção garante que o marcador existe rápido o suficiente para o usuário real não perceber o atraso).
+
+**`npm test` → 112/112 passando** (nenhum teste quebrou com o reagrupamento — os testes de `init-scheduling.test.js` continuam válidos porque testam o comportamento fim-a-fim da fila, não a divisão interna em grupos).
+
+### Passo 4 — Confirmação de que a proteção original não regrediu
+
+O Grupo A só é disparado de dentro de `startIdleQueue()`, exatamente no mesmo ponto em que a fila inteira já era disparada antes desta correção — ou seja, continua **inteiramente condicionado** ao `onComplete` da timeline do hero (ou ao fallback de 3,5s), nunca antes disso. A mudança desta correção é só **como as funções se organizam depois desse gatilho** (lote vs. encadeamento individual), não **quando o gatilho acontece** — então, por construção, o Grupo A não pode competir por CPU com a animação do hero, porque só começa a rodar depois que ela já terminou (ou depois de 3,5s, no caso do fallback).
+
+A única forma de esta mudança reintroduzir contenção seria se rodar 9 funções em sequência síncrona (~22-31ms medido) causasse um bloqueio perceptível — mas 22-31ms está bem abaixo do limiar de 50ms usado nesta sessão para "bloqueio significativo", e acontece **depois** que a animação do hero já parou de animar (não há mais nada para o bloqueio interromper visualmente nesse momento).
+
+**Não foi possível remedir a suavidade da cascata do hero via amostragem de opacidade (CPU 4x throttle) neste ambiente** — mesma limitação de sandbox já registrada (sem Chrome DevTools/Safari real, e headless Chrome não avança o ticker do GSAP de forma confiável para este tipo de medição, conforme descoberto no Passo 3 acima). A garantia de que o hero continua suave é **estrutural/por revisão de código** (o gatilho do Grupo A não mudou), não uma remedição dinâmica. Recomendo que o usuário confirme visualmente no dispositivo real — é o mesmo teste já descrito antes (observar a cascata badge → título → subtítulo → botões, sem saltos).
+
+### Resumo entregável
+
+| Métrica | Resultado |
+|---|---|
+| Span do Grupo A, antes | 1255,3ms |
+| Span do Grupo A, depois | 22,6ms (média de 10 execuções: 20,5ms; min 15,7ms; max 24,9ms) |
+| Hero continua suave | Garantido por construção (gatilho inalterado); não remedido dinamicamente neste ambiente — pendente validação visual do usuário |
+| Teste "Sobre Nós"/seções não cortam | `.differential-item[0]` em transição ativa (0,605), não travado em 0, após rolagem simulada |
+| Suíte automatizada | 112/112 passando (107 + 5 + 65 de regressão do carrossel inclusos) |
+
+Nenhuma alteração foi commitada ou enviada. Aguardando aprovação final do usuário.
