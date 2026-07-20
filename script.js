@@ -13,23 +13,35 @@
     var params = new URLSearchParams(location.search);
     if (params.get('debug') !== 'scroll') return;
 
-    var log = [];
+    var JUMP_THRESHOLD = 10; // reduzido de 30 — captura saltos menores/perceptiveis
+    var VERBOSE_THRESHOLD = 5; // qualquer variacao > 5px entra no buffer
+    var BUFFER_SIZE = 50; // buffer circular — nao cresce sem limite numa sessao longa
+
+    var buffer = []; // circular, ultimos BUFFER_SIZE eventos (qualquer tipo)
     var lastY = window.scrollY;
+    var lastTop = document.documentElement.scrollTop;
     var lastInnerH = window.innerHeight;
     var lastDocH = document.documentElement.scrollHeight;
     var startedAt = performance.now();
-    var jumpDetected = false;
+    var buttonShown = false;
 
-    function showCopyButton() {
-        if (jumpDetected) return;
-        jumpDetected = true;
+    function pushEvent(entry) {
+        entry.t = Math.round(performance.now() - startedAt);
+        buffer.push(entry);
+        if (buffer.length > BUFFER_SIZE) buffer.shift();
+        window.__scrollDebugLog = buffer;
+    }
+
+    function showCopyButton(reason) {
+        if (buttonShown) return;
+        buttonShown = true;
         var btn = document.createElement('button');
         btn.textContent = '📋 Copiar log de debug';
         btn.style.cssText = 'position:fixed;bottom:20px;right:20px;z-index:999999;' +
             'padding:14px 18px;background:#2A873E;color:#fff;border:none;border-radius:8px;' +
             'font-size:15px;font-weight:600;box-shadow:0 4px 12px rgba(0,0,0,0.3);';
         btn.addEventListener('click', function () {
-            var payload = JSON.stringify(window.__scrollDebugLog || log, null, 2);
+            var payload = JSON.stringify({ reason: reason, log: window.__scrollDebugLog || buffer }, null, 2);
             if (navigator.clipboard && navigator.clipboard.writeText) {
                 navigator.clipboard.writeText(payload).then(function () {
                     btn.textContent = '✅ Copiado!';
@@ -46,37 +58,71 @@
     if (window.ScrollTrigger && typeof window.ScrollTrigger.refresh === 'function' && !window.ScrollTrigger.__wrappedForDebug) {
         var origRefresh = window.ScrollTrigger.refresh;
         window.ScrollTrigger.refresh = function () {
-            log.push({ t: Math.round(performance.now() - startedAt), event: 'ScrollTrigger.refresh()', scrollY: window.scrollY, innerHeight: window.innerHeight, docHeight: document.documentElement.scrollHeight });
+            pushEvent({ event: 'ScrollTrigger.refresh()', scrollY: window.scrollY, scrollTop: document.documentElement.scrollTop, innerHeight: window.innerHeight, docHeight: document.documentElement.scrollHeight });
             return origRefresh.apply(this, arguments);
         };
         window.ScrollTrigger.__wrappedForDebug = true;
     }
 
     window.addEventListener('resize', function () {
-        log.push({ t: Math.round(performance.now() - startedAt), event: 'resize', innerHeight: window.innerHeight });
+        pushEvent({ event: 'resize', innerHeight: window.innerHeight });
     }, { passive: true });
 
-    var poll = setInterval(function () {
+    // Listener ativo pela sessao inteira (sem limite de tempo) — o salto pode
+    // acontecer bem depois da janela inicial de inicializacoes.
+    setInterval(function () {
         var y = window.scrollY;
+        var top = document.documentElement.scrollTop;
         var innerH = window.innerHeight;
         var docH = document.documentElement.scrollHeight;
-        var t = performance.now() - startedAt;
-        log.push({ t: Math.round(t), scrollY: y, innerHeight: innerH, docHeight: docH });
 
-        if (lastY - y > 30) {
-            log.push({ t: Math.round(t), event: 'SALTO DETECTADO', from: lastY, to: y, delta: lastY - y, innerHeight: innerH, lastInnerHeight: lastInnerH, docHeight: docH, lastDocHeight: lastDocH });
-            window.__scrollDebugLog = log;
-            showCopyButton();
+        var yDrop = lastY - y;
+        var topDrop = lastTop - top;
+        var changed = Math.abs(y - lastY) > VERBOSE_THRESHOLD || Math.abs(top - lastTop) > VERBOSE_THRESHOLD;
+
+        if (changed) {
+            pushEvent({ scrollY: y, scrollTop: top, innerHeight: innerH, docHeight: docH, dY: y - lastY, dTop: top - lastTop });
+        }
+
+        if (yDrop > JUMP_THRESHOLD || topDrop > JUMP_THRESHOLD) {
+            pushEvent({
+                event: 'SALTO DETECTADO', from: lastY, to: y, delta: yDrop,
+                fromTop: lastTop, toTop: top, deltaTop: topDrop,
+                innerHeight: innerH, lastInnerHeight: lastInnerH, docHeight: docH, lastDocHeight: lastDocH,
+            });
+            showCopyButton('salto automatico (scrollY ou scrollTop caiu > ' + JUMP_THRESHOLD + 'px)');
         }
         lastY = y;
+        lastTop = top;
         lastInnerH = innerH;
         lastDocH = docH;
     }, 20);
 
-    setTimeout(function () {
-        clearInterval(poll);
-        window.__scrollDebugLog = log;
-    }, 15000);
+    // Long-press manual (2s) em qualquer lugar da tela — ativa o botao mesmo
+    // se a deteccao automatica nao disparar, pra sempre dar pra capturar o
+    // buffer circular dos ultimos eventos.
+    var pressTimer = null;
+    function cancelPress() { if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; } }
+    document.addEventListener('touchstart', function (e) {
+        var startX = e.touches[0].clientX, startY = e.touches[0].clientY;
+        pressTimer = setTimeout(function () {
+            pushEvent({ event: 'LONG-PRESS MANUAL (2s)' });
+            showCopyButton('long-press manual');
+        }, 2000);
+        var moveHandler = function (ev) {
+            var dx = Math.abs(ev.touches[0].clientX - startX);
+            var dy = Math.abs(ev.touches[0].clientY - startY);
+            if (dx > 15 || dy > 15) cancelPress(); // dedo se moveu — provavelmente e um scroll, nao um long-press
+        };
+        document.addEventListener('touchmove', moveHandler, { passive: true });
+        document.addEventListener('touchend', function cleanup() {
+            cancelPress();
+            document.removeEventListener('touchmove', moveHandler);
+            document.removeEventListener('touchend', cleanup);
+        }, { once: true });
+    }, { passive: true });
+
+    console.log('[DEBUG-SCROLL] instrumentacao ativa (threshold=' + JUMP_THRESHOLD + 'px, buffer circular de ' + BUFFER_SIZE + ' eventos, sem limite de tempo). Toque e segure 2s em qualquer lugar pra forcar a captura manual.');
 })();
 
 // === DESIGN TOKENS (referência para edição) ===

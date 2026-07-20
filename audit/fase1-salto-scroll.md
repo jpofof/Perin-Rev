@@ -73,3 +73,36 @@ Se o botão nunca aparecer mesmo depois de reproduzir o salto visualmente, isso 
 ## Item do checklist
 
 - [~] FASE 1: **investigada, causa não confirmada/reproduzida em simulação.** Instrumentação `?debug=scroll` adicionada a `script.js` (autocontida, fácil de remover, verificada via Puppeteer exceto o clipboard em si). Nenhuma correção implementada — aguardando captura real do usuário no iPhone.
+
+## Instrumentação v3 — botão nunca apareceu no teste real (iPhone)
+
+> Usuário testou `?debug=scroll` no iPhone real: o salto continuou acontecendo (confirmado visualmente), mas o botão **nunca apareceu**. Investigadas as 4 hipóteses levantadas antes de tentar de novo.
+
+### Investigação das 4 hipóteses
+
+1. **Threshold conservador demais (>30px)** — confirmado como problema real, corrigido: reduzido para **>10px**. Um salto visualmente perceptível mas menor que 30px (ex: numa tela pequena, ou em vários passos pequenos) passava despercebido.
+2. **Janela de tempo limitada — CAUSA MAIS PROVÁVEL, confirmada.** O `setInterval` de captura era explicitamente parado (`clearInterval`) depois de **15 segundos** (`setTimeout(..., 15000)`). Rolar a página inteira num ritmo humano normal, prestando atenção ao conteúdo, facilmente leva mais que 15s — se o salto relatado aconteceu depois desse ponto, a instrumentação já estava desarmada havia tempo. **Corrigido: removido o limite de tempo** — o listener agora fica ativo pela sessão inteira (sem `setTimeout`/`clearInterval`).
+3. **Tipo de evento diferente (`scrollTop` vs `scrollY`)** — não descartado por leitura de código (não há nenhum `scrollIntoView` fora de fluxos de interação explícita, já confirmado na rodada anterior), mas **corrigido defensivamente**: agora monitora `window.scrollY` **e** `document.documentElement.scrollTop` em paralelo, logando os dois e disparando o salto se qualquer um deles cair mais que o threshold.
+4. **Build publicado desatualizado** — **descartado**. Verificado via `curl --ssl-no-revoke` contra a produção: o `script.min.js` publicado contém o bloco de debug completo (confirmado via `grep` por `__scrollDebugLog`, `SALTO DETECTADO`, `initScrollJumpDebug` no arquivo baixado da Netlify) — o código estava lá, só não capturou o evento pelos motivos 1 e 2 acima.
+
+### Mudanças implementadas (`script.js`, bloco `initScrollJumpDebug`)
+
+1. `JUMP_THRESHOLD` reduzido de 30px para **10px**.
+2. Removido o `setTimeout(..., 15000)` que parava a captura — **ativo pela sessão inteira**, sem limite de tempo.
+3. Monitora `window.scrollY` e `document.documentElement.scrollTop` em paralelo; qualquer um dos dois caindo mais que o threshold dispara a detecção.
+4. Log verbose: **todo** evento com variação > 5px (`VERBOSE_THRESHOLD`) é registrado num **buffer circular de 50 entradas** (`BUFFER_SIZE`) — não cresce sem limite numa sessão longa, mas mantém sempre os últimos 50 eventos disponíveis para inspeção manual mesmo que a detecção automática do salto falhe.
+5. **Long-press manual**: tocar e segurar em qualquer lugar da tela por 2s força a exibição do botão de cópia (cancela automaticamente se o dedo se mover mais de 15px, para não disparar durante um scroll normal segurado). Registra um evento `LONG-PRESS MANUAL (2s)` no buffer antes de mostrar o botão.
+6. `console.log` inicial confirmando que a instrumentação está ativa (visível se o usuário algum dia conectar um Mac; não essencial para o uso sem Mac).
+
+### Verificação (Puppeteer, Chrome real)
+
+- **Sem** `?debug=scroll`: `window.__scrollDebugLog` continua `undefined` — gating intacto, zero efeito em usuários normais.
+- **Com** `?debug=scroll`, aguardando 16 segundos (passando do antigo limite de 15s) e então simulando uma queda de 15px (abaixo do antigo threshold de 30px, acima do novo de 10px): **botão apareceu corretamente** — confirma que as duas causas mais prováveis (threshold e limite de tempo) foram corrigidas.
+- Buffer permanece limitado a 50 entradas (circular, confirmado).
+- Campo `scrollTop` presente nos eventos junto com `scrollY`, confirmado.
+- `npm test` → **112/112 passando**.
+- `script.min.js` regenerado e verificado com `node scripts/check-min-freshness.js` (OK).
+
+### Item do checklist (atualizado)
+
+- [~] FASE 1: causa ainda não confirmada. Instrumentação v3 pronta (threshold menor, sem limite de tempo, `scrollY`+`scrollTop`, buffer circular verbose, long-press manual). Todas as 4 hipóteses da rodada anterior investigadas — mais provável era o limite de 15s. Aguardando nova captura real do usuário no iPhone.
