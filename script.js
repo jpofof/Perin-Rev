@@ -4,6 +4,81 @@
 
 'use strict';
 
+// === DEBUG TEMPORARIO — FASE 1, salto de scroll (remover apos diagnostico) ===
+// So ativa com ?debug=scroll na URL — nunca roda para usuarios normais. Bloco
+// autocontido, nao interfere em nada do resto do arquivo. Seguro remover
+// (junto com o </script> extra no index.html, se algum for adicionado) assim
+// que a causa do salto de scroll estiver confirmada e corrigida.
+(function initScrollJumpDebug() {
+    var params = new URLSearchParams(location.search);
+    if (params.get('debug') !== 'scroll') return;
+
+    var log = [];
+    var lastY = window.scrollY;
+    var lastInnerH = window.innerHeight;
+    var lastDocH = document.documentElement.scrollHeight;
+    var startedAt = performance.now();
+    var jumpDetected = false;
+
+    function showCopyButton() {
+        if (jumpDetected) return;
+        jumpDetected = true;
+        var btn = document.createElement('button');
+        btn.textContent = '📋 Copiar log de debug';
+        btn.style.cssText = 'position:fixed;bottom:20px;right:20px;z-index:999999;' +
+            'padding:14px 18px;background:#2A873E;color:#fff;border:none;border-radius:8px;' +
+            'font-size:15px;font-weight:600;box-shadow:0 4px 12px rgba(0,0,0,0.3);';
+        btn.addEventListener('click', function () {
+            var payload = JSON.stringify(window.__scrollDebugLog || log, null, 2);
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(payload).then(function () {
+                    btn.textContent = '✅ Copiado!';
+                }).catch(function () {
+                    btn.textContent = '❌ Falhou — copie via console';
+                });
+            } else {
+                btn.textContent = '❌ clipboard indisponivel';
+            }
+        });
+        document.body.appendChild(btn);
+    }
+
+    if (window.ScrollTrigger && typeof window.ScrollTrigger.refresh === 'function' && !window.ScrollTrigger.__wrappedForDebug) {
+        var origRefresh = window.ScrollTrigger.refresh;
+        window.ScrollTrigger.refresh = function () {
+            log.push({ t: Math.round(performance.now() - startedAt), event: 'ScrollTrigger.refresh()', scrollY: window.scrollY, innerHeight: window.innerHeight, docHeight: document.documentElement.scrollHeight });
+            return origRefresh.apply(this, arguments);
+        };
+        window.ScrollTrigger.__wrappedForDebug = true;
+    }
+
+    window.addEventListener('resize', function () {
+        log.push({ t: Math.round(performance.now() - startedAt), event: 'resize', innerHeight: window.innerHeight });
+    }, { passive: true });
+
+    var poll = setInterval(function () {
+        var y = window.scrollY;
+        var innerH = window.innerHeight;
+        var docH = document.documentElement.scrollHeight;
+        var t = performance.now() - startedAt;
+        log.push({ t: Math.round(t), scrollY: y, innerHeight: innerH, docHeight: docH });
+
+        if (lastY - y > 30) {
+            log.push({ t: Math.round(t), event: 'SALTO DETECTADO', from: lastY, to: y, delta: lastY - y, innerHeight: innerH, lastInnerHeight: lastInnerH, docHeight: docH, lastDocHeight: lastDocH });
+            window.__scrollDebugLog = log;
+            showCopyButton();
+        }
+        lastY = y;
+        lastInnerH = innerH;
+        lastDocH = docH;
+    }, 20);
+
+    setTimeout(function () {
+        clearInterval(poll);
+        window.__scrollDebugLog = log;
+    }, 15000);
+})();
+
 // === DESIGN TOKENS (referência para edição) ===
 // Cores: --cor-preto-puro, --cor-branco-gelo, --cor-verde-floresta, --cor-verde-brilhante, --cor-verde-neon, --cor-bege-escuro, --cor-cinza-acastanhado, --cor-creme
 
