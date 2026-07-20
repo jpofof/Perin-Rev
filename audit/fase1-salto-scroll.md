@@ -106,3 +106,59 @@ Se o botão nunca aparecer mesmo depois de reproduzir o salto visualmente, isso 
 ### Item do checklist (atualizado)
 
 - [~] FASE 1: causa ainda não confirmada. Instrumentação v3 pronta (threshold menor, sem limite de tempo, `scrollY`+`scrollTop`, buffer circular verbose, long-press manual). Todas as 4 hipóteses da rodada anterior investigadas — mais provável era o limite de 15s. Aguardando nova captura real do usuário no iPhone.
+
+## Dados reais capturados no iPhone — análise
+
+> Dois saltos registrados: 1209px→0 e 772px→0, ambos instantâneos (~21ms entre amostras — o intervalo de polling, não a duração real do salto, que é efetivamente imediato), em ~19s e ~25s após o load. `docHeight` constante (18826) nos dois — **descarta definitivamente mudança de layout/altura como causa**. Nenhum `ScrollTrigger.refresh()` nos ~3s anteriores a cada salto. Isso é o padrão de uma chamada direta de "ir para o topo" (`scrollTo`/`scrollIntoView`/`scrollTop = 0`), não um efeito colateral de reflow.
+
+### Passo 1 — Busca exaustiva (`script.js`, fonte)
+
+Grep por todos os padrões pedidos (`scrollTo`, `scrollIntoView`, `scrollTop\s*=`, `scroll(0`, `\.scroll\(`, mais `\.focus\(\)`, `pushState`/`replaceState`, `href="#`):
+
+| Ocorrência | Função | Disparado por | Pode rodar ~19-25s após load, sem interação? |
+|---|---|---|---|
+| `window.scrollTo({top: portfolioState.savedScrollY, ...})` (`script.js` ~1180) | fechamento do visualizador de portfólio | clique no botão de fechar (`backBtn`) | **Não** — exige clique explícito no visualizador, que não estava aberto (nenhum evento de abertura de projeto nos dados) |
+| `firstError.scrollIntoView(...)` (`script.js` ~1567) | validação do formulário de contato | submit do formulário com erro | **Não** — exige submit do formulário |
+| `.focus()` (6 ocorrências, `initCustomSelect`, ~1671-1702) | navegação por teclado do select customizado (setas/Enter/Escape) | `keydown` no trigger/opções | **Não** — todas dentro de handlers de `keydown`, exigem teclado ativo (não aplicável em touch/mobile) |
+| `href="#"` em `.nav-logo` (linha 44) e `.footer-logo` (linha 1041) de `index.html` | comportamento nativo do navegador (hash vazio = topo do documento) | clique/toque no logo | **Só com toque real** — mas **nenhum `.click()` programático existe em `script.js`** (`grep` por `.click()`/`dispatchEvent` sem resultados) — descarta disparo automático via JS |
+| `Object.getOwnPropertyDescriptor`/`scrollTop` setters, `pushState`/`replaceState` | — | — | Nenhuma ocorrência encontrada em `script.js` |
+
+**Nenhum candidato de código encontrado que explique um salto automático, sem interação do usuário, ~19-25s após o load.** Todas as ocorrências de scroll/foco programático no código exigem uma ação explícita do usuário (clique, submit, teclado) que não está presente no cenário relatado (usuário só rolando passivamente).
+
+### Hipótese mais provável
+
+**Gesto nativo do iOS Safari: tocar na barra de status (topo da tela) rola a página atual instantaneamente para o topo.** É um comportamento do sistema operacional/navegador, não do site — não passa por nenhuma API JavaScript interceptável (não chama `scrollTo`, não dispara `scrollIntoView`, não altera `scrollTop` via JS). Encaixa em **todos** os pontos dos dados capturados:
+- Instantâneo (o iOS anima esse scroll-to-top de forma muito rápida, quase sem transição perceptível a 20ms de polling).
+- Vai exatamente para `0` (não para uma posição relativa/calculada — é literalmente "topo do documento").
+- Independente de `docHeight`/`ScrollTrigger.refresh()` (não tem relação nenhuma com o estado da página).
+- Pode acontecer a qualquer momento — bate com o timing "aleatório" (~19s numa vez, ~25s na outra, sem relação com nenhum timer do nosso código).
+- É um falso-positivo extremamente comum em relatos de "a página pulou sozinha" — usuários frequentemente não percebem que tocaram no topo da tela (reposicionando o polegar, encostando a mão, etc.) durante um gesto de rolagem contínuo.
+
+**Não é uma certeza absoluta** — só uma leitura estática do código não prova ausência de causa (é impossível provar um negativo por grep). Por isso, antes de descartar definitivamente, instrumentei o código para capturar isso com certeza na próxima tentativa.
+
+### Passo 2 — Instrumentação para captura de stack trace (implementada)
+
+Adicionado ao bloco `initScrollJumpDebug` (ainda atrás de `?debug=scroll`, mesmo isolamento de antes):
+
+- **Intercepta `window.scrollTo()` e `window.scroll()`** — loga `console.trace()` + a stack (8 primeiras linhas) no buffer, com os argumentos exatos passados.
+- **Intercepta `Element.prototype.scrollIntoView()`** (qualquer elemento) — loga qual elemento (tag/id/classe) e a stack.
+- **Intercepta o setter de `scrollTop`** em `document.documentElement` e `document.body` especificamente (via `Object.defineProperty` na instância, não no protótipo — escopo mínimo) — loga quando qualquer código atribui `scrollTop = 0`.
+- **Rastreia `focusin`** — se o elemento focado estiver a menos de 400px do topo do documento, loga a stack (cobre a hipótese de foco automático empurrando o scroll).
+
+**Se o próximo salto for causado por qualquer uma dessas chamadas, o buffer vai conter uma entrada `CHAMADA JS: ...` com a stack trace exata (arquivo:linha) apontando pra causa.** Se o próximo salto acontecer **sem nenhuma dessas entradas no buffer**, isso é evidência forte a favor da hipótese do gesto nativo do iOS (nenhuma API JS foi chamada, logo não é o nosso código).
+
+**Verificado (Puppeteer, Chrome real):**
+- Sem `?debug=scroll`: `window.scrollTo` continua sendo a função nativa (não interceptada) — confirmado `window.scrollTo.toString()` não contém o wrapper; chamadas normais de scroll continuam funcionando sem erro. Zero efeito em produção normal.
+- Com `?debug=scroll`: forçado `window.scrollTo(0, 0)` via JS — capturado corretamente no buffer com a stack (`CHAMADA JS: window.scrollTo(0,0)`).
+- Forçado `document.documentElement.scrollTop = 0` via JS — capturado corretamente (`CHAMADA JS: element.scrollTop = 0`).
+- `npm test` → **112/112 passando**. `script.min.js` regenerado e verificado.
+
+### Passo 3 — Resposta às perguntas do fechamento
+
+1. **Candidatos encontrados:** nenhum em `script.js` que se encaixe no cenário (todos exigem interação explícita ausente nos dados). `href="#"` existe mas não tem disparo programático.
+2. **Mais provável:** o gesto nativo do iOS Safari de tocar a barra de status para rolar ao topo — não é um bug de código, é comportamento do sistema. Raciocínio detalhado acima.
+3. **Preciso de mais uma captura no iPhone antes de ter certeza suficiente para corrigir.** A busca por código não encontrou nenhuma causa programática, e a hipótese do gesto nativo, embora bem fundamentada, não é 100% verificável sem ver o próximo salto passar pela instrumentação de stack trace. **Não vou implementar nenhuma correção de código ainda** — se a próxima captura confirmar "gesto nativo" (buffer sem nenhuma entrada `CHAMADA JS`), a conclusão é que **não há bug no código para corrigir** nesta frente (talvez vale considerar, só como sugestão de UX opcional, algo como `<meta name="mobile-web-app-status-bar-style">` ou orientar o usuário sobre o gesto — mas isso é uma decisão sua, não uma correção técnica). Se a captura mostrar uma entrada `CHAMADA JS`, ela vai apontar exatamente a linha do código responsável.
+
+### Item do checklist (atualizado novamente)
+
+- [~] FASE 1: causa mais provável identificada (gesto nativo do iOS, não é bug de código), mas **não confirmada** — nenhuma correção implementada. Instrumentação de stack trace pronta para a próxima captura. `?debug=scroll` continua ativo (não remover ainda).

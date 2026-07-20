@@ -55,6 +55,61 @@
         document.body.appendChild(btn);
     }
 
+    // Intercepta TODA forma programatica de mover o scroll pra 0/topo, capturando
+    // a pilha de chamadas exata (console.trace + string da stack no proprio log,
+    // ja que nao da pra copiar o console do iPhone sem Mac). Se nenhuma dessas
+    // disparar no momento do salto, e forte indicio de que NAO e o nosso codigo
+    // — ex: o gesto nativo do iOS Safari de tocar a barra de status pra rolar
+    // ao topo, que nao passa por nenhuma API JS interceptavel.
+    function captureStack(label) {
+        var stack = (new Error()).stack || 'stack indisponivel';
+        pushEvent({ event: 'CHAMADA JS: ' + label, stack: stack.split('\n').slice(0, 8).join(' | ') });
+        console.trace('[DEBUG-SCROLL] ' + label);
+    }
+    var origScrollTo = window.scrollTo;
+    window.scrollTo = function () {
+        captureStack('window.scrollTo(' + Array.prototype.slice.call(arguments).map(String).join(',') + ')');
+        return origScrollTo.apply(this, arguments);
+    };
+    var origScroll = window.scroll;
+    window.scroll = function () {
+        captureStack('window.scroll(' + Array.prototype.slice.call(arguments).map(String).join(',') + ')');
+        return origScroll.apply(this, arguments);
+    };
+    var origScrollIntoView = Element.prototype.scrollIntoView;
+    Element.prototype.scrollIntoView = function () {
+        captureStack('Element.scrollIntoView() em <' + this.tagName + (this.id ? '#' + this.id : '') + (this.className ? '.' + String(this.className).split(' ').join('.') : '') + '>');
+        return origScrollIntoView.apply(this, arguments);
+    };
+    // scrollTop = 0 direto (documentElement e body — os dois alvos possiveis
+    // pra "voltar ao topo" dependendo do modo de quirks do navegador).
+    [document.documentElement, document.body].forEach(function (el) {
+        var proto = Object.getPrototypeOf(el);
+        var desc = null;
+        while (proto && !desc) {
+            desc = Object.getOwnPropertyDescriptor(proto, 'scrollTop');
+            proto = Object.getPrototypeOf(proto);
+        }
+        if (!desc || !desc.set) return;
+        Object.defineProperty(el, 'scrollTop', {
+            configurable: true,
+            get: function () { return desc.get.call(el); },
+            set: function (v) {
+                if (v === 0) captureStack('element.scrollTop = 0 em <' + el.tagName + '>');
+                return desc.set.call(el, v);
+            },
+        });
+    });
+    // Foco programatico em elemento perto do topo tambem pode causar scroll
+    // automatico do navegador ate ele (mesmo sem chamada explicita de scroll).
+    document.addEventListener('focusin', function (e) {
+        var rect = e.target.getBoundingClientRect ? e.target.getBoundingClientRect() : null;
+        var docTop = rect ? rect.top + window.scrollY : null;
+        if (docTop !== null && docTop < 400) { // elemento focado perto do topo do documento
+            captureStack('focusin perto do topo em <' + e.target.tagName + (e.target.id ? '#' + e.target.id : '') + '> (docTop=' + Math.round(docTop) + ')');
+        }
+    }, true);
+
     if (window.ScrollTrigger && typeof window.ScrollTrigger.refresh === 'function' && !window.ScrollTrigger.__wrappedForDebug) {
         var origRefresh = window.ScrollTrigger.refresh;
         window.ScrollTrigger.refresh = function () {
