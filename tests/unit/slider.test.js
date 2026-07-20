@@ -45,8 +45,23 @@ global.ResizeObserver = class ResizeObserver {
   disconnect() {}
 };
 
-// Load the script (it will execute initPage immediately)
+// Load the script (it will execute initPage immediately). Non-critical inits
+// (carousel, gallery, below-the-fold ScrollTrigger) run via requestIdleCallback,
+// which jsdom doesn't implement — runWhenIdle() falls back to setTimeout(fn, 0).
+// Fake timers flush that synchronously so the rest of this file can assert on
+// the fully-initialized DOM, matching what happens for real in a browser a tick
+// later.
+// runOnlyPendingTimers (nao runAllTimers) em loop bem limitado: as inicializacoes
+// nao-criticas rodam encadeadas, uma por requestIdleCallback (setTimeout(fn,0) no
+// fallback do jsdom, que nao tem requestIdleCallback) — precisa de varias rodadas
+// pra atravessar a cadeia toda. runAllTimers() nao serve aqui: o clients carousel
+// tem um loop de requestAnimationFrame que se reagenda indefinidamente e abortaria
+// com "infinite loop". O loop abaixo e bounded (nao "ate esvaziar"), entao nao
+// persegue esse RAF para sempre.
+jest.useFakeTimers();
 require('../../script.js');
+for (let i = 0; i < 20; i++) jest.runOnlyPendingTimers();
+jest.useRealTimers();
 
 // ────────────────────────────────────
 // Helpers

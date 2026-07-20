@@ -2217,8 +2217,27 @@ function initPage() {
     initHeroEntrance(startIdleQueue);
     setTimeout(startIdleQueue, 3500);
 
-    // ScrollTrigger refresh on resize
-    window.addEventListener('resize', () => ScrollTrigger.refresh());
+    // ScrollTrigger refresh on resize — so quando a LARGURA muda (rotacao de
+    // tela, redimensionamento real de janela), nunca so por mudanca de altura.
+    // Causa raiz confirmada via stack trace real no iPhone: no Safari iOS, a
+    // barra de endereco dinamica (aparece/some durante o scroll) dispara varios
+    // eventos de resize so por mudanca de ALTURA da viewport — cada um chamava
+    // ScrollTrigger.refresh(), que internamente faz um scrollTo(0,0) pra medir
+    // e depois restaura a posicao; ciclos sobrepostos desses refreshes faziam
+    // a restauracao falhar, prendendo o scroll em 0 (o "salto pra tras"
+    // reportado). ScrollTrigger.config({ ignoreMobileResize: true }) nao
+    // protegia contra isso porque so filtra o listener INTERNO do proprio
+    // GSAP, nao este listener manual. Debounce de 150ms e protecao extra
+    // contra sequencias rapidas de resize de largura genuina (ex: redimensionar
+    // a janela no desktop arrastando a borda).
+    let lastWidth = window.innerWidth;
+    let resizeRefreshTimeout;
+    window.addEventListener('resize', () => {
+        if (window.innerWidth === lastWidth) return; // so altura mudou — ignora (barra de endereco do Safari)
+        lastWidth = window.innerWidth;
+        clearTimeout(resizeRefreshTimeout);
+        resizeRefreshTimeout = setTimeout(() => ScrollTrigger.refresh(), 150);
+    });
     ScrollTrigger.config({ ignoreMobileResize: true });
 
     // Recalcula os marcadores de start depois que TODAS as imagens/fontes

@@ -162,3 +162,49 @@ Adicionado ao bloco `initScrollJumpDebug` (ainda atrás de `?debug=scroll`, mesm
 ### Item do checklist (atualizado novamente)
 
 - [~] FASE 1: causa mais provável identificada (gesto nativo do iOS, não é bug de código), mas **não confirmada** — nenhuma correção implementada. Instrumentação de stack trace pronta para a próxima captura. `?debug=scroll` continua ativo (não remover ainda).
+
+## Causa raiz confirmada — não era gesto nativo do iOS
+
+> A hipótese do gesto nativo do iOS (seção anterior) estava **errada** — descartada pela captura real com stack trace, reforçada pelo teste comparativo (bug não ocorre em Android, só em iOS, o que já era incompatível com "gesto de tocar a barra de status" ser a explicação, já que esse gesto é específico do Safari/iOS mas a ausência em Android por si só não prova nada — o que realmente descarta é a stack trace capturada apontando para código nosso).
+
+**Causa real:** `window.addEventListener('resize', () => ScrollTrigger.refresh())` (`script.js`, linha ~2221 antes desta correção — adicionado numa correção anterior desta sessão para cobrir o caso de fontes carregando depois do `load`). No Safari iOS, a barra de endereço dinâmica (que aparece/some durante o scroll, mudando `window.innerHeight` sem mudar `innerWidth`) dispara múltiplos eventos nativos de `resize` **só por mudança de altura**. Cada disparo chamava `ScrollTrigger.refresh()` incondicionalmente — e `refresh()` internamente faz um `scrollTo(0,0)` para remedir os marcadores, restaurando a posição original em seguida. Com a barra de endereço animando rapidamente durante o scroll, múltiplos ciclos de refresh se sobrepunham, e a restauração da posição falhava — prendendo o scroll em `0`. Isso é exatamente o "salto para trás" reportado.
+
+`ScrollTrigger.config({ ignoreMobileResize: true })` (já presente no código, adicionado numa correção anterior) **não protegia contra isso** porque essa config só filtra o listener de resize **interno do próprio GSAP** — não tem nenhum efeito sobre o nosso `window.addEventListener('resize', ...)` manual, que é um listener completamente separado.
+
+### Correção aplicada (`script.js`, ~linha 2221)
+
+```js
+let lastWidth = window.innerWidth;
+let resizeRefreshTimeout;
+window.addEventListener('resize', () => {
+    if (window.innerWidth === lastWidth) return; // so altura mudou — ignora
+    lastWidth = window.innerWidth;
+    clearTimeout(resizeRefreshTimeout);
+    resizeRefreshTimeout = setTimeout(() => ScrollTrigger.refresh(), 150);
+});
+ScrollTrigger.config({ ignoreMobileResize: true });
+```
+
+- Só chama `ScrollTrigger.refresh()` quando `innerWidth` muda de fato (rotação de tela, redimensionamento real de janela) — mudanças de só altura (barra de endereço do Safari) são ignoradas.
+- Debounce de 150ms como proteção extra contra sequências rápidas de mudanças de largura genuínas (ex: arrastar a borda da janela no desktop).
+- `document.fonts.ready.then(() => ScrollTrigger.refresh())` e `window.addEventListener('load', () => ScrollTrigger.refresh())` **não foram tocados** — continuam disparando uma única vez cada, sem o problema de repetição do listener de resize.
+
+### Validação
+
+**Local (Puppeteer, Chrome real):**
+- Mudança **só de altura** (simulando a barra de endereço do Safari, viewport 390×844 → 390×700): `ScrollTrigger.refresh()` **não** disparou (0 chamadas). Confirmado.
+- Mudança **de largura** (simulando rotação de tela, 390×844 → 844×390): `ScrollTrigger.refresh()` disparou (1 chamada). Confirmado.
+- Três mudanças rápidas de largura em sequência (800→750→700, ~30ms entre cada): debounce colapsou em **1 única chamada** de refresh, não 3. Confirmado.
+- **Nota metodológica:** `page.setViewport()` do Puppeteer não dispara o evento `resize` nativo de forma confiável neste ambiente headless (confirmado — 0 eventos de resize registrados mesmo com listener bruto, antes de qualquer lógica nossa). Contornado disparando `window.dispatchEvent(new Event('resize'))` manualmente após cada `setViewport()`, o que testa a lógica do listener corretamente (a condição `innerWidth !== lastWidth` e o debounce), mesmo que o REALISMO do disparo do evento em si dependa do navegador real.
+
+**`npm test` → 112/112 passando.** `script.min.js` regenerado e verificado com `node scripts/check-min-freshness.js` (OK).
+
+**Correção da Fase 1 anterior (fonte tarde, "Sobre Nós" cortada) não afetada:** os dois refreshes responsáveis por essa correção (`fonts.ready` e `load`) não foram alterados — continuam intactos, cada um disparando uma única vez, independente do listener de resize.
+
+### Pendente
+
+Aguardando você testar de novo no iPhone com `?debug=scroll` ainda ativo, rolando a partir da região do botão "Ver Projetos" (onde reproduziu de forma consistente antes) — confirmar que o salto parou. `?debug=scroll` **não foi removido** ainda, conforme instruído.
+
+### Item do checklist (final desta rodada)
+
+- [~] FASE 1: **causa raiz confirmada e corrigida** (listener de resize disparando `ScrollTrigger.refresh()` por mudança de altura da viewport no Safari iOS, contornando `ignoreMobileResize`). Correção implementada e validada localmente (112/112 testes, comportamento do listener confirmado via Puppeteer). **Aguardando validação final no dispositivo real** antes de marcar como concluída e remover `?debug=scroll`.
