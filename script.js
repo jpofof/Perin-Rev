@@ -218,9 +218,9 @@ function initHeroAnimations() {
 }
 
 // === HERO ENTRANCE — safe for any scroll position ===
-function initHeroEntrance() {
+function initHeroEntrance(onDone) {
     const hero = document.querySelector('.hero-architectural-scene');
-    if (!hero) return;
+    if (!hero) { if (onDone) onDone(); return; }
 
     // Force final state on all entrance elements FIRST (before any ScrollTrigger)
     // This prevents elements from remaining at opacity:0 if entrance never fires
@@ -250,17 +250,23 @@ function initHeroEntrance() {
         // segundo que se somava a percepcao de lentidao em rede rapida.
         const tl = gsap.timeline({
             delay: 0.15,
-            defaults: { ease: 'power3.out' }
+            defaults: { ease: 'power3.out' },
+            onComplete: onDone,
         });
 
-        tl.to('.hero-badge', { opacity: 1, y: 0, duration: 0.7 })
-            .to('.hero-title-line-1', { opacity: 1, y: 0, rotateX: 0, duration: 0.9 }, '-=0.3')
-            .to('.hero-title-line-2', { opacity: 1, y: 0, rotateX: 0, duration: 0.9 }, '-=0.5')
-            .to('.hero-title-line-3', { opacity: 1, y: 0, rotateX: 0, duration: 0.9 }, '-=0.5')
-            .to('.hero-subtitle', { opacity: 1, y: 0, duration: 0.7 }, '-=0.5')
-            .to('.hero-actions', { opacity: 1, y: 0, duration: 0.7 }, '-=0.3');
+        // Durations/overlaps reduzidos pela metade (~2.85s -> ~1.5s de ponta a
+        // ponta) — cascata continua perceptivel, so mais rapida. Ver RELATORIO-
+        // PERFORMANCE.md, secao "Carregamento inicial", Passo 1.
+        tl.to('.hero-badge', { opacity: 1, y: 0, duration: 0.35 })
+            .to('.hero-title-line-1', { opacity: 1, y: 0, rotateX: 0, duration: 0.45 }, '-=0.15')
+            .to('.hero-title-line-2', { opacity: 1, y: 0, rotateX: 0, duration: 0.45 }, '-=0.25')
+            .to('.hero-title-line-3', { opacity: 1, y: 0, rotateX: 0, duration: 0.45 }, '-=0.25')
+            .to('.hero-subtitle', { opacity: 1, y: 0, duration: 0.35 }, '-=0.25')
+            .to('.hero-actions', { opacity: 1, y: 0, duration: 0.35 }, '-=0.15');
+    } else {
+        // If not visible, elements already have final state (opacity:1) — nada a esperar.
+        if (onDone) onDone();
     }
-    // If not visible, elements already have final state (opacity:1)
 }
 
 // === NAVIGATION ===
@@ -670,6 +676,16 @@ function createCascadingSlider(listEl, collectionEl) {
 
     requestAnimationFrame(function () {
         initSlides();
+        // O slider fixa a altura do container em 420px (ver getSizes()), sempre
+        // maior que o clamp() do CSS em telas estreitas — isso muda a altura da
+        // pagina DEPOIS que os ScrollTrigger.refresh() de load/fonts.ready ja
+        // rodaram (initCascadingSlider e chamado na fila idle, depois do load),
+        // deixando os marcadores de todas as secoes abaixo desatualizados. Disparar
+        // o proprio refresh aqui, uma unica vez na montagem inicial, e robusto a
+        // qualquer mudanca futura na ordem/timing do scheduling em initPage().
+        if (typeof ScrollTrigger !== 'undefined') {
+            ScrollTrigger.refresh();
+        }
     });
 
     return {
@@ -788,6 +804,21 @@ function initPortfolioGallery() {
 
         grid.appendChild(card);
     });
+
+    // #portfolioGrid fica vazio no HTML estatico — os cards so existem depois
+    // desta chamada. initPortfolioGallery roda na fila idle (script.js:1934+),
+    // DEPOIS que initServicesReveal/initDifferentialsAnimation/initValuesReveal/
+    // initTestimonialsReveal (itens anteriores da mesma fila) ja criaram seus
+    // ScrollTrigger medindo a pagina SEM a grade do portfolio. Como portfolio
+    // fica acima de services/segments/process/testimonials no DOM (index.html),
+    // adicionar essa altura desloca a posicao real de todas essas secoes,
+    // deixando os marcadores de ScrollTrigger ja criados desatualizados — a
+    // causa raiz de secoes nao revelarem ao rolar ate que o fallback de 1.5s
+    // (initScrollRevealFallback) force a revelacao. Disparar o refresh aqui
+    // corrige a causa, nao so o sintoma.
+    if (typeof ScrollTrigger !== 'undefined') {
+        ScrollTrigger.refresh();
+    }
 
     // --- Back button ---
     backBtn.addEventListener('click', function () {
@@ -1796,6 +1827,13 @@ function initClientsCarousel() {
     track.addEventListener('touchstart', onPointerDown, { passive: true });
     track.addEventListener('touchmove', onPointerMove, { passive: false });
     track.addEventListener('touchend', onPointerUp);
+    // touchcancel: o navegador pode interromper o toque sem disparar touchend
+    // (comum em mobile quando o gesto e resolvido como scroll da pagina em vez
+    // de drag do carrossel). Sem isso, isDragging ficava travado em true para
+    // sempre, congelando o mecanismo de retomada de velocidade (RETURN_SPRING
+    // em animate() so roda quando !isDragging) — o carrossel parava de girar
+    // sozinho depois do primeiro toque ambiguo. Mesmo reset de onPointerUp.
+    track.addEventListener('touchcancel', onPointerUp);
 
     // Prevent text selection while dragging
     track.addEventListener('dragstart', (e) => e.preventDefault());
@@ -1878,30 +1916,89 @@ function initScrollRevealFallback() {
     elements.forEach(el => fallbackObserver.observe(el));
 }
 
+// Roda fn assim que o main thread ficar ocioso, com timeout de seguranca (nao
+// espera para sempre se o thread ficar ocupado). Fallback setTimeout(fn, 0)
+// para navegadores sem requestIdleCallback (Safari).
+function runWhenIdle(fn, timeout) {
+    if (typeof window.requestIdleCallback === 'function') {
+        window.requestIdleCallback(fn, { timeout: timeout || 200 });
+    } else {
+        setTimeout(fn, 0);
+    }
+}
+
+// Roda cada funcao da lista em seu proprio requestIdleCallback, encadeados
+// (a proxima so e agendada depois que a anterior termina) — nao agrupa tudo
+// num unico callback. Uma primeira tentativa fez isso (1 callback grande com
+// ~15 funcoes dentro) e piorou o travamento: sob CPU throttled, o browser
+// atrasa o idle callback ate perto do timeout e entao roda o bloco inteiro de
+// uma vez do mesmo jeito, so que mais tarde — fatiar em callbacks individuais
+// deixa o thread respirar (pintar/avancar o rAF do hero) entre cada funcao.
+function runQueueWhenIdle(fns) {
+    let i = 0;
+    function next() {
+        if (i >= fns.length) return;
+        const fn = fns[i++];
+        runWhenIdle(() => {
+            fn();
+            next();
+        });
+    }
+    next();
+}
+
 // === INIT ALL ===
 function initPage() {
-    createParticles();
+    // Critico — a unica coisa visivel no primeiro frame e o hero. Mantido
+    // sincrono e o mais enxuto possivel para o GSAP ticker (requestAnimationFrame)
+    // conseguir avancar a timeline de entrada sem competir por CPU.
     initHeroVideoBackground();
     initHeroParallax();
-    initHeroEntrance();
     initHeroAnimations();
     initNavigation();
-    initScrollReveals();
-    initCounters();
-    initServicesReveal();
-    initDifferentialsAnimation();
-    initSegmentsTabs();
-    initValuesReveal();
-    initTestimonialsReveal();
-    initServicesInteraction();
-    initButtonRipple();
-    initContactForm();
-    initCustomSelect();
-    initServiceGridAdjust();
-    initCascadingSlider();
-    initPortfolioGallery();
-    initClientsCarousel();
-    initScrollRevealFallback();
+    initButtonRipple(); // inclui o botao do hero — precisa estar pronto pra clique imediato
+
+    // Nao-critico — tudo abaixo da dobra (ScrollTrigger de secoes ainda fora da
+    // tela, carrosseis, formulario, particulas decorativas do hero). Antes,
+    // tudo isso rodava sincrono ANTES do primeiro frame do hero conseguir
+    // pintar, produzindo uma long task de ~400ms (medido) que travava a
+    // animacao de entrada no meio. Adiado para depois que o thread ficar
+    // ocioso (ou no maximo 200ms), sem alterar nenhuma logica interna das
+    // funcoes — so o momento em que rodam.
+    //
+    // O inicio da fila em si (nao cada item dentro dela) so acontece depois
+    // que a timeline de entrada do hero termina (onComplete) — antes disso,
+    // mesmo respeitando "idle", o timeout de seguranca do requestIdleCallback
+    // (200ms) podia forcar uma funcao nao-critica a rodar competindo por CPU
+    // bem no meio da animacao do hero em device mobile mais lento, causando
+    // o titulo "pular" em vez de animar suave. onComplete e a garantia real
+    // de que o hero ja terminou. Fallback de 3.5s cobre o caso da timeline
+    // nunca completar (ex: usuario sai da pagina, erro).
+    let queueStarted = false;
+    function startIdleQueue() {
+        if (queueStarted) return;
+        queueStarted = true;
+        runQueueWhenIdle([
+            createParticles,
+            initScrollReveals,
+            initCounters,
+            initServicesReveal,
+            initDifferentialsAnimation,
+            initSegmentsTabs,
+            initValuesReveal,
+            initTestimonialsReveal,
+            initServicesInteraction,
+            initContactForm,
+            initCustomSelect,
+            initServiceGridAdjust,
+            initCascadingSlider,
+            initPortfolioGallery,
+            initClientsCarousel,
+            initScrollRevealFallback,
+        ]);
+    }
+    initHeroEntrance(startIdleQueue);
+    setTimeout(startIdleQueue, 3500);
 
     // ScrollTrigger refresh on resize
     window.addEventListener('resize', () => ScrollTrigger.refresh());

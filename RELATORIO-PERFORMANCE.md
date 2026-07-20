@@ -793,3 +793,131 @@ Todas as 4 correções do Passo 5 implementadas e validadas nesta rodada:
 4. `delay: 0.4 → 0.15` na timeline de entrada do hero.
 
 Testes: 107/107. Layout do hero validado pixel-idêntico. Zero erros de console em 10 execuções sob rede lenta simulada.
+
+## Contenção de main thread durante a animação do hero (Passo 0) + redução da timeline (Passo 1)
+
+> Rodada seguinte: mesmo com o poster aparecendo imediatamente (fix anterior confirmado funcionando pelo usuário), sobrava a queixa de que a própria animação do hero soluça/trava durante a execução — sintoma diferente de "atraso antes de começar". Investigado com evidência real (Puppeteer + CDP Performance/longtask + patch de `requestAnimationFrame`), não só leitura de código.
+
+### Passo 0 — reordenar `initPage()` para tirar trabalho síncrono do caminho do hero
+
+**Confirmado**: `initHeroEntrance()` roda antes de todas as outras inicializações (partículas, ~37 instâncias de ScrollTrigger de seções fora da tela, carrossel de clientes), todas síncronas, sem `setTimeout`/`requestIdleCallback` entre elas. Medido via `PerformanceObserver` (longtask): **long task de 415ms** logo em t=168ms — exatamente o bloco de `initPage()` — com gaps de frame de rAF de até 233ms nessa janela.
+
+**Breakdown por função** (instrumentado): `initScrollReveals` 60ms, `initHeroEntrance` 37ms, `initClientsCarousel` 27ms, `initValuesReveal` 14ms, resto somando ~54ms — **192ms de trabalho síncrono, nenhum dele visível no primeiro frame**.
+
+**Implementação**: `initPage()` dividido em dois grupos. Crítico (mantido síncrono): `initHeroVideoBackground`, `initHeroParallax`, `initHeroEntrance`, `initHeroAnimations`, `initNavigation`, `initButtonRipple` (inclui o botão do hero — precisa estar clicável de imediato). Não-crítico (tudo abaixo da dobra: partículas, os `ScrollTrigger.batch()`/individuais, formulário, os 3 carrosséis/galeria): adiado.
+
+**Tentativa 1 (revertida)**: agrupar todo o não-crítico em **um único** `requestIdleCallback` piorou a situação — sob CPU throttled, o navegador atrasa o callback até perto do timeout (200ms) e aí roda o bloco inteiro de uma vez do mesmo jeito, só mais tarde. Medido: long tasks subiram para ~900ms em média, gaps de até 2,6s.
+
+**Tentativa 2 (implementada)**: `runQueueWhenIdle()` — cada função não-crítica em seu **próprio** `requestIdleCallback`, encadeados (a próxima só é agendada depois que a anterior termina), com fallback `setTimeout(fn, 0)` para navegadores sem `requestIdleCallback` (Safari). `initClientsCarousel`/`initCascadingSlider`/`initPortfolioGallery` tiveram só o **momento** de inicialização adiado — nenhuma lógica interna alterada.
+
+### Achado metodológico — minha primeira medição de "stutter" estava contaminada
+
+Comparando antes/depois com a métrica original (`rAF gaps > 30ms` na janela toda), o resultado pareceu neutro/pior (~2,6s de "gap" em ambos). Investigado: essa métrica contava como stutter **qualquer** intervalo sem frame, incluindo o período **depois** que a animação do hero já tinha terminado naturalmente (nada mais pedindo frames não é um travamento). Corrigido para medir só durante a janela em que o título está de fato em transição (opacity entre 0 e 1):
+
+| Métrica (CPU 4x, 10 execuções) | Antes do Passo 0 | Depois do Passo 0 |
+|---|---|---|
+| Título começa a animar (média) | ~4,4s | ~4,1s |
+| Maior stall real *durante* a animação ativa | 29,4ms | 41,3ms |
+
+**Resultado honesto**: o Passo 0 antecipa o início da animação em ~200-300ms de forma consistente (ganho real), mas **não mostrou evidência clara de eliminar stutter durante a animação** nesta simulação — ambos os valores (29-41ms) já eram pequenos, nada como as long tasks de 400-900ms medidas no load. Reportado ao usuário antes de prosseguir; ele optou por seguir para o Passo 1 mesmo assim.
+
+### Passo 1 — timeline reduzida (~2,85s → ~1,5s)
+
+Durations e overlaps reduzidos pela metade, mantendo a mesma estrutura de cascata (badge → 3 linhas do título → subtítulo → botões):
+
+| Elemento | Antes (`duration`, overlap) | Depois |
+|---|---|---|
+| badge | 0.7s | 0.35s |
+| título linha 1 | 0.9s, `-=0.3` | 0.45s, `-=0.15` |
+| título linha 2 | 0.9s, `-=0.5` | 0.45s, `-=0.25` |
+| título linha 3 | 0.9s, `-=0.5` | 0.45s, `-=0.25` |
+| subtítulo | 0.7s, `-=0.5` | 0.35s, `-=0.25` |
+| botões | 0.7s, `-=0.3` | 0.35s, `-=0.15` |
+
+Total: delay 0.15s + timeline ≈ 1,5s (era 2,85s).
+
+### Validação — armadilha do ambiente de teste headless
+
+Uma tentativa de validação visual dinâmica (Puppeteer, sem CPU throttle) mostrou o `gsap.ticker.frame` **travado** em um número fixo (4-8) por segundos inteiros, com elementos parados em opacidades intermediárias — sintoma aparentemente idêntico ao "trava no meio" relatado. Investigado antes de assumir qualquer coisa: **o mesmo congelamento reproduz de forma idêntica na versão anterior ao Passo 0/1 (HEAD antes desta rodada)**, e `script.js` não toca em `gsap.ticker`/`lagSmoothing` em lugar nenhum (confirmado por grep). Conclusão: é um artefato do Chrome headless neste sandbox (sem compositor/display real, `requestAnimationFrame` executando a ~2-3fps de forma intermitente), não uma regressão desta rodada — mas também significa que a validação visual dinâmica direta neste ambiente específico não é confiável no modo "sem throttle".
+
+**Validação que funcionou** (mesma metodologia CPU-4x-throttle das rodadas anteriores, que já tinha se mostrado consistente): amostragem fina da opacidade dos 6 elementos ao longo do carregamento —
+
+```
+badge inicia ~2837ms → 1  (opacity 1 em 3312ms)
+título linha 1 → 1 em 3493ms
+título linha 2 → 1 em 3656ms
+título linha 3 → 1 em 3821ms
+subtítulo      → 1 em 3979ms
+botões         → 1 em 4318ms
+```
+
+Cascata completa na ordem correta, do início ao fim em **~1,48s** — bate com os ~1,5s calculados. Efeito visual da cascata preservado, só mais rápido.
+
+### Confirmação do carrossel
+
+`initCascadingSlider`, `initPortfolioGallery` e `initClientsCarousel` agora inicializam de forma assíncrona (dentro da fila de `requestIdleCallback`), sem nenhuma mudança de lógica interna. Isso quebrou `tests/unit/slider.test.js`, que assumia inicialização síncrona logo após `require('../../script.js')` — corrigido usando `jest.useFakeTimers()` + `jest.runOnlyPendingTimers()` em loop limitado (bounded, não `runAllTimers()` — o loop de `requestAnimationFrame` do clients carousel se reagenda indefinidamente e abortaria com "infinite loop" se não fosse limitado). Ajuste de infraestrutura de teste, nenhuma alteração no carrossel em si.
+
+**`npm test` → 107/107 passando** (65 de regressão do carrossel inclusos, confirmando que nada no carrossel quebrou).
+
+## Correções: scheduling do hero, ordem cascading slider, touchcancel carrossel clientes
+
+> Data: 20/07/2026. Diagnóstico prévio em `audit/diagnostico-mobile-hero-secao-carrossel.md` (aprovado pelo usuário). Três correções implementadas e testadas isoladamente, nesta ordem. Não commitado/enviado — aguardando aprovação final do usuário, incluindo confirmação explícita sobre a criação de arquivos de teste novos (`tests/unit/init-scheduling.test.js`, `tests/unit/clients-carousel.test.js`) além dos já existentes.
+
+### Correção 1 — Scheduling do hero: fila idle só começa após `onComplete` da timeline
+
+**Problema:** `runQueueWhenIdle` (item 1934 antes desta correção) começava a rodar quase imediatamente após a parte síncrona de `initPage()`, via `requestIdleCallback` com `timeout: 200`. Em CPU mobile mais lenta, esse timeout podia forçar uma função não-crítica a rodar **durante** a janela de animação do hero (delay 0.15s + ~1.5s de cascata), competindo por main thread exatamente quando o GSAP `ticker` precisava de frames livres — causando o título "pular" em vez de animar suave.
+
+**Correção aplicada** (`script.js`, `initHeroEntrance`/`initPage`):
+- `initHeroEntrance(onDone)` agora aceita um callback e o registra como `onComplete` da timeline GSAP (`gsap.timeline({ ..., onComplete: onDone })`). Se o hero não estiver visível no viewport (branch `else`, elementos já em opacity:1), `onDone()` é chamado imediatamente — nada a esperar.
+- `initPage()` só chama `runQueueWhenIdle([...])` dentro de `startIdleQueue()`, disparado por `initHeroEntrance(startIdleQueue)`. Um `setTimeout(startIdleQueue, 3500)` cobre o caso da timeline nunca completar (usuário sai da página, erro); uma flag `queueStarted` garante que a fila só inicia uma vez, não importa qual gatilho vença.
+- Nenhuma lógica interna das 16 funções da fila foi alterada — só o momento em que a fila **começa**.
+
+**Trade-off documentado:** isso atrasa o início absoluto da fila (antes: ~200ms após `DOMContentLoaded`; agora: ~1.65s, tempo da animação do hero, ou até 3.5s no pior caso) — o que também atrasa quando `initPortfolioGallery()` roda e, por consequência, quando a Correção 2 (abaixo) dispara seu `ScrollTrigger.refresh()`. Isso não piora a Correção 2 em si (a distância relativa entre os itens da fila não muda, só o ponto de partida), mas significa que o tempo total até as seções abaixo da dobra ficarem corretas fica um pouco maior em troca de uma entrada do hero mais suave. O fallback de 1.5s (`initScrollRevealFallback`) continua ativo como rede de segurança adicional.
+
+**Testes** (`tests/unit/init-scheduling.test.js`):
+- `idle queue (e.g. cascading slider) does not start before hero entrance onComplete fires` — usa um mock de `gsap.timeline` que captura o `onComplete` sem invocá-lo; confirma que `createParticles` (primeiro item da fila) não rodou 500ms depois, e que roda assim que o `onComplete` capturado é chamado manualmente.
+- `3.5s fallback starts the idle queue even if hero onComplete never fires` — mock que nunca invoca `onComplete`; confirma que a fila inicia mesmo assim via fallback.
+- Ambos falham no código anterior à correção (`initHeroEntrance()` sem parâmetro, fila chamada incondicionalmente) — confirmado revertendo `script.js` temporariamente e rodando os testes antes de restaurar.
+
+**Validação real (CPU 4x throttle, 10 execuções)** — não executável neste sandbox (sem Chrome DevTools/Safari real disponível, mesma limitação já registrada nas rodadas anteriores deste relatório). Passo a passo para o usuário validar no dispositivo real está na seção "Como validar no Safari real do iPhone" acima; o critério de sucesso é a cascata de opacidade do hero (badge → título → subtítulo → botões) completar sem saltos, amostrando opacidade a cada ~50-100ms como feito na seção "Carregamento inicial" acima.
+
+### Correção 2 — Ordem entre criação de ScrollTrigger e mutações de altura pós-load
+
+**Descoberta durante a implementação — corrige a hipótese do diagnóstico original:** o diagnóstico aprovado apontava `initCascadingSlider()` (redimensionamento 280→420px de `.cascading-slider-collection`) como causa do Sintoma 2. Ao escrever o teste de regressão, descobri que essa hipótese estava **errada**: os elementos `.cascading-slide` não existem no HTML estático (`grep` confirmou zero ocorrências em `index.html`) — eles só são criados quando o usuário abre um projeto do portfólio (`openProject()`). `initCascadingSlider()` (`script.js`) tem um guard (`if (!list || list.querySelectorAll('.cascading-slide').length === 0) return;`) que **sempre retorna cedo no carregamento da página** — `createCascadingSlider()` nunca executa no load, então a mudança de altura 280→420px nunca acontece nesse momento. A correção original (`ScrollTrigger.refresh()` dentro do `requestAnimationFrame` de `createCascadingSlider`) foi mantida — é inofensiva e correta para quando o visualizador do portfólio realmente abre — mas não resolve o Sintoma 2 sozinha.
+
+**Causa real, confirmada por leitura de `index.html`:** `#portfolioGrid` também está **vazio no HTML estático** e só é populado por `initPortfolioGallery()` (item 14 de 16 na fila idle), que roda **depois** de `initServicesReveal`(4), `initDifferentialsAnimation`(5), `initValuesReveal`(7) e `initTestimonialsReveal`(8) — todos itens anteriores na mesma fila, que já criaram seus `ScrollTrigger` medindo a página **sem** a grade do portfólio. A ordem das seções no DOM (`index.html`) é: `hero → about → clients → differentials → portfolio → services → segments → process → testimonials → faq → contact`. Como o portfólio fica **acima** de services/segments/process/testimonials, popular sua grade (6 cards, `aspect-ratio: 16/10` cada) empurra a posição real de todas essas seções para baixo — invalidando os marcadores de `ScrollTrigger` já calculados para elas. Nenhum `ScrollTrigger.refresh()` roda depois disso, então essas seções ficam com marcadores obsoletos até o fallback de 1.5s (`initScrollRevealFallback`) forçar a revelação — exatamente o padrão "corta, depois de um tempo tudo aparece" relatado.
+
+**Correção aplicada** (`script.js`, `initPortfolioGallery`): logo após o `forEach` que cria e insere os `.portfolio-card` em `grid`, adicionado `if (typeof ScrollTrigger !== 'undefined') { ScrollTrigger.refresh(); }`. Corrige a causa (marcadores desatualizados) no momento exato em que a página realmente muda de altura, em vez de depender só do fallback.
+
+**Testes** (`tests/unit/init-scheduling.test.js`, describe `Portfolio grid population -> ScrollTrigger.refresh on mount`): confirma que `#portfolioGrid` foi populado e que `ScrollTrigger.refresh()` foi chamado depois. Falha no código anterior à correção (confirmado revertendo `script.js` e rodando o teste).
+
+**Validação real (10 execuções)** — mesma limitação de ambiente; critério de sucesso: rolar a página em mobile real (ou emulado com throttle) e confirmar que "Sobre Nós", diferenciais, serviços, segmentos, processo e depoimentos aparecem completos ao alcançar cada seção, sem depender do atraso de 1.5s do fallback (idealmente, a revelação deve coincidir com o momento em que o elemento entra na viewport, não 1.5s depois).
+
+### Correção 3 — `touchcancel` no carrossel de clientes
+
+**Correção aplicada** (`script.js`, `initClientsCarousel`): adicionado `track.addEventListener('touchcancel', onPointerUp);` junto aos listeners existentes de `touchstart`/`touchmove`/`touchend`. Reutiliza `onPointerUp` (mesma função do `touchend`) — já reseta `isDragging = false` e recalcula `velocity`/`baseSpeed` a partir do `dragDelta` acumulado até o cancelamento, sem necessidade de lógica nova.
+
+**Testes** (`tests/unit/clients-carousel.test.js`):
+- `carousel element exists and auto-rotate loop is active` — smoke test do loop de `requestAnimationFrame`.
+- `velocity resumes converging to baseSpeed after a gesture is interrupted by touchcancel` — o teste mais importante: simula (1) um drag real via `touchend` que define `velocity = -22`/`baseSpeed = -6.6` por momentum; (2) apenas 2 frames de convergência (spring ainda longe do alvo); (3) um segundo gesto ambíguo que é cancelado via `touchcancel` sem `touchend`; (4) 250 frames adicionais. Calcula a velocidade por frame (`Δtranslate3d`) resultante e confirma que converge para a faixa esperada (~-0,2, valor de equilíbrio analítico considerando o `FRICTION` aplicado a cada frame). **Sem o fix, este teste falha**: a velocidade fica congelada em ~-19 (o valor de quando o segundo toque começou, antes de qualquer convergência), porque `isDragging` nunca volta a `false` e o bloco de correção (`RETURN_SPRING`/`FRICTION`) para de rodar — confirmado revertendo `script.js` e rodando o teste antes de restaurar.
+
+**Interferência no carregamento:** já medida como baixa no diagnóstico (~27ms de setup, loop leve e gateado por `IntersectionObserver`) — esta correção não muda esse cálculo, pois não adiciona nenhum trabalho ao setup ou ao loop, só um listener a mais que só executa em caso de cancelamento de gesto.
+
+### Validação final
+
+- **`npm test` → 112/112 passando** (107 anteriores + 5 novos: 2 em `clients-carousel.test.js`, 3 em `init-scheduling.test.js`). `65/65` testes de regressão do carrossel (`slider.regression.test.js`) inclusos e passando, confirmando que a estrutura/proporções/comportamento aprovados do carrossel cascata não foram alterados.
+- `script.min.js` regenerado via `npx terser script.js -o script.min.js -c -m` e verificado com `node scripts/check-min-freshness.js` (OK).
+- Cada um dos 5 novos testes foi confirmado como guarda de regressão real: revertido `script.js` temporariamente (`git stash`) e reexecutado o teste correspondente, confirmando falha sem a correção, antes de restaurar e confirmar sucesso com a correção presente.
+- **Validação visual em dispositivo real (10 execuções para Sintomas 1 e 2, fluxo completo dos três sintomas juntos) não foi possível neste ambiente** — mesma limitação já registrada nas rodadas anteriores deste relatório (sem Chrome DevTools/Safari real no sandbox de CLI). Pendente para o usuário: passo a passo de validação no Safari real do iPhone já documentado na seção "Mobile: travamento por sobrecarga de main thread" acima serve para os três sintomas; para o carrossel de clientes especificamente, o teste manual é: tocar no carrossel perto do fim da página como se fosse rolar (gesto ambíguo), soltar o dedo fora da área ou deixar o gesto virar scroll da página, e confirmar que o carrossel volta a girar sozinho pouco depois — sem precisar de outro toque completo (start+end) para "destravar".
+
+### Resumo do que mudou desde o diagnóstico aprovado
+
+| Item | Diagnóstico original | Confirmado na implementação |
+|---|---|---|
+| Sintoma 1 | Fix do Passo 0 presente mas insuficiente; `timeout: 200` força execução durante a animação do hero | Confirmado — corrigido via `onComplete` da timeline + fallback de 3.5s |
+| Sintoma 2 | `initCascadingSlider()` redimensiona 280→420px depois dos refreshes | **Hipótese errada** — `.cascading-slide` não existe no load, `initCascadingSlider()` sempre retorna cedo. Causa real: `initPortfolioGallery()` popula `#portfolioGrid` (vazio no HTML estático) depois que ScrollTriggers de seções abaixo do portfólio já foram criados, sem refresh subsequente |
+| Sintoma 3 | Falta `touchcancel`, `isDragging` trava em `true` | Confirmado — teste de regressão reproduz o congelamento de velocidade sem o fix |
+
+Nenhuma alteração foi commitada ou enviada. Aguardando aprovação final do usuário.
+
+**Não commitado nem enviado — aguardando aprovação.**
