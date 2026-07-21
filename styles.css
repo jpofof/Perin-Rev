@@ -192,6 +192,18 @@ h6 {
     padding: 12px 0;
 }
 
+.premium-navigation.scrolled .nav-link {
+    color: var(--color-text-secondary);
+}
+
+.premium-navigation.scrolled .nav-link:hover {
+    color: var(--color-text-primary);
+}
+
+.premium-navigation.scrolled .nav-toggle-line {
+    background: var(--color-text-primary);
+}
+
 .nav-container {
     max-width: var(--container-max);
     margin: 0 auto;
@@ -234,7 +246,7 @@ h6 {
     font-family: var(--font-secondary);
     font-size: 14px;
     font-weight: 500;
-    color: var(--color-text-secondary);
+    color: var(--cor-branco-gelo);
     transition: color var(--transition-fast);
     position: relative;
 }
@@ -251,7 +263,7 @@ h6 {
 }
 
 .nav-link:hover {
-    color: var(--color-text-primary);
+    color: var(--cor-verde-brilhante);
 }
 
 .nav-link:hover::after {
@@ -292,7 +304,7 @@ h6 {
 .nav-toggle-line {
     width: 28px;
     height: 2px;
-    background: var(--color-text-primary);
+    background: var(--cor-branco-gelo);
     border-radius: 2px;
     transition: all var(--transition-fast);
 }
