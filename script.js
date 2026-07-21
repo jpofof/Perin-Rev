@@ -2248,14 +2248,48 @@ function initClientsCarousel() {
     // Pausa o loop de rAF quando o carrossel sai da viewport — este carrossel
     // fica no fim da página e, sem isso, o loop rodava para sempre desde o
     // load, mesmo com o usuário lendo o hero no topo.
+    //
+    // Observa #clientsStage (contêiner fixo, sem transform, do tamanho real da
+    // faixa visível) em vez de #clientsTrack. Track é 3x mais largo que a área
+    // visível (clones para o loop infinito) e tem seu translate3d reescrito a
+    // cada frame pelo próprio loop que este observer controla — observar um
+    // alvo que se transforma continuamente enquanto o observer decide se ele
+    // deve continuar se transformando é uma referência circular: o navegador
+    // pode entregar uma leitura isIntersecting:false espúria mesmo com o
+    // elemento comprovadamente visível (boundingTop idêntico ao instante
+    // anterior), interrompendo o autoplay para sempre. Confirmado via teste
+    // automatizado (audit/carrossel-clientes-mobile.md) — stage, por ser
+    // estático, não sofre esse problema.
+    const visibilityTarget = document.getElementById('clientsStage') || track;
     if ('IntersectionObserver' in window) {
+        // Rede de segurança extra: debounce por tempo (não por contagem de
+        // callbacks) antes de parar. Uma saída real de viewport normalmente
+        // dispara UMA única notificação de isIntersecting:false — exigir 2
+        // callbacks consecutivos nunca seria satisfeito nesse caso e quebraria
+        // o stop() legítimo (confirmado em teste). Em vez disso, adia o
+        // stop() por STOP_DEBOUNCE_MS; se uma notificação isIntersecting:true
+        // chegar antes do timeout disparar (o padrão da leitura espúria
+        // original: false seguido de true poucos ms depois), o stop() pendente
+        // é cancelado. start() continua imediato, sem debounce.
+        const STOP_DEBOUNCE_MS = 100;
+        let pendingStopTimer = null;
         const visibilityObserver = new IntersectionObserver((entries) => {
             entries.forEach((entry) => {
-                if (entry.isIntersecting) start();
-                else stop();
+                if (entry.isIntersecting) {
+                    if (pendingStopTimer) {
+                        clearTimeout(pendingStopTimer);
+                        pendingStopTimer = null;
+                    }
+                    start();
+                } else if (!pendingStopTimer) {
+                    pendingStopTimer = setTimeout(() => {
+                        pendingStopTimer = null;
+                        stop();
+                    }, STOP_DEBOUNCE_MS);
+                }
             });
         }, { threshold: 0 });
-        visibilityObserver.observe(track);
+        visibilityObserver.observe(visibilityTarget);
     } else {
         start();
     }

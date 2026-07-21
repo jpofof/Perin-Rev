@@ -1059,3 +1059,9 @@ Toda a infraestrutura de diagnóstico `?isolate=...` (`no-video`, `no-gsap`, `no
 - **Teste definitivo pendente:** usuário validar no iPhone real, sem nenhum `?isolate=`/`?debug=`, usando o site normalmente por 30-40s tentando reproduzir tudo que já causou travamento antes.
 
 Documentação completa da investigação (todos os isolamentos, dados brutos capturados, tabelas de validação por etapa) em `audit/fase-perf-real.md` e `audit/isolamento-query-params.md`.
+
+## Carrossel de clientes parado em mobile — causa raiz e correção
+
+**Data:** 21/07/2026. Diagnóstico e correção completos em `audit/carrossel-clientes-mobile.md`.
+
+Resumo: o `IntersectionObserver` que pausa/retoma o `requestAnimationFrame` do carrossel observava `#clientsTrack` — o próprio elemento que o loop transforma (`translate3d`) a cada frame. Isso gerava, ocasionalmente, uma leitura espúria `isIntersecting: false` (elemento sem ter saído da tela), disparando `stop()` e travando o autoplay para sempre. Reproduzido de forma determinística via Puppeteer (Chrome, não exclusivo de Safari). Corrigido observando `#clientsStage` (contêiner fixo já existente no HTML) em vez do elemento em movimento, mais um debounce de 100ms antes de `stop()` como rede de segurança adicional. 112 testes passando; validado que o carrossel gira continuamente ao entrar na viewport (mobile e desktop) e ainda para corretamente ao sair de fato da tela.
