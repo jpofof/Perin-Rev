@@ -244,3 +244,23 @@ https://perinconstrucoes.netlify.app/?isolate=no-animation-only
 - Se **ambos travarem**: a causa é a combinação/quantidade das 3 camadas em conjunto, não uma característica isolada — a correção provável é reduzir a complexidade geral (menos elementos, ou desligar essas camadas em mobile, como já foi feito com o vídeo).
 
 Nenhuma correção definitiva foi aplicada ainda — depende do resultado desses dois testes.
+
+---
+
+## Atualização final — causa raiz confirmada, correção aplicada, infraestrutura removida (21/07/2026)
+
+### Resultado
+
+Confirmado no iPhone real: **`?isolate=no-blur-only` resolve o travamento por completo**, sozinho, mantendo a animação (CSS `floatShape` + parallax do mouse) rodando normalmente. Causa raiz isolada: `filter: blur(100px)` nos 3 `.light-spot`.
+
+### Correção definitiva
+
+`styles.css`, regra `.light-spot`: `filter: blur(100px)` → `filter: blur(24px)`, aplicada **permanentemente** (sem condicional, válida para mobile e desktop). Resumo completo da investigação (todas as etapas, do heartbeat até esta conclusão) em `RELATORIO-PERFORMANCE.md`, seção "Travamento recorrente no Safari iOS — causa raiz e correção".
+
+### Infraestrutura de `?isolate=...` removida
+
+Toda a infraestrutura descrita neste documento (`__ISOLATE`, `__gsapDisabled()`, `__scrollTriggerDisabled()`, e todos os guards em `initHeroVideoBackground`, `createParticles`, `initHeroEntrance`, `initButtonRipple`, `initScrollReveals`, `batchReveal`, `initCounters`, `initScrollRevealFallback`, `initPortfolioGallery`, `initCascadingSlider`, `initClientsCarousel`, `initHeroParallax`, `initPage`) foi removida de `script.js`, já tendo cumprido seu propósito de diagnóstico. As regras CSS `.isolate-no-blur-only`/`.isolate-no-animation-only` também foram removidas de `styles.css`. Nenhuma das 9 flags (`no-video`, `no-gsap`, `no-particles`, `no-carousel-clients`, `no-scrolltrigger-only`, `no-geometries`, `no-blur-only`, `no-animation-only`, `minimal`) está mais disponível.
+
+A instrumentação `?debug=scroll`/`?debug=perf` (Fase 1/2, documentada em `audit/fase-perf-real.md`) foi **mantida**, por ser útil para validações futuras.
+
+Este documento (`audit/isolamento-query-params.md`) permanece como registro histórico da investigação.

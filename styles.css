@@ -510,14 +510,6 @@ h6 {
     }
 }
 
-/* ISOLAMENTO TEMPORARIO — ?isolate=no-animation-only (ver audit/isolamento-query-params.md).
-   Congela a animacao CSS das formas geometricas (o parallax do mouse via JS
-   e desativado separadamente em initHeroParallax()), mantendo blur/opacidade
-   originais intactos — formas paradas, visualmente identicas ao normal. */
-.isolate-no-animation-only .geometry-shape {
-    animation: none;
-}
-
 .hero-lighting-layer {
     position: absolute;
     top: 0;
@@ -531,17 +523,15 @@ h6 {
 .light-spot {
     position: absolute;
     border-radius: 50%;
-    filter: blur(100px);
+    /* Reduzido de blur(100px) — causa raiz confirmada de travamento severo e
+       recorrente no Safari/WebKit iOS (compositing de blur pesado). Testado
+       no dispositivo real: blur(24px) preserva o efeito de "glow" suave
+       pretendido no design sem o custo de composição do valor original.
+       Aplicado permanentemente (mobile e desktop) — sem desvantagem
+       conhecida. Ver audit/isolamento-query-params.md. */
+    filter: blur(24px);
     opacity: 0.1;
     transition: transform var(--transition-fast);
-}
-
-/* ISOLAMENTO TEMPORARIO — ?isolate=no-blur-only (ver audit/isolamento-query-params.md).
-   Remove especificamente o filter: blur(100px) dos light-spot, mantendo
-   hero-grid/hero-geometries/hero-lighting presentes e animando normalmente
-   (CSS floatShape + parallax do mouse intactos). */
-.isolate-no-blur-only .light-spot {
-    filter: none;
 }
 
 .light-spot-1 {
