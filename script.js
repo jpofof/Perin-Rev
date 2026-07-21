@@ -582,6 +582,10 @@ function initHeroParallax() {
     const geometries = document.querySelector('.hero-geometries');
     const lighting = document.querySelector('.hero-lighting-layer');
     const grid = document.querySelector('.hero-grid-layer');
+    // ISOLAMENTO no-geometries — os elementos ja foram removidos do DOM em
+    // initPage() antes desta funcao rodar; nada a fazer aqui alem de sair
+    // cedo (evita lancar ao tentar ler .style/.querySelectorAll de null).
+    if (!geometries || !lighting || !grid) return;
 
     document.addEventListener('mousemove', (e) => {
         const x = (e.clientX / window.innerWidth - 0.5) * 2;
@@ -2472,6 +2476,20 @@ function runBatchWhenIdle(fns) {
 
 // === INIT ALL ===
 function initPage() {
+    // ISOLAMENTO no-geometries — remove a grade de fundo, as formas SVG e as
+    // luzes com blur do hero ANTES de qualquer init rodar, mantendo intacta a
+    // timeline de entrada GSAP do texto/badge/subtitulo/botoes. Diferente de
+    // no-gsap (que desliga a timeline inteira), este isolamento testa
+    // especificamente se essas camadas — que animam via CSS puro
+    // (@keyframes floatShape, independente do GSAP) e usam filter: blur(100px)
+    // nos light-spots — sao a fonte do travamento, mesmo com a timeline do
+    // hero rodando normalmente. Ver audit/isolamento-query-params.md.
+    if (__ISOLATE['no-geometries']) {
+        document.querySelectorAll('#heroGrid, #heroGeometries, #heroLighting').forEach(function (el) {
+            el.remove();
+        });
+    }
+
     // Critico — a unica coisa visivel no primeiro frame e o hero. Mantido
     // sincrono e o mais enxuto possivel para o GSAP ticker (requestAnimationFrame)
     // conseguir avancar a timeline de entrada sem competir por CPU.

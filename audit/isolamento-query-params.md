@@ -105,3 +105,76 @@ https://perinconstrucoes.netlify.app/?isolate=minimal
 ## Remoção futura
 
 Assim que a causa do travamento estiver confirmada, remover o bloco `__ISOLATE`/`__gsapDisabled()`/`__scrollTriggerDisabled()` e todos os guards associados listados acima, e regenerar `script.min.js`.
+
+---
+
+## Atualização — `no-geometries` (21/07/2026)
+
+### Dado real que motivou este passo
+
+Resultado dos testes anteriores no iPhone real:
+
+| Isolamento | Resultado |
+|---|---|
+| `no-video` | travamento idêntico ao normal — **não ajuda** |
+| `no-particles` | travamento idêntico ao normal — **não ajuda** |
+| `no-scrolltrigger-only` (mantém a timeline, desliga só o ScrollTrigger) | melhora **bem pouco** |
+| `no-gsap` (desliga a timeline de entrada inteira) | **quase elimina** o travamento |
+
+A diferença entre `no-gsap` e `no-scrolltrigger-only` aponta a **própria execução da timeline de entrada do hero** como o fator determinante, não o ScrollTrigger/scroll. Suspeita levantada: as formas geométricas SVG do hero (`hero-geometries`, `hero-grid`, `hero-lighting`), que segundo hipótese inicial seriam animadas *dentro* dessa timeline junto com o texto.
+
+### Confirmação dos nomes exatos no código atual
+
+Inspeção de `index.html`/`styles.css` confirma os IDs/classes:
+
+- `#heroGrid` (`.hero-grid-layer`) — grade de fundo (linear-gradient, sem animação).
+- `#heroGeometries` (`.hero-geometries`) — contém 3 `<div class="geometry-shape geometry-shape-N">` com `<svg>` inline (retângulos/polígonos com stroke).
+- `#heroLighting` (`.hero-lighting-layer`) — contém 3 `<div class="light-spot light-spot-N">`.
+
+**Correção importante à hipótese original:** essas três camadas **não são animadas pela timeline GSAP de entrada** (`initHeroEntrance()`, `script.js`) — essa timeline só anima `.hero-badge`, `.hero-title-line-*`, `.hero-subtitle`, `.hero-actions`. As camadas geométricas são animadas por dois mecanismos **independentes de GSAP**:
+
+1. **`.geometry-shape-1/2/3`** — `animation: floatShape 15-25s ease-in-out infinite` **em CSS puro** (`styles.css`, `@keyframes floatShape`), rodando o tempo todo, sem relação com a timeline de entrada nem com `initHeroEntrance()`.
+2. **Parallax do mouse (`initHeroParallax()`, `script.js`)** — também **não usa GSAP**: um listener `mousemove` que escreve `style.transform` direto em `.hero-geometries`, `.hero-grid-layer` e nos 3 `.light-spot` a cada movimento do mouse.
+
+Ou seja: essas camadas continuam renderizando e animando **normalmente mesmo sob `?isolate=no-gsap`** (que só desliga chamadas `gsap.*`) — e mesmo assim `no-gsap` quase eliminou o travamento. Isso não descarta a hipótese das geometrias, mas muda o que ela precisa provar: se `no-geometries` (que remove essas camadas mas **mantém** a timeline GSAP do texto rodando normalmente) também resolver bem, a explicação mais provável é que o **ticker do GSAP (rAF) competindo por main thread durante a timeline de entrada COM as camadas de geometria/blur rodando ao mesmo tempo** é que gera o travamento — não uma dessas partes isoladamente, mas a soma/contenção entre elas no Safari. Se `no-geometries` não ajudar, a suspeita se desloca de volta para a timeline GSAP do próprio texto/badge, ou o parallax do mouse.
+
+### Achado separado: `filter: blur(100px)` estático nos light-spots
+
+Independente de qualquer animação, os 3 `.light-spot` (`styles.css`) têm `filter: blur(100px)` aplicado via CSS — um blur pesado (raio de 100px) sobre elementos de até 600×600px, conhecido por ser significativamente mais caro no compositor do WebKit/Safari do que no Chrome/Blink, **mesmo parado, sem nenhuma animação**. Isso é uma fonte de custo potencialmente separada da animação em si (CSS `floatShape` + parallax do mouse). `no-geometries` remove os light-spots inteiramente, então não isola "blur estático" de "geometrias animadas" — se o resultado for positivo, ainda não sabemos qual das duas causas (o blur em si, ou a animação) pesa mais. Registrado aqui para decidir um teste futuro mais granular (ex.: um isolamento que mantém os light-spots visíveis mas sem `filter: blur()`, ou sem a animação CSS `floatShape` mas com o blur) **se `no-geometries` confirmar a hipótese geral**.
+
+### O que foi implementado
+
+- `initPage()` (`script.js`) — primeiro passo da função, antes de qualquer `init*()` rodar: sob `__ISOLATE['no-geometries']`, remove do DOM `#heroGrid`, `#heroGeometries` e `#heroLighting` por completo (`el.remove()`), incluindo os 3 SVGs de formas geométricas e os 3 light-spots com blur.
+- `initHeroParallax()` — adicionado guard de segurança (`if (!geometries || !lighting || !grid) return;`) para não lançar erro ao tentar acessar `.style`/`.querySelectorAll` de elementos removidos.
+- `initHeroEntrance()` **não foi alterado** — a timeline GSAP do badge/título/subtítulo/ações continua rodando exatamente igual, confirmando o objetivo do isolamento (diferente de `no-gsap`, que também desliga essa timeline).
+- **Não adicionado a `minimal`** — `no-geometries` é um isolamento novo e específico, mantendo `minimal` com a mesma composição já documentada (`no-video,no-gsap,no-particles,no-carousel-clients`), conforme solicitado.
+
+### Validação
+
+- `npm test`: 4 suítes, **112 testes passando** — inalterado.
+- Puppeteer, comparando `baseline` vs `?isolate=no-geometries`:
+  - `#heroGeometries`/`#heroGrid`/`#heroLighting` presentes no baseline, **ausentes** sob `no-geometries` — confirmado.
+  - Nenhum erro de página (`pageerror`) em nenhum dos dois casos — confirma que `initHeroParallax()` não quebra com os elementos ausentes.
+  - Opacidade de `.hero-badge`/`.hero-title-line-1` evolui de forma idêntica em ambos os casos (parcial durante a timeline, `1` após ~2,5s) — confirma que a timeline de entrada do texto continua rodando normalmente sob `no-geometries`, ao contrário de `no-gsap`.
+- `script.min.js` regenerado via `npx terser script.js -o script.min.js -c -m` e validado com `node scripts/check-min-freshness.js`.
+
+### Arquivos alterados nesta atualização
+
+- `script.js` — remoção de `#heroGrid`/`#heroGeometries`/`#heroLighting` no início de `initPage()` sob `no-geometries`; guard de segurança em `initHeroParallax()`.
+- `script.min.js` — regenerado.
+- `audit/isolamento-query-params.md` — esta atualização.
+
+### URL para o usuário testar
+
+```
+https://perinconstrucoes.netlify.app/?isolate=no-geometries
+```
+
+### Instruções para o usuário
+
+Testar por 15-20s, do mesmo jeito que os isolamentos anteriores, prestando atenção especial a:
+
+1. **O texto do hero ainda anima normalmente?** (badge, título, subtítulo, botões devem continuar tendo a transição de entrada — diferente de `no-gsap`, onde tudo aparece instantâneo). Se o texto aparecer instantâneo em vez de animado, algo está errado e deve ser reportado.
+2. **O travamento melhora, piora, ou fica igual** comparado ao site normal?
+
+Se `no-geometries` resolver bem (parecido com `no-gsap`), confirma que as camadas de geometria/grid/luz (CSS `floatShape` + parallax do mouse + blur estático) são a causa raiz — próximo passo é decidir a correção definitiva (remover, simplificar os efeitos, ou trocar por algo mais leve), possivelmente com um teste adicional para separar "é o blur estático" de "é a animação". Se não ajudar muito, a suspeita muda para a própria timeline GSAP do texto/badge ou para o parallax do mouse.
