@@ -16,6 +16,38 @@ function __perfCheckpoint(label) {
     }
 }
 
+// === ISOLAMENTO TEMPORARIO PARA DIAGNOSTICO POR ELIMINACAO (remover apos
+// diagnostico) — ver audit/isolamento-query-params.md para a lista completa
+// e o que cada flag desliga. Sem ?isolate=... na URL, __ISOLATE fica vazio e
+// todo o comportamento normal do site permanece 100% inalterado. Calculado
+// de forma sincrona, ANTES de initPage() rodar, para que os guards dentro
+// das funcoes de inicializacao ja vejam as flags corretas.
+var __ISOLATE = (function () {
+    var params = new URLSearchParams(location.search);
+    var raw = params.get('isolate');
+    if (!raw) return {};
+    var list = raw.split(',').map(function (s) { return s.trim(); }).filter(Boolean);
+    if (list.indexOf('minimal') !== -1) {
+        list = list.concat(['no-video', 'no-gsap', 'no-particles', 'no-carousel-clients']);
+    }
+    var flags = {};
+    list.forEach(function (f) { flags[f] = true; });
+    return flags;
+})();
+window.__ISOLATE = __ISOLATE;
+
+// true quando NENHUMA animacao/plugin GSAP deve rodar (nem timeline do hero,
+// nem ScrollTrigger, nem o carrossel cascata do portfolio).
+function __gsapDisabled() {
+    return !!__ISOLATE['no-gsap'];
+}
+// true quando especificamente o ScrollTrigger deve ficar desligado — inclui
+// o caso de no-gsap (que desliga tudo) e o caso mais cirurgico de
+// no-scrolltrigger-only (que mantem GSAP/timeline do hero funcionando).
+function __scrollTriggerDisabled() {
+    return !!(__ISOLATE['no-gsap'] || __ISOLATE['no-scrolltrigger-only']);
+}
+
 // === DEBUG TEMPORARIO — FASE 1, salto de scroll (remover apos diagnostico) ===
 // So ativa com ?debug=scroll na URL — nunca roda para usuarios normais. Bloco
 // autocontido, nao interfere em nada do resto do arquivo. Seguro remover
@@ -410,6 +442,10 @@ function __perfCheckpoint(label) {
 
 // === HERO PARTICLES ===
 function createParticles() {
+    // ISOLAMENTO no-particles/minimal — pula a criacao das 50 particulas
+    // animadas por completo (nao so pausa). Ver audit/isolamento-query-params.md.
+    if (__ISOLATE['no-particles']) return;
+
     var __hookTestMarker789 = 1;
     const container = document.getElementById('heroParticles');
     const particleCount = 50;
@@ -457,7 +493,10 @@ function initHeroVideoBackground() {
     const connection = navigator.connection || navigator.webkitConnection || navigator.mozConnection;
     const isSlowConnection = connection && ['slow-2g', '2g'].includes(connection.effectiveType);
 
-    if (isMobile || prefersReducedMotion || isSlowConnection) {
+    // ISOLAMENTO no-video/minimal — reaproveita exatamente a mesma logica de
+    // remocao ja usada em mobile (nenhum byte de video baixado, so o poster
+    // estatico do CSS aparece). Ver audit/isolamento-query-params.md.
+    if (isMobile || prefersReducedMotion || isSlowConnection || __ISOLATE['no-video']) {
         // preload="none" nas duas tags garante que nenhum byte de video seja
         // baixado; removê-las do DOM evita qualquer chance de um browser
         // decidir buscar metadata por conta própria.
@@ -623,6 +662,18 @@ function initHeroEntrance(onDone) {
     const hero = document.querySelector('.hero-architectural-scene');
     if (!hero) { if (onDone) onDone(); return; }
 
+    // ISOLAMENTO no-gsap/minimal — nenhuma chamada gsap.set/gsap.timeline
+    // roda. Hero aparece direto no estado final via CSS/JS puro (opacity:1,
+    // sem transform), sem timeline de entrada. Ver audit/isolamento-query-params.md.
+    if (__gsapDisabled()) {
+        document.querySelectorAll('.hero-badge, .hero-title-line, .hero-subtitle, .hero-actions').forEach(function (el) {
+            el.style.opacity = '1';
+            el.style.transform = 'none';
+        });
+        if (onDone) onDone();
+        return;
+    }
+
     // Force final state on all entrance elements FIRST (before any ScrollTrigger)
     // This prevents elements from remaining at opacity:0 if entrance never fires
     gsap.set('.hero-badge, .hero-title-line, .hero-subtitle, .hero-actions', {
@@ -705,6 +756,19 @@ function initNavigation() {
 
 // === SCROLL REVEAL ANIMATIONS ===
 function initScrollReveals() {
+    // ISOLAMENTO no-gsap/no-scrolltrigger-only/minimal — nenhum ScrollTrigger
+    // roda. '.section-title-reveal' e '.text-reveal' ja sao opacity:1 por
+    // padrao no CSS (nunca tem gsap.set de opacity:0 aplicado nelas), entao
+    // pular os dois primeiros loops nao muda nada visualmente. So
+    // '.process-step' (que comeca oculto via CSS) precisa da revelacao
+    // forcada aqui. Ver audit/isolamento-query-params.md.
+    if (__scrollTriggerDisabled()) {
+        document.querySelectorAll('.process-step').forEach(function (el) {
+            el.classList.add('revealed');
+        });
+        return;
+    }
+
     gsap.utils.toArray('.section-title-reveal').forEach(title => {
         gsap.to(title, {
             scrollTrigger: {
@@ -751,6 +815,9 @@ function initScrollReveals() {
 
 // === COUNTER ANIMATIONS ===
 function initCounters() {
+    // ISOLAMENTO no-gsap/no-scrolltrigger-only/minimal — nenhum
+    // gsap.to/scrollTrigger roda para os contadores.
+    if (__scrollTriggerDisabled()) return;
     gsap.utils.toArray('.counter-target').forEach(counter => {
         const target = counter.getAttribute('data-target');
         const numTarget = parseFloat(target);
@@ -1100,6 +1167,10 @@ function createCascadingSlider(listEl, collectionEl) {
 
 // === CASCADING SLIDER (legacy wrapper for initPage) ===
 function initCascadingSlider() {
+    // ISOLAMENTO no-gsap/minimal — o carrossel cascata do portfolio (Carrossel
+    // de Projetos, documentado em AGENTS.md) e GSAP-dependente por design;
+    // nao inicializa sob este isolamento.
+    if (__gsapDisabled()) return;
     var list = document.getElementById('cascadingSliderList');
     if (!list || list.querySelectorAll('.cascading-slide').length === 0) return;
     var collection = document.querySelector('.cascading-slider-collection');
@@ -1217,7 +1288,10 @@ function initPortfolioGallery() {
     // causa raiz de secoes nao revelarem ao rolar ate que o fallback de 1.5s
     // (initScrollRevealFallback) force a revelacao. Disparar o refresh aqui
     // corrige a causa, nao so o sintoma.
-    if (typeof ScrollTrigger !== 'undefined') {
+    // ISOLAMENTO no-gsap/no-scrolltrigger-only/minimal — nao chama
+    // ScrollTrigger.refresh() (a grade em si continua sendo populada
+    // normalmente acima, isso nao e animacao).
+    if (typeof ScrollTrigger !== 'undefined' && !__scrollTriggerDisabled()) {
         ScrollTrigger.refresh();
     }
 
@@ -1998,6 +2072,9 @@ function initCustomSelect() {
 
 // === BUTTON RIPPLE EFFECT ===
 function initButtonRipple() {
+    // ISOLAMENTO no-gsap/minimal — nenhum gsap.fromTo roda; botoes continuam
+    // clicaveis normalmente, so sem o efeito visual de ripple.
+    if (__gsapDisabled()) return;
     document.querySelectorAll('.hero-button-primary, .form-submit-button').forEach(btn => {
         btn.addEventListener('click', function (e) {
             const ripple = this.querySelector('.hero-button-glow, .form-submit-ripple') || this;
@@ -2032,6 +2109,16 @@ function initButtonRipple() {
 // de defasagem entre itens grandes, acima do limiar de percepcao de
 // assincronia). leaveStagger:0 restaura o comportamento sincronizado original.
 function batchReveal(selector, { y = 40, duration = 0.6, stagger = 0.1, leaveStagger = 0, ease = 'power2.out', start = 'top 85%' } = {}) {
+    // ISOLAMENTO no-gsap/no-scrolltrigger-only/minimal — nenhum gsap.set/
+    // ScrollTrigger roda; conteudo forcado visivel direto via style puro.
+    // Ver audit/isolamento-query-params.md.
+    if (__scrollTriggerDisabled()) {
+        document.querySelectorAll(selector).forEach(function (el) {
+            el.style.opacity = '1';
+            el.style.transform = 'none';
+        });
+        return;
+    }
     gsap.set(selector, { opacity: 0, y });
     ScrollTrigger.batch(selector, {
         start,
@@ -2080,6 +2167,12 @@ function initServiceGridAdjust() {
 
 // === CLIENTS CAROUSEL — physics-based drag, inertia, directional memory ===
 function initClientsCarousel() {
+    // ISOLAMENTO no-carousel-clients/minimal — nao inicializa (sem clonagem
+    // de slides, sem rAF de rotacao). O track ja tem largura de fallback via
+    // CSS (--slide-w com default), entao sobra como uma linha estatica dos
+    // logos originais, sem rotacao automatica. Ver audit/isolamento-query-params.md.
+    if (__ISOLATE['no-carousel-clients']) return;
+
     const track = document.getElementById('clientsTrack');
     if (!track) return;
 
@@ -2289,6 +2382,10 @@ function initScrollRevealFallback() {
         if (!isHidden(el)) return;
         if (el.classList.contains('process-step')) {
             el.classList.add('revealed');
+        } else if (__gsapDisabled()) {
+            // ISOLAMENTO no-gsap/minimal — mesmo resultado visual sem chamar gsap.
+            el.style.opacity = '1';
+            el.style.transform = 'none';
         } else {
             gsap.set(el, { opacity: 1, x: 0, y: 0 });
         }
@@ -2473,28 +2570,33 @@ function initPage() {
     // GSAP, nao este listener manual. Debounce de 150ms e protecao extra
     // contra sequencias rapidas de resize de largura genuina (ex: redimensionar
     // a janela no desktop arrastando a borda).
-    let lastWidth = window.innerWidth;
-    let resizeRefreshTimeout;
-    window.addEventListener('resize', () => {
-        if (window.innerWidth === lastWidth) return; // so altura mudou — ignora (barra de endereco do Safari)
-        lastWidth = window.innerWidth;
-        clearTimeout(resizeRefreshTimeout);
-        resizeRefreshTimeout = setTimeout(() => ScrollTrigger.refresh(), 150);
-    });
-    ScrollTrigger.config({ ignoreMobileResize: true });
+    // ISOLAMENTO no-gsap/no-scrolltrigger-only/minimal — nenhum dos listeners
+    // abaixo e registrado, entao ScrollTrigger.refresh()/config() nunca e
+    // chamado. Ver audit/isolamento-query-params.md.
+    if (!__scrollTriggerDisabled()) {
+        let lastWidth = window.innerWidth;
+        let resizeRefreshTimeout;
+        window.addEventListener('resize', () => {
+            if (window.innerWidth === lastWidth) return; // so altura mudou — ignora (barra de endereco do Safari)
+            lastWidth = window.innerWidth;
+            clearTimeout(resizeRefreshTimeout);
+            resizeRefreshTimeout = setTimeout(() => ScrollTrigger.refresh(), 150);
+        });
+        ScrollTrigger.config({ ignoreMobileResize: true });
 
-    // Recalcula os marcadores de start depois que TODAS as imagens/fontes
-    // terminarem de carregar — evita marcadores calculados para uma página
-    // ainda curta (causa raiz do bug de conteúdo não revelar em mobile).
-    window.addEventListener('load', () => ScrollTrigger.refresh());
+        // Recalcula os marcadores de start depois que TODAS as imagens/fontes
+        // terminarem de carregar — evita marcadores calculados para uma página
+        // ainda curta (causa raiz do bug de conteúdo não revelar em mobile).
+        window.addEventListener('load', () => ScrollTrigger.refresh());
 
-    // Gap encontrado no diagnostico de carregamento inicial: com font-display:swap,
-    // a troca da fonte (reflow de metricas/quebra de linha) pode terminar DEPOIS do
-    // evento 'load' em rede lenta — o refresh acima roda cedo demais nesse caso e a
-    // primeira secao apos o hero fica com marcadores desatualizados de novo. Refresh
-    // adicional quando document.fonts.ready resolver cobre esse caso especifico.
-    if (document.fonts && document.fonts.ready) {
-        document.fonts.ready.then(() => ScrollTrigger.refresh());
+        // Gap encontrado no diagnostico de carregamento inicial: com font-display:swap,
+        // a troca da fonte (reflow de metricas/quebra de linha) pode terminar DEPOIS do
+        // evento 'load' em rede lenta — o refresh acima roda cedo demais nesse caso e a
+        // primeira secao apos o hero fica com marcadores desatualizados de novo. Refresh
+        // adicional quando document.fonts.ready resolver cobre esse caso especifico.
+        if (document.fonts && document.fonts.ready) {
+            document.fonts.ready.then(() => ScrollTrigger.refresh());
+        }
     }
 }
 
