@@ -587,6 +587,12 @@ function initHeroParallax() {
     // cedo (evita lancar ao tentar ler .style/.querySelectorAll de null).
     if (!geometries || !lighting || !grid) return;
 
+    // ISOLAMENTO no-animation-only — nao registra o listener de parallax do
+    // mouse para estas camadas, deixando-as completamente paradas (o blur
+    // original de 100px continua intacto via CSS). Ver
+    // audit/isolamento-query-params.md.
+    if (__ISOLATE['no-animation-only']) return;
+
     document.addEventListener('mousemove', (e) => {
         const x = (e.clientX / window.innerWidth - 0.5) * 2;
         const y = (e.clientY / window.innerHeight - 0.5) * 2;
@@ -2488,6 +2494,25 @@ function initPage() {
         document.querySelectorAll('#heroGrid, #heroGeometries, #heroLighting').forEach(function (el) {
             el.remove();
         });
+    }
+
+    // ISOLAMENTO no-blur-only — mantem hero-grid/hero-geometries/hero-lighting
+    // presentes e animando normalmente (CSS floatShape + parallax do mouse
+    // intactos), mas remove so o filter: blur(100px) dos .light-spot via a
+    // classe .isolate-no-blur-only (ver regra em styles.css). Testa
+    // isoladamente se o custo vem do blur estatico.
+    if (__ISOLATE['no-blur-only']) {
+        document.documentElement.classList.add('isolate-no-blur-only');
+    }
+
+    // ISOLAMENTO no-animation-only — mantem as formas visiveis com o blur
+    // original de 100px, mas congela toda animacao: a classe
+    // .isolate-no-animation-only (styles.css) desativa @keyframes floatShape
+    // via animation:none, e initHeroParallax() (abaixo) nao anima essas
+    // camadas quando esta flag esta ativa. Testa isoladamente se o custo vem
+    // do movimento continuo, nao do blur em si.
+    if (__ISOLATE['no-animation-only']) {
+        document.documentElement.classList.add('isolate-no-animation-only');
     }
 
     // Critico — a unica coisa visivel no primeiro frame e o hero. Mantido
