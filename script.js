@@ -4,6 +4,18 @@
 
 'use strict';
 
+// Helper global (fora de qualquer IIFE de debug) usado pelos checkpoints
+// granulares dentro de initPage() — precisa estar disponivel la, entao nao
+// pode viver dentro do bloco initPerfDebug() mais abaixo. No-op total (sem
+// custo de performance) quando window.__perfDebugLog nao existe, ou seja,
+// fora do modo ?debug=perf/?debug=all. Remover junto com o bloco
+// initPerfDebug() quando a instrumentacao nao for mais necessaria.
+function __perfCheckpoint(label) {
+    if (window.__perfDebugLog) {
+        window.__perfDebugLog.push({ event: label, t: Math.round(performance.now()) });
+    }
+}
+
 // === DEBUG TEMPORARIO — FASE 1, salto de scroll (remover apos diagnostico) ===
 // So ativa com ?debug=scroll na URL — nunca roda para usuarios normais. Bloco
 // autocontido, nao interfere em nada do resto do arquivo. Seguro remover
@@ -2324,11 +2336,29 @@ function initPage() {
     // Critico — a unica coisa visivel no primeiro frame e o hero. Mantido
     // sincrono e o mais enxuto possivel para o GSAP ticker (requestAnimationFrame)
     // conseguir avancar a timeline de entrada sem competir por CPU.
+    //
+    // DEBUG TEMPORARIO (Fase 2, ?debug=perf) — checkpoints granulares em volta
+    // de cada chamada sincrona, pra achar qual delas (ou a soma) consome os
+    // ~3,8s de bloqueio do main thread medidos no iPhone real. __perfCheckpoint
+    // e no-op fora do modo debug. Nao altera ordem nem comportamento de nenhuma
+    // funcao. Remover junto com initPerfDebug() apos o diagnostico.
+    __perfCheckpoint('initPage-sync-start');
+    __perfCheckpoint('initHeroVideoBackground-start');
     initHeroVideoBackground();
+    __perfCheckpoint('initHeroVideoBackground-end');
+    __perfCheckpoint('initHeroParallax-start');
     initHeroParallax();
+    __perfCheckpoint('initHeroParallax-end');
+    __perfCheckpoint('initHeroAnimations-start');
     initHeroAnimations();
+    __perfCheckpoint('initHeroAnimations-end');
+    __perfCheckpoint('initNavigation-start');
     initNavigation();
+    __perfCheckpoint('initNavigation-end');
+    __perfCheckpoint('initButtonRipple-start');
     initButtonRipple(); // inclui o botao do hero — precisa estar pronto pra clique imediato
+    __perfCheckpoint('initButtonRipple-end');
+    __perfCheckpoint('initPage-sync-end');
 
     // Nao-critico — tudo abaixo da dobra (ScrollTrigger de secoes ainda fora da
     // tela, carrosseis, formulario, particulas decorativas do hero). Antes,

@@ -53,3 +53,49 @@ Botão fixo (`📋 Copiar log de performance`, canto inferior direito, acima do 
 ## Remoção futura
 
 Assim que a causa do travamento estiver confirmada e corrigida, remover o bloco `initPerfDebug()` inteiro de `script.js` (autocontido, mesma forma que o bloco de debug de scroll da Fase 1) e regenerar `script.min.js`.
+
+---
+
+## Atualização — checkpoints granulares em `initPage()` (20/07/2026)
+
+### Dado real que motivou este passo
+
+Captura real no iPhone do usuário via `?debug=perf` (reprodutível em toda carga, não é efeito de aquecimento/JIT):
+
+- **Bloqueio de main thread de ~3785ms sem nenhum frame** e **heartbeat atrasado em 3843ms**, entre `DOMContentLoaded` (t=44) e t≈3839 — **antes** do Grupo A rodar, **antes** do evento `load`, e **enquanto a timeline de entrada do hero ainda estava em andamento** (começou em t=40, só terminou em t=5241 — mais de 5s no total, quando o esperado é ~1,5-2s).
+- Isso não aparece em Chrome/Puppeteer/WebPageTest — confirma que o gargalo é específico do motor WebKit/Safari real, não reproduzível em emulação.
+
+O bloqueio está confinado à parte **síncrona** de `initPage()` — as funções que rodam antes do Grupo A ser adiado para idle. Passo necessário: granularizar os checkpoints para achar qual função (ou a soma delas) está consumindo os ~3,8s.
+
+### Lista real confirmada no código (não é a suposta na hipótese original — `createParticles` faz parte do **Grupo B**, adiado para idle, não do bloco síncrono)
+
+Ordem exata em `initPage()` (`script.js`, dentro da função, antes do agendamento do Grupo A/B):
+
+1. `initHeroVideoBackground()`
+2. `initHeroParallax()`
+3. `initHeroAnimations()`
+4. `initNavigation()`
+5. `initButtonRipple()`
+
+Não há chamada a `gsap.registerPlugin(ScrollTrigger)` em `script.js` — o registro do plugin acontece internamente nos arquivos vendor (`vendor/gsap/gsap.min.js` / `vendor/gsap/ScrollTrigger.min.js`), fora do escopo do nosso código, então não há onde inserir esse checkpoint específico sem modificar os vendors (não deve ser feito).
+
+### O que foi adicionado
+
+- `function __perfCheckpoint(label)` — helper global de topo de arquivo (fora de qualquer IIFE de debug, pois precisa estar acessível dentro de `initPage()`). No-op total quando `window.__perfDebugLog` não existe (fora do modo `?debug=perf`/`?debug=all`) — sem custo de performance em produção.
+- Checkpoints `-start`/`-end` ao redor de cada uma das 5 chamadas síncronas acima, mais `initPage-sync-start` / `initPage-sync-end` marcando o início e o fim de todo o bloco síncrono. Nenhuma ordem ou comportamento de função foi alterado — só os logs em volta.
+
+### Validação
+
+- `npm test`: 4 suítes, **112 testes passando** (unitários + os 65 de regressão do carrossel) — inalterado.
+- Puppeteer com `?debug=perf`: confirmado via `window.__perfDebugLog` que a sequência de eventos aparece corretamente ordenada: `script-start` → `initPage-sync-start` → `initHeroVideoBackground-start/end` → `initHeroParallax-start/end` → `initHeroAnimations-start/end` → `initNavigation-start/end` → `initButtonRipple-start/end` → `initPage-sync-end` → `hero-entrance-start` → ...
+- `script.min.js` regenerado via `npx terser script.js -o script.min.js -c -m` e validado com `node scripts/check-min-freshness.js`.
+
+### Arquivos alterados nesta atualização
+
+- `script.js` — helper `__perfCheckpoint()` no topo do arquivo; checkpoints granulares em volta das 5 chamadas síncronas de `initPage()`.
+- `script.min.js` — regenerado.
+- `audit/fase-perf-real.md` — esta atualização.
+
+### Próximo passo
+
+Repetir a captura no iPhone com `?debug=perf` (mesmas instruções da seção anterior). Com os checkpoints granulares, o log vai mostrar exatamente qual função (ou combinação) consome os ~3,8s de bloqueio — a partir daí dá para propor a correção.
