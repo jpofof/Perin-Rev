@@ -1208,7 +1208,7 @@ function initPortfolioGallery() {
 
     // #portfolioGrid fica vazio no HTML estatico — os cards so existem depois
     // desta chamada. initPortfolioGallery roda na fila idle (script.js:1934+),
-    // DEPOIS que initServicesReveal/initDifferentialsAnimation/initValuesReveal/
+    // DEPOIS que initServicesReveal/initDifferentialsAnimation/
     // initTestimonialsReveal (itens anteriores da mesma fila) ja criaram seus
     // ScrollTrigger medindo a pagina SEM a grade do portfolio. Como portfolio
     // fica acima de services/segments/process/testimonials no DOM (index.html),
@@ -2048,16 +2048,6 @@ function initServicesReveal() {
     batchReveal('.service-mosaic-item', { y: 40, duration: 0.6, stagger: 0.1, ease: 'power2.out', start: 'top 85%' });
 }
 
-function initValuesReveal() {
-    // Original disparava todos os .value-item pelo trigger compartilhado
-    // '.values-row' (mesmo ponto de disparo para todos). ScrollTrigger.batch()
-    // usa cada item como seu proprio trigger — como estao na mesma linha
-    // (mesmo grid/flex row), o topo de cada item coincide com o topo da row,
-    // entao o ponto de disparo na pratica e o mesmo (diferenca sub-pixel, se
-    // houver). Documentado por transparencia, nao e um comportamento novo.
-    batchReveal('.value-item', { y: 40, duration: 0.6, stagger: 0.15, ease: 'power2.out', start: 'top 80%' });
-}
-
 function initTestimonialsReveal() {
     batchReveal('.testimonial-card', { y: 40, duration: 0.6, stagger: 0.15, ease: 'power2.out', start: 'top 85%' });
 }
@@ -2308,7 +2298,7 @@ function initClientsCarousel() {
 // elemento ainda fique retido perto da viewport sem revelar.
 function initScrollRevealFallback() {
     const GRACE_PERIOD_MS = 1500;
-    const selector = '.differential-item, .service-mosaic-item, .value-item, .testimonial-card, .process-step';
+    const selector = '.differential-item, .service-mosaic-item, .testimonial-card, .process-step';
     const elements = document.querySelectorAll(selector);
     if (!elements.length) return;
 
@@ -2469,7 +2459,6 @@ function initPage() {
             initCounters,
             initServicesReveal,
             initDifferentialsAnimation,
-            initValuesReveal,
             initTestimonialsReveal,
             initServiceGridAdjust,
             initPortfolioGallery,

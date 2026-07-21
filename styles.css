@@ -967,54 +967,6 @@ h6 {
     letter-spacing: 1px;
 }
 
-.values-row {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 24px;
-    margin-top: 100px;
-}
-
-.value-item {
-    padding: 40px 32px;
-    background: var(--color-bg-surface);
-    border: 1px solid var(--color-border-light);
-    border-radius: 16px;
-    text-align: center;
-    transition: all 0.4s var(--ease-premium);
-    box-shadow: 0 2px 12px var(--color-shadow);
-}
-
-.value-item:hover {
-    border-color: rgba(42, 135, 62, 0.2);
-    transform: translateY(-8px);
-    box-shadow: 0 20px 60px var(--color-shadow-hover);
-}
-
-.value-icon {
-    margin-bottom: 20px;
-    display: inline-block;
-}
-
-.value-icon svg path,
-.value-icon svg circle,
-.value-icon svg rect {
-    stroke: var(--color-accent-primary);
-}
-
-.value-title {
-    font-family: var(--font-primary);
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--color-text-primary);
-    margin-bottom: 12px;
-}
-
-.value-description {
-    font-size: 14px;
-    color: var(--color-text-secondary);
-    line-height: 1.6;
-}
-
 /* === SERVICES SECTION === */
 .services-interactive-module {
     padding: var(--section-padding);
@@ -2758,10 +2710,6 @@ h6 {
         gap: 60px;
     }
 
-    .values-row {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
     .differentials-grid {
         grid-template-columns: repeat(2, 1fr);
     }
@@ -2849,10 +2797,6 @@ h6 {
 
     .about-stat-number {
         font-size: 28px;
-    }
-
-    .values-row {
-        grid-template-columns: 1fr;
     }
 
     .footer-grid {

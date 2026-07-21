@@ -130,7 +130,7 @@ describe('Portfolio grid population -> ScrollTrigger.refresh on mount', () => {
   // The real page-load culprit is #portfolioGrid: it starts EMPTY in the
   // static HTML and is only populated by initPortfolioGallery() (idle queue
   // item 14) — after initServicesReveal/initDifferentialsAnimation/
-  // initValuesReveal/initTestimonialsReveal (earlier items in the same queue)
+  // initTestimonialsReveal (earlier items in the same queue)
   // already created their ScrollTrigger instances measuring the page WITHOUT
   // the portfolio grid's height. Since portfolio sits above services/segments/
   // process/testimonials in DOM order (index.html), this shifts their real
