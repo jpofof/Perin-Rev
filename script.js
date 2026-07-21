@@ -245,6 +245,48 @@ function __perfCheckpoint(label) {
 
     mark('script-start');
 
+    // --- Passo 3 (Fase 2): instrumentacao ampla de timers, pra achar a fonte
+    // do travamento periodico de ~3s reportado durante TODA a sessao (nao so
+    // no carregamento). Investigacao de codigo (Passos 1-2) nao encontrou
+    // nenhum listener de animationiteration/animationend nas particulas do
+    // hero (createParticles() so usa animacao CSS pura, sem callback JS) nem
+    // nenhum setInterval de producao com esse intervalo — entao, em vez de
+    // instrumentar um candidato especifico, interceptamos setTimeout/
+    // setInterval nativos SEM alterar comportamento: so logamos quando o
+    // delay cai na janela 2500-3500ms, na criacao E no disparo do callback,
+    // com stack resumida pra identificar a origem real (nosso codigo, GSAP
+    // interno, ou outra lib de terceiro).
+    var TIMER_WINDOW_MIN = 2500;
+    var TIMER_WINDOW_MAX = 3500;
+    var origSetTimeout = window.setTimeout;
+    var origSetInterval = window.setInterval;
+    function shortStack() {
+        var stack = (new Error()).stack || '';
+        return stack.split('\n').slice(2, 6).join(' | ');
+    }
+    window.setTimeout = function (fn, delay) {
+        if (typeof delay === 'number' && delay >= TIMER_WINDOW_MIN && delay <= TIMER_WINDOW_MAX) {
+            mark('setTimeout-created', { delay: delay, stack: shortStack() });
+            var wrapped = function () {
+                mark('setTimeout-fired', { delay: delay });
+                if (typeof fn === 'function') return fn.apply(this, arguments);
+            };
+            return origSetTimeout.apply(window, [wrapped].concat(Array.prototype.slice.call(arguments, 1)));
+        }
+        return origSetTimeout.apply(window, arguments);
+    };
+    window.setInterval = function (fn, delay) {
+        if (typeof delay === 'number' && delay >= TIMER_WINDOW_MIN && delay <= TIMER_WINDOW_MAX) {
+            mark('setInterval-created', { delay: delay, stack: shortStack() });
+            var wrapped = function () {
+                mark('setInterval-fired', { delay: delay });
+                if (typeof fn === 'function') return fn.apply(this, arguments);
+            };
+            return origSetInterval.apply(window, [wrapped].concat(Array.prototype.slice.call(arguments, 1)));
+        }
+        return origSetInterval.apply(window, arguments);
+    };
+
     // --- Marcos ja conhecidos (DOMContentLoaded, load) ---
     document.addEventListener('DOMContentLoaded', function () { mark('DOMContentLoaded'); });
     window.addEventListener('load', function () { mark('load'); });

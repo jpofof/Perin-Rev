@@ -99,3 +99,61 @@ Não há chamada a `gsap.registerPlugin(ScrollTrigger)` em `script.js` — o reg
 ### Próximo passo
 
 Repetir a captura no iPhone com `?debug=perf` (mesmas instruções da seção anterior). Com os checkpoints granulares, o log vai mostrar exatamente qual função (ou combinação) consome os ~3,8s de bloqueio — a partir daí dá para propor a correção.
+
+---
+
+## Atualização — investigação do padrão periódico de ~3s (20/07/2026)
+
+### Dado real que motivou este passo
+
+O usuário confirmou que o travamento **não é só no carregamento inicial**: acontece repetidamente, em intervalos de ~3 segundos, durante **toda a sessão de uso**. Também confirmou que não é GC/falta de memória, e que a instrumentação de debug amplia a duração dos travamentos mas não é a causa (o problema existe sem o debug também).
+
+Hipótese principal a investigar: o intervalo de ~3s bate com `animation: particleFloat 3s ease-in-out infinite` das 50 partículas do hero (`styles.css:573`), identificado em auditoria anterior.
+
+### Passo 1 — Listener nas partículas: hipótese descartada
+
+Busca em `script.js` por `animationiteration`, `animationend`, `animationstart`, `transitionend` e pela classe `.particle`/`createParticles`: **nenhum listener JS encontrado**. `createParticles()` (script.js) só adiciona a classe `.particle` e define `animationDelay`/`animationDuration` inline via `style` — a animação em si é **100% CSS**, sem callback JavaScript algum anexado a `animationiteration`/`animationend`. Além disso, a duração real de cada partícula é aleatória entre 3 e 7s (`Math.random() * 4 + 3` em `script.js`, linha ~381), não um valor fixo de 3s sincronizado entre as 50 — o que também enfraquece a hipótese de um padrão de ~3s perceptível e consistente vindo daí.
+
+O único código JS relacionado às partículas é um `IntersectionObserver` (`script.js`, dentro de `createParticles()`) que só alterna uma classe `is-paused` quando o hero entra/sai da viewport — não executa a cada 3s, só na transição de visibilidade.
+
+**Conclusão do Passo 1: hipótese principal descartada.** A animação das partículas é pura CSS, sem trabalho JS periódico anexado a ela.
+
+### Passo 2 — Outras fontes de trabalho periódico
+
+- **`setInterval` no código-fonte:** apenas 2 ocorrências em todo `script.js`, e ambas são da própria instrumentação de debug (inertes em produção):
+  - `script.js` ~linha 141 — polling do `?debug=scroll` (20ms).
+  - `script.js` ~linha 354 — heartbeat do `?debug=perf` (200ms).
+  Nenhum `setInterval` de produção existe no código.
+- **Loop `requestAnimationFrame` do carrossel de clientes (`initClientsCarousel`):** inspecionado o corpo de `animate()` — cada frame faz apenas aritmética simples (soma de velocidade/atrito, wrap de posição, um `transform` via `style.transform`). Não há contador que dispare recálculo pesado a cada N frames, nem `getBoundingClientRect`/leitura de layout dentro do loop. Custo por frame é O(1) e não cresce com o tempo.
+- **`IntersectionObserver`s existentes** (partículas do hero, visibilidade do hero para o vídeo, reveal de seções, fallback de reveal): todos só alternam classes/flags booleanas no callback — nenhum faz trabalho pesado, e nenhum observa um elemento que cruza o threshold ciclicamente (todos são seções que entram na viewport uma vez ao rolar, não elementos animados oscilando).
+- **GSAP `ScrollTrigger`:** único `onUpdate` encontrado é de um tween (`initCounters`, contador numérico com `once: true` — dispara uma vez, não repete). Não há `onUpdate`/`onRefresh` de `ScrollTrigger` reexecutando ciclicamente sem relação a scroll real.
+- **Candidato periódico real, mas não compatível com o padrão de ~3s:** `initHeroVideoBackground()` implementa um loop forward→reverse do vídeo time-lapse do hero (`script.js`), com `handleEnded()` disparando `setTimeout(..., 260)` a cada fim de clipe antes de trocar para o próximo. Porém a duração real do vídeo (`assets/videos/construction-timelapse.mp4`, confirmada via `ffprobe`) é de **~16,2 segundos**, não ~3s — então esse loop existe e é periódico, mas no ciclo errado para explicar o padrão relatado. Registrado aqui para descartar, não como candidato.
+
+### Passo 3 — Instrumentação ampla de timers (sem candidato específico confirmado)
+
+Como os Passos 1-2 não encontraram um candidato de código único e claro no intervalo de ~3s, foi adicionada instrumentação ampla em vez de instrumentar um alvo específico: **interceptação de `window.setTimeout`/`window.setInterval`** dentro do bloco `initPerfDebug()` (`script.js`), sem alterar nenhum comportamento — só loga quando o `delay` cai na janela **2500-3500ms**, tanto na criação (`setTimeout-created`/`setInterval-created`, com stack resumida da origem) quanto no disparo do callback (`setTimeout-fired`/`setInterval-fired`). Isso cobre tanto código próprio quanto qualquer timer criado internamente por GSAP ou outra lib de terceiro, caso exista.
+
+**Validação local (Puppeteer, Chrome):** o único timer capturado na janela 2500-3500ms foi o já conhecido fallback de segurança `setTimeout(startIdleQueue, 3500)` (`initPage()`) — criado em t=11ms, disparado uma única vez em t≈3511ms. É um timer **one-shot** (não repete), comportamento esperado e já documentado — não é o padrão periódico relatado. Nenhum outro timer na janela apareceu durante os primeiros ~4s de carregamento em ambiente Chrome/desktop.
+
+### Resposta às perguntas do Passo 4
+
+1. **Listener de `animationiteration` nas partículas:** não encontrado — **descarta** a hipótese principal. A animação das partículas é puramente CSS, sem JS anexado.
+2. **Lista de todos os `setInterval` no código:** apenas os 2 de debug (`?debug=scroll` 20ms e `?debug=perf` 200ms), ambos inertes em produção normal. Nenhum `setInterval` de produção.
+3. **Outro candidato de trabalho periódico de ~3s:** nenhum encontrado por inspeção estática do código. O único loop periódico real identificado (vídeo forward/reverse do hero) tem ciclo de ~16,2s, incompatível com o padrão de ~3s relatado.
+4. **Recomendação:** **não há causa clara e única confirmada ainda** — não corrigir. Pedir nova captura no iPhone com `?debug=perf` (build atual já inclui a interceptação ampla de timers). Se o padrão de ~3s for causado por algo em código JS (nosso ou de terceiro/GSAP), a nova captura deve mostrar `setTimeout-created`/`setInterval-created`/`setTimeout-fired`/`setInterval-fired` repetindo a cada ~3s com uma stack de origem. Se **nada** aparecer na faixa 2500-3500ms mesmo com o travamento acontecendo, isso desloca a suspeita para fora do JS interceptável por essa técnica — possivelmente: (a) o próprio motor de renderização/compositor do Safari re-executando o layout das 50 partículas animadas por CSS mesmo sem JS (custo de compositing, não de scripting — não apareceria como long task nem como timer), ou (b) o ciclo do vídeo forward/reverse (16,2s) tendo múltiplos sub-eventos de decode/repaint que o usuário percebe como recorrência mais curta. Ambas as alternativas exigiriam abordagem de instrumentação diferente (Performance panel do Safari via cabo, não só JS) caso a próxima captura não aponte um timer.
+
+### Validação
+
+- `npm test`: 4 suítes, **112 testes passando** — inalterado.
+- Puppeteer com `?debug=perf`: confirmado que a interceptação de `setTimeout`/`setInterval` funciona (captura corretamente o fallback de 3500ms, criação e disparo, com stack), e que o comportamento normal da página (hero entrance, Grupo A, carrossel de clientes) continua intacto — nenhuma regressão introduzida pelo wrap.
+- `script.min.js` regenerado via `npx terser script.js -o script.min.js -c -m` e validado com `node scripts/check-min-freshness.js`.
+
+### Arquivos alterados nesta atualização
+
+- `script.js` — interceptação de `window.setTimeout`/`window.setInterval` dentro de `initPerfDebug()`, ativa somente sob `?debug=perf`/`?debug=all`.
+- `script.min.js` — regenerado.
+- `audit/fase-perf-real.md` — esta atualização.
+
+### Próximo passo
+
+Nova captura no iPhone com `?debug=perf`, usando o site normalmente até sentir pelo menos 2-3 ocorrências do travamento de ~3s, depois copiar o log. Procurar especificamente por `setTimeout-created`/`setInterval-created`/`setTimeout-fired`/`setInterval-fired` repetindo em cadência de ~3s — a stack de origem deve apontar o culpado. Se nada aparecer nessa faixa, escalar para análise via Safari Web Inspector remoto (cabo, macOS) no painel de Performance/Timelines, que consegue capturar compositing/rendering fora do alcance de instrumentação JS.
