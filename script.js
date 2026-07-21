@@ -11,7 +11,8 @@
 // que a causa do salto de scroll estiver confirmada e corrigida.
 (function initScrollJumpDebug() {
     var params = new URLSearchParams(location.search);
-    if (params.get('debug') !== 'scroll') return;
+    var __dbg = params.get('debug');
+    if (__dbg !== 'scroll' && __dbg !== 'all') return;
 
     var JUMP_THRESHOLD = 10; // reduzido de 30 — captura saltos menores/perceptiveis
     var VERBOSE_THRESHOLD = 5; // qualquer variacao > 5px entra no buffer
@@ -178,6 +179,176 @@
     }, { passive: true });
 
     console.log('[DEBUG-SCROLL] instrumentacao ativa (threshold=' + JUMP_THRESHOLD + 'px, buffer circular de ' + BUFFER_SIZE + ' eventos, sem limite de tempo). Toque e segure 2s em qualquer lugar pra forcar a captura manual.');
+})();
+
+// === DEBUG TEMPORARIO — FASE 2, travamento real no Safari iOS (remover apos
+// diagnostico) ===
+// So ativa com ?debug=perf ou ?debug=all na URL — nunca roda para usuarios
+// normais. Bloco autocontido. Motivacao: o WebPageTest so testa Chrome (mesmo
+// em "modo mobile"), entao nunca reproduz o travamento real que o usuario e
+// os pais dele sentem no Safari/WebKit do iPhone. Esta instrumentacao roda
+// direto no dispositivo real para capturar dados que o Chrome nao reproduz —
+// mesma estrategia que funcionou para o bug de salto de scroll acima.
+(function initPerfDebug() {
+    var params = new URLSearchParams(location.search);
+    var __dbg = params.get('debug');
+    if (__dbg !== 'perf' && __dbg !== 'all') return;
+
+    var log = [];
+    var startedAt = performance.now();
+    window.__perfDebugLog = log;
+    var buttonShown = false;
+
+    function mark(event, extra) {
+        var entry = Object.assign({ event: event, t: Math.round(performance.now() - startedAt) }, extra || {});
+        log.push(entry);
+    }
+
+    function showCopyButton() {
+        if (buttonShown) return;
+        buttonShown = true;
+        var btn = document.createElement('button');
+        btn.textContent = '📋 Copiar log de performance';
+        btn.style.cssText = 'position:fixed;bottom:80px;right:20px;z-index:999999;' +
+            'padding:14px 18px;background:#1E5FBF;color:#fff;border:none;border-radius:8px;' +
+            'font-size:15px;font-weight:600;box-shadow:0 4px 12px rgba(0,0,0,0.3);';
+        btn.addEventListener('click', function () {
+            var payload = JSON.stringify({ log: window.__perfDebugLog || log }, null, 2);
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(payload).then(function () {
+                    btn.textContent = '✅ Copiado!';
+                }).catch(function () {
+                    btn.textContent = '❌ Falhou — copie via console';
+                });
+            } else {
+                btn.textContent = '❌ clipboard indisponivel';
+            }
+        });
+        document.body.appendChild(btn);
+    }
+    // Botao sempre disponivel desde o inicio — captura manual apos usar o site
+    // normalmente por 15-20s, sem necessidade de deteccao automatica de anomalia.
+    if (document.body) showCopyButton();
+    else document.addEventListener('DOMContentLoaded', showCopyButton, { once: true });
+
+    mark('script-start');
+
+    // --- Marcos ja conhecidos (DOMContentLoaded, load) ---
+    document.addEventListener('DOMContentLoaded', function () { mark('DOMContentLoaded'); });
+    window.addEventListener('load', function () { mark('load'); });
+
+    // --- Hero entrance e Grupo A: wrap das funcoes globais existentes sem
+    // alterar sua logica interna. Funciona porque declaracoes de funcao no
+    // topo do arquivo sao hoisted antes deste IIFE rodar. ---
+    if (typeof window.initHeroEntrance === 'function') {
+        var origInitHeroEntrance = window.initHeroEntrance;
+        window.initHeroEntrance = function (onDone) {
+            mark('hero-entrance-start');
+            return origInitHeroEntrance(function () {
+                mark('hero-entrance-end');
+                if (onDone) onDone();
+            });
+        };
+    } else {
+        mark('hero-entrance-hook-indisponivel');
+    }
+
+    if (typeof window.runBatchWhenIdle === 'function') {
+        var origRunBatchWhenIdle = window.runBatchWhenIdle;
+        window.runBatchWhenIdle = function (fns) {
+            mark('grupoA-start');
+            var result = origRunBatchWhenIdle(fns);
+            mark('grupoA-end');
+            return result;
+        };
+    } else {
+        mark('grupoA-hook-indisponivel');
+    }
+
+    if (typeof window.initClientsCarousel === 'function') {
+        var origInitClientsCarousel = window.initClientsCarousel;
+        window.initClientsCarousel = function () {
+            mark('clientsCarousel-init-start');
+            var result = origInitClientsCarousel.apply(this, arguments);
+            var track = document.getElementById('clientsTrack');
+            var firstImg = track ? track.querySelector('img') : null;
+            if (firstImg) {
+                if (firstImg.complete) {
+                    mark('clientsCarousel-first-image-loaded', { fromCache: true });
+                } else {
+                    firstImg.addEventListener('load', function () {
+                        mark('clientsCarousel-first-image-loaded', { fromCache: false });
+                    }, { once: true });
+                }
+            }
+            return result;
+        };
+    } else {
+        mark('clientsCarousel-hook-indisponivel');
+    }
+
+    // --- Frame timing via requestAnimationFrame: captura deltas > 50ms nos
+    // primeiros ~9s de vida da pagina (janela onde os travamentos reais foram
+    // relatados: hero entrance + Grupo A rodando). ---
+    var RAF_WINDOW_MS = 9000;
+    var lastFrameTime = startedAt;
+    function rafTick(now) {
+        var delta = now - lastFrameTime;
+        if (delta > 50) {
+            mark('frame-delta', { deltaMs: Math.round(delta) });
+        }
+        lastFrameTime = now;
+        if (now - startedAt < RAF_WINDOW_MS) {
+            requestAnimationFrame(rafTick);
+        } else {
+            mark('frame-timing-window-encerrada');
+        }
+    }
+    requestAnimationFrame(rafTick);
+
+    // --- Long tasks (PerformanceObserver) — suporte inconsistente no Safari
+    // iOS, entao registramos explicitamente quando nao disponivel. ---
+    if ('PerformanceObserver' in window) {
+        try {
+            new PerformanceObserver(function (list) {
+                list.getEntries().forEach(function (entry) {
+                    mark('longtask', { duration: Math.round(entry.duration), startTime: Math.round(entry.startTime), name: entry.name });
+                });
+            }).observe({ entryTypes: ['longtask'] });
+        } catch (e) {
+            mark('longtask-unsupported', { error: String(e) });
+        }
+    } else {
+        mark('performance-observer-unsupported');
+    }
+
+    // --- Memoria: performance.memory nao existe no Safari — registra
+    // indisponivel em vez de inventar dado. ---
+    if (performance.memory) {
+        mark('memory', {
+            usedJSHeapSize: performance.memory.usedJSHeapSize,
+            totalJSHeapSize: performance.memory.totalJSHeapSize,
+        });
+    } else {
+        mark('memory-unsupported');
+    }
+
+    // --- Heartbeat: setInterval de 200ms. Gap >500ms entre heartbeats
+    // consecutivos = main thread bloqueado tempo suficiente pro proprio timer
+    // atrasar — sinal direto de travamento percebido pelo usuario. ---
+    var HEARTBEAT_INTERVAL = 200;
+    var HEARTBEAT_GAP_THRESHOLD = 500;
+    var lastHeartbeat = startedAt;
+    setInterval(function () {
+        var now = performance.now();
+        var gap = now - lastHeartbeat;
+        if (gap > HEARTBEAT_GAP_THRESHOLD) {
+            mark('heartbeat-gap', { gapMs: Math.round(gap) });
+        }
+        lastHeartbeat = now;
+    }, HEARTBEAT_INTERVAL);
+
+    console.log('[DEBUG-PERF] instrumentacao ativa. Use o site normalmente por 15-20s e toque no botao para copiar o log.');
 })();
 
 // === DESIGN TOKENS (referência para edição) ===
