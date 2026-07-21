@@ -2111,7 +2111,7 @@ function initClientsCarousel() {
     // Physics state
     let currentX = -setWidth;          // start at first original set
     let velocity = 0;
-    let baseSpeed = 2.8;               // px per frame, rightward (left-to-right) — positive = → → →
+    let baseSpeed = 4.2;               // px per frame, rightward (left-to-right) — positive = → → → (2.8 * 1.5, +50% de velocidade)
     const FRICTION = 0.95;             // inertia deceleration (higher = slides longer)
     const RETURN_SPRING = 0.025;       // how fast velocity returns to baseSpeed
     const MAX_SPEED = 22;              // max momentum on release

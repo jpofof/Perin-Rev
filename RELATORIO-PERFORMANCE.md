@@ -1065,3 +1065,24 @@ Documentação completa da investigação (todos os isolamentos, dados brutos ca
 **Data:** 21/07/2026. Diagnóstico e correção completos em `audit/carrossel-clientes-mobile.md`.
 
 Resumo: o `IntersectionObserver` que pausa/retoma o `requestAnimationFrame` do carrossel observava `#clientsTrack` — o próprio elemento que o loop transforma (`translate3d`) a cada frame. Isso gerava, ocasionalmente, uma leitura espúria `isIntersecting: false` (elemento sem ter saído da tela), disparando `stop()` e travando o autoplay para sempre. Reproduzido de forma determinística via Puppeteer (Chrome, não exclusivo de Safari). Corrigido observando `#clientsStage` (contêiner fixo já existente no HTML) em vez do elemento em movimento, mais um debounce de 100ms antes de `stop()` como rede de segurança adicional. 112 testes passando; validado que o carrossel gira continuamente ao entrar na viewport (mobile e desktop) e ainda para corretamente ao sair de fato da tela.
+
+## Carrossel de clientes — velocidade de rotação aumentada em 1.5x
+
+**Data:** 21/07/2026.
+
+`baseSpeed` em `initClientsCarousel()` (`script.js`, dentro do loop `animate()`) alterado de **2,8** para **4,2** px/frame (2,8 × 1,5). Única mudança de valor — nenhuma outra lógica (loop infinito, pausa via `IntersectionObserver`, debounce, drag/touch) foi tocada.
+
+Nota técnica: o loop aplica atrito (`FRICTION = 0.95`) a cada frame mesmo sem interação do usuário, então a velocidade visual de regime não é igual a `baseSpeed`, e sim um valor de equilíbrio proporcional a ele (`RETURN_SPRING`/`FRICTION` convergem para ~32% de `baseSpeed`). Como essa proporção é linear, multiplicar `baseSpeed` por 1,5 multiplica a velocidade real por exatamente 1,5 também — confirmado empiricamente (não só analiticamente) medindo o tempo de um ciclo completo do loop infinito (`setWidth` = 918,7px) via Puppeteer, comparando a versão antiga (`HEAD`) e a nova lado a lado:
+
+| Versão | `baseSpeed` | px/s (regime) | Tempo por ciclo completo |
+|---|---|---|---|
+| Antes | 2,8 | 54,10 | 16,98s |
+| Depois | 4,2 | 81,15 | 11,32s |
+
+Razão: 16,98s / 11,32s = **1,500x** — exatamente os 1,5x solicitados (11,32s ≈ 66,7% do tempo original).
+
+Validado adicionalmente:
+- Movimento suave em ambas as velocidades: frame delta médio de 16,67ms, máximo 17,3ms (60fps estável, sem jank), tanto em desktop (1440×900) quanto mobile (emulação iPhone).
+- Drag/touch continua funcionando normalmente na nova velocidade — gesto de arraste responde e o autoplay retoma normalmente ao soltar, sem conflito.
+- Nenhum teste unitário/regressão referenciava o valor de velocidade — os 112 testes continuam passando sem alteração.
+- `script.min.js` regenerado e `check-min-freshness` confirma consistência.
