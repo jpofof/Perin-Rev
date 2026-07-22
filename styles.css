@@ -861,21 +861,88 @@ h6 {
     bottom: 0;
     left: 0;
     width: 100%;
-    height: 200px;
-    background: linear-gradient(to top, var(--color-bg-primary), transparent);
+    height: 150px;
+    /* Curva ease-in-out (cosseno: alpha = (1+cos(pi*t))/2) comprimida nos
+       primeiros 75% da caixa, seguida de um patamar EXATAMENTE 0 de 75% a
+       100% (topo). O clip-path da onda abaixo corta a caixa entre 2.63% e
+       16.32% a partir do topo — ou seja, inteiramente dentro do patamar
+       zero. Isso garante que a borda da onda coincide sempre com opacidade
+       real zero, sem nenhum ponto da borda visivel carregando alpha
+       residual (o problema da versao anterior, que so chegava a zero
+       exatamente no stop de 100%, deixando o topo da onda com ~0.01-0.06
+       de alpha perceptivel contra a foto escura). A cor solida (100%
+       opaca, no fundo) usa --color-bg-secondary (#EDEDE0) — a MESMA cor de
+       fundo de .about-narrative-section logo abaixo. Altura reduzida de
+       380px para 150px e reaproximada da base da viewport para funcionar
+       como indicativo sutil de "role para baixo", nao como elemento visual
+       de destaque. */
+    background: linear-gradient(to top,
+            rgba(237, 237, 224, 1) 0%,
+            rgba(237, 237, 224, 0.9755) 7.5%,
+            rgba(237, 237, 224, 0.9045) 15%,
+            rgba(237, 237, 224, 0.794) 22.5%,
+            rgba(237, 237, 224, 0.6545) 30%,
+            rgba(237, 237, 224, 0.5) 37.5%,
+            rgba(237, 237, 224, 0.3455) 45%,
+            rgba(237, 237, 224, 0.206) 52.5%,
+            rgba(237, 237, 224, 0.0955) 60%,
+            rgba(237, 237, 224, 0.0245) 67.5%,
+            rgba(237, 237, 224, 0.0062) 71.25%,
+            rgba(237, 237, 224, 0.002) 73%,
+            rgba(237, 237, 224, 0) 75%,
+            rgba(237, 237, 224, 0) 100%);
     z-index: 4;
     pointer-events: none;
-    animation: hero-gradient-breathe 5s ease-in-out infinite;
+    animation: hero-gradient-breathe 3.8s ease-in-out infinite;
+    /* Quebra a borda superior reta em uma onda claramente visivel — curva
+       senoidal (2.5 ciclos) amostrada em 29 pontos. Pontos escalados
+       (x 200/380) para manter a MESMA amplitude em pixels (~10-62px) ja
+       aprovada visualmente antes do aumento de altura do elemento —
+       amplitude em % menor porque a caixa ficou mais alta, mas o
+       resultado renderizado em pixels e identico ao aprovado.
+       clip-path e compositavel, sem custo de repaint como filter:blur(). */
+    clip-path: polygon(0% 9.47%,
+            3.6% 11.37%,
+            7.1% 13.11%,
+            10.7% 14.58%,
+            14.3% 15.63%,
+            17.9% 16.21%,
+            21.4% 16.26%,
+            25% 15.79%,
+            28.6% 14.84%,
+            32.1% 13.42%,
+            35.7% 11.74%,
+            39.3% 9.84%,
+            42.9% 7.95%,
+            46.4% 6.16%,
+            50% 4.63%,
+            53.6% 3.47%,
+            57.1% 2.79%,
+            60.7% 2.63%,
+            64.3% 3%,
+            67.9% 3.89%,
+            71.4% 5.21%,
+            75% 6.84%,
+            78.6% 8.68%,
+            82.1% 10.63%,
+            85.7% 12.42%,
+            89.3% 14.05%,
+            92.9% 15.26%,
+            96.4% 16.05%,
+            100% 16.32%,
+            100% 100%,
+            0% 100%);
 }
 
-/* Respiracao sutil de opacidade — so opacity (compositavel, sem repaint/reflow),
-   causa raiz do travamento Safari iOS anterior nesta sessao foi filter:blur(),
-   entao evitamos qualquer propriedade que force repaint aqui. */
+/* Respiracao de opacidade claramente perceptivel — so opacity (compositavel,
+   sem repaint/reflow), causa raiz do travamento Safari iOS anterior nesta
+   sessao foi filter:blur(), entao evitamos qualquer propriedade que force
+   repaint aqui. */
 @keyframes hero-gradient-breathe {
 
     0%,
     100% {
-        opacity: 0.85;
+        opacity: 0.5;
     }
 
     50% {

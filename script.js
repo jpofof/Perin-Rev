@@ -590,9 +590,11 @@ function initHeroAnimations() {
         canvas.style.transform = `scale(${scale})`;
         canvas.style.opacity = String(opacity);
 
-        // Overlay: começa em 200px, cresce até no máximo 50% da altura da hero (max 400px)
-        const maxOverlay = Math.min(hero.offsetHeight * 0.5, 400);
-        const overlayH = 200 + (maxOverlay - 200) * progress;
+        // Overlay: começa em 150px (altura base do CSS, .hero-overlay-gradient),
+        // cresce até no máximo ~0.5x a altura da hero (max 300px, mesma
+        // proporção 2x de antes, escalada para a nova base menor)
+        const maxOverlay = Math.min(hero.offsetHeight * 0.5, 300);
+        const overlayH = 150 + (maxOverlay - 150) * progress;
         overlay.style.height = `${overlayH}px`;
     }
 
