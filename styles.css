@@ -775,6 +775,16 @@ h6 {
     gap: 12px;
     opacity: 0;
     animation: fadeInUp 1s ease 2s forwards;
+    /* Sem "right", a largura shrink-to-fit de um elemento absolute so
+       herda ate (largura do containing block - left), entao em telas
+       estreitas (ex: 320px, onde 50% = 160px) esse teto ficava MENOR que
+       a largura natural do texto (~175px), forcando quebra em duas linhas
+       desalinhada ("ROLE PARA" / "EXPLORAR"). width: max-content remove
+       essa restricao artificial; max-width com margem lateral e o
+       text-align abaixo sao a rede de seguranca para telas hipoteticas
+       ainda mais estreitas. */
+    width: max-content;
+    max-width: calc(100vw - 32px);
 }
 
 .hero-scroll-text {
@@ -783,6 +793,7 @@ h6 {
     letter-spacing: 3px;
     text-transform: uppercase;
     color: var(--color-text-muted);
+    text-align: center;
 }
 
 /* Hero text/CTA colors overridden for legibility against the video background + dark overlay */
@@ -807,13 +818,11 @@ h6 {
     background: rgba(245, 245, 245, 0.1);
 }
 
-.hero-architectural-scene .hero-badge {
-    padding: 6px 16px;
-    border-radius: 100px;
-    background: rgba(10, 16, 12, 0.25);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-}
+/* .hero-architectural-scene .hero-badge: sem fundo/caixa visivel — apenas
+   texto + linhas decorativas verdes (ver .hero-badge-text e
+   .hero-badge-line acima). Removidos padding, border-radius, background e
+   backdrop-filter que criavam a "pilula" semitransparente ao redor do
+   texto. */
 
 .hero-architectural-scene .hero-scroll-text {
     color: rgba(245, 245, 245, 0.6);
@@ -2950,6 +2959,33 @@ h6 {
     .mobile-link,
     .mobile-link-highlight {
         font-size: 28px;
+    }
+}
+
+/* Hero: em viewports baixas (iPhone SE 568px, iPhone 8/375x667 etc.) o
+   bloco de conteudo centralizado verticalmente (badge+titulo+subtitulo+
+   botoes) fica mais alto que o espaco disponivel acima do
+   .hero-scroll-indicator (ancorado com bottom fixo, fora do fluxo) —
+   media confirmada empiricamente: gap negativo (sobreposicao real) em
+   320x568 e 375x667. Comprime as margens verticais internas e aproxima o
+   scroll-indicator da borda inferior apenas nessas alturas, sem alterar
+   telas altas/desktop. */
+@media (max-height: 700px) {
+    .hero-badge {
+        margin-bottom: 16px;
+    }
+
+    .hero-title {
+        margin-bottom: 16px;
+    }
+
+    .hero-subtitle {
+        margin-bottom: 20px;
+    }
+
+    .hero-scroll-indicator {
+        bottom: 30px;
+        gap: 6px;
     }
 }
 
