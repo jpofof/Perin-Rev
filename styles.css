@@ -192,12 +192,16 @@ h6 {
     padding: 12px 0;
 }
 
-.premium-navigation.scrolled .nav-link {
+.premium-navigation.scrolled .nav-link:not(.nav-link-highlight) {
     color: var(--color-text-secondary);
 }
 
-.premium-navigation.scrolled .nav-link:hover {
+.premium-navigation.scrolled .nav-link:not(.nav-link-highlight):hover {
     color: var(--color-text-primary);
+}
+
+.premium-navigation.scrolled .nav-link-highlight {
+    color: #FFFFFF;
 }
 
 .premium-navigation.scrolled .nav-toggle-line {
@@ -2987,27 +2991,6 @@ h6 {
         bottom: 30px;
         gap: 6px;
     }
-}
-
-/* ============================================= */
-/* ABOUT — BADGES (substitui contadores zerados até termos números reais) */
-/* Adicionado sem alterar nenhuma regra existente */
-/* ============================================= */
-.about-badges-row {
-    display: flex;
-    gap: 12px;
-    margin-top: 32px;
-    flex-wrap: wrap;
-}
-
-.about-badge {
-    font-family: var(--font-secondary);
-    font-size: 13px;
-    color: var(--color-text-secondary);
-    border: 1px solid var(--color-border-subtle);
-    border-radius: 999px;
-    padding: 8px 18px;
-    background: var(--color-bg-surface);
 }
 
 /* ============================================= */
