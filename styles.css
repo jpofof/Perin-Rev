@@ -865,6 +865,28 @@ h6 {
     background: linear-gradient(to top, var(--color-bg-primary), transparent);
     z-index: 4;
     pointer-events: none;
+    animation: hero-gradient-breathe 5s ease-in-out infinite;
+}
+
+/* Respiracao sutil de opacidade — so opacity (compositavel, sem repaint/reflow),
+   causa raiz do travamento Safari iOS anterior nesta sessao foi filter:blur(),
+   entao evitamos qualquer propriedade que force repaint aqui. */
+@keyframes hero-gradient-breathe {
+
+    0%,
+    100% {
+        opacity: 0.85;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .hero-overlay-gradient {
+        animation: none;
+    }
 }
 
 /* === ABOUT SECTION === */
