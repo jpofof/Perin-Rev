@@ -1207,7 +1207,7 @@ h6 {
     margin-bottom: 24px;
 }
 
-.services-cta {
+.section-cta {
     display: flex;
     justify-content: center;
     margin-top: 64px;
@@ -1767,6 +1767,12 @@ h6 {
     overflow: hidden;
     /* clipa a cortina durante a transição */
     /* Altura definida pelo conteúdo da galeria (grid natural) */
+    /* min-height é travado/liberado via JS (openProject/closeProject) ao trocar
+       entre a altura da galeria e a do viewer — anima os dois sentidos em vez de
+       saltar, empurrando o que vem depois (CTA) de forma fluida. Mesmo timing do
+       VP_DURATION/VP_CURVE do viewer (script.js) para os dois movimentos ficarem
+       sincronizados. */
+    transition: min-height 0.85s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 /* Container ancora o palco */

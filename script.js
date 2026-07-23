@@ -835,7 +835,7 @@ const portfolioProjects = [
 ];
 
 // === CASCADING SLIDER ENGINE (reusable) ===
-function createCascadingSlider(listEl, collectionEl) {
+function createCascadingSlider(listEl, collectionEl, skipInitialRefresh) {
     const slides = listEl.querySelectorAll('.cascading-slide');
     const prevBtn = document.querySelector('.cascading-slider-button-prev');
     const nextBtn = document.querySelector('.cascading-slider-button-next');
@@ -1049,12 +1049,20 @@ function createCascadingSlider(listEl, collectionEl) {
     function goTo(idx, btn) {
         if (isTransitioning || idx === currentIndex || total <= 1) return;
         isTransitioning = true;
+        // Ancora de scroll: captura a posicao ANTES de qualquer mudanca de DOM,
+        // igual openProject/closeProject. positionSlides() so reposiciona
+        // left/width (a altura do container e fixa via clamp/JS), entao normalmente
+        // nao ha mudanca de altura de documento aqui — mas ancorar continua sendo
+        // uma rede de seguranca de baixo custo contra qualquer desvio de scroll.
+        var scrollAnchor = window.scrollY;
         currentIndex = idx;
         positionSlides(currentIndex);
         if (btn) btn.classList.add('hover-active');
         setTimeout(function () {
             isTransitioning = false;
             if (btn) btn.classList.remove('hover-active');
+            if (window.ScrollTrigger) ScrollTrigger.refresh();
+            window.scrollTo({ top: scrollAnchor, behavior: 'instant' });
         }, (DURATION + 0.02) * 1000);
     }
 
@@ -1086,7 +1094,13 @@ function createCascadingSlider(listEl, collectionEl) {
         // deixando os marcadores de todas as secoes abaixo desatualizados. Disparar
         // o proprio refresh aqui, uma unica vez na montagem inicial, e robusto a
         // qualquer mudanca futura na ordem/timing do scheduling em initPage().
-        if (typeof ScrollTrigger !== 'undefined') {
+        //
+        // skipInitialRefresh: quando o carrossel de fotos do portfolio e (re)criado
+        // a cada abertura de projeto (openProject), esse refresh automatico disparava
+        // sem nenhuma ancora de scroll — causa confirmada de salto ao abrir. openProject
+        // ja faz seu proprio refresh+restauracao de scroll no momento certo (depois da
+        // transicao de altura do palco terminar), entao pula esse aqui nesse caso.
+        if (!skipInitialRefresh && typeof ScrollTrigger !== 'undefined') {
             ScrollTrigger.refresh();
         }
     });
@@ -1253,6 +1267,11 @@ function initPortfolioGallery() {
         var stage = document.getElementById('portfolioStage');
         var stageHeight = stage.offsetHeight;
         stage.style.minHeight = stageHeight + 'px';
+        // Guarda a altura natural da galeria pra closeProject() poder
+        // restaura-la com transicao suave (sem isso, precisaria remedir a
+        // galeria ja em .staged, o que devolveria a altura do viewer — a
+        // mesma referencia circular corrigida abaixo em onComplete).
+        portfolioState.galleryHeight = stageHeight;
 
         // Gallery vai para staged (atrás, será coberta pela viewport)
         gallery.classList.add('staged');
@@ -1291,7 +1310,7 @@ function initPortfolioGallery() {
 
         // Inicia o carrossel imediatamente (atrás da viewport — invisível)
         if (portfolioState.sliderInstance) portfolioState.sliderInstance.destroy();
-        portfolioState.sliderInstance = createCascadingSlider(sliderList, sliderCollection);
+        portfolioState.sliderInstance = createCascadingSlider(sliderList, sliderCollection, true);
 
         var allSlides = sliderList.querySelectorAll('.cascading-slide');
         var activeSlide = sliderList.querySelector('.cascading-slide[data-status="active"]');
@@ -1312,6 +1331,61 @@ function initPortfolioGallery() {
                 requestAnimationFrame(function () {
                     viewer.style.bottom = 'auto';
                     stage.style.overflow = 'visible';
+                    // O palco estava travado na altura da GALERIA (stageHeight, acima),
+                    // que so serve pra estabilizar a animacao de abertura. Com o viewer
+                    // ja ativo, ele e o unico conteudo visivel — o palco deve refletir a
+                    // altura REAL do viewer, nao mais a da galeria:
+                    // - viewer mais alto que a galeria (comum em desktop, 3-5 colunas):
+                    //   sem isso, o conteudo do viewer (titulo+subtitulo+carrossel+nav)
+                    //   nao contribui pro fluxo (position:absolute) e a seta de navegacao
+                    //   sobrepoe o proximo elemento da secao (CTA).
+                    // - viewer mais baixo que a galeria (comum em mobile, grid 1 coluna
+                    //   com varios cards empilhados): sem isso, o palco continua reservando
+                    //   a altura antiga da galeria e sobra um gap vazio abaixo do viewer.
+                    //
+                    // O viewer tem min-height:100% relativo ao palco — medir
+                    // viewer.offsetHeight devolveria essa altura herdada (referencia
+                    // circular), e zerar o minHeight do palco antes de medir tambem NAO
+                    // funciona: forca um flush de estilo que quebra a transicao CSS (o
+                    // navegador perde o valor "antes" real e o min-height salta em vez
+                    // de animar). Em vez disso mede-se o conteudo real do viewer pela
+                    // borda inferior do ultimo elemento visivel (nav do carrossel) --
+                    // no fluxo do proprio viewer, sem depender do min-height dele.
+                    var viewerTopY = viewer.getBoundingClientRect().top;
+                    var viewerContentBottomY = sliderNav.getBoundingClientRect().bottom;
+                    var viewerContentHeight = viewerContentBottomY - viewerTopY;
+                    stage.style.minHeight = viewerContentHeight + 'px';
+
+                    // ANCORA DE SCROLL: a mudanca de altura do palco (acima) muda a
+                    // altura total do documento, o que deixa os marcadores do
+                    // ScrollTrigger desatualizados. Um ScrollTrigger.refresh() e
+                    // necessario para o restante da pagina continuar revelando/
+                    // escondendo corretamente ao rolar, mas ele por si so pode mover o
+                    // scroll (internamente faz um scrollTo(0,0) pra medir). Por isso:
+                    // 1) espera a transicao CSS de min-height terminar (layout ja
+                    //    estavel), 2) chama refresh(), 3) restaura IMEDIATAMENTE (sem
+                    // timeout) a posicao de scroll capturada em savedScrollY, ANTES de
+                    // qualquer interacao com o carrossel — anula o salto do refresh.
+                    var scrollSettled = false;
+                    var settleScroll = function () {
+                        if (scrollSettled) return;
+                        scrollSettled = true;
+                        if (window.ScrollTrigger) ScrollTrigger.refresh();
+                        window.scrollTo({ top: portfolioState.savedScrollY, behavior: 'instant' });
+                        // Excecao mobile: centraliza o painel recem-expandido depois da
+                        // ancora — em telas estreitas o card clicado pode nao estar mais
+                        // visivel apos o reajuste de layout. Desktop nao rola mais nada.
+                        if (window.innerWidth <= 768) {
+                            viewer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+                    };
+                    stage.addEventListener('transitionend', function onStageTransitionEnd(e) {
+                        if (e.target !== stage || e.propertyName !== 'min-height') return;
+                        stage.removeEventListener('transitionend', onStageTransitionEnd);
+                        settleScroll();
+                    });
+                    // Fallback de seguranca caso transitionend nao dispare (ex.: delta 0)
+                    setTimeout(settleScroll, 900);
                 });
             }
         });
@@ -1400,6 +1474,11 @@ function initPortfolioGallery() {
         // Restaura overflow:hidden no stage para clipar o viewer durante a animação de descida
         var stage = document.getElementById('portfolioStage');
         stage.style.overflow = 'hidden';
+        // Restaura a altura do palco para a da galeria (guardada em openProject) com
+        // a mesma transicao suave de min-height — reverso simetrico da abertura, sem
+        // isso o palco voltaria de forma seca pra galeria assim que minHeight for
+        // limpo no onComplete abaixo.
+        stage.style.minHeight = (portfolioState.galleryHeight || stage.offsetHeight) + 'px';
 
         var otherCards = Array.from(grid.querySelectorAll('.portfolio-card:not([data-project-index="' + portfolioState.currentProjectIndex + '"])'));
         var allSlides = sliderList.querySelectorAll('.cascading-slide');
@@ -1459,6 +1538,15 @@ function initPortfolioGallery() {
                 stageClose.style.minHeight = '';
                 stageClose.style.overflow = '';
 
+                // ANCORA DE SCROLL (mesma logica de openProject): a altura do palco ja
+                // voltou a da galeria (transicao CSS terminou bem antes deste
+                // onComplete — 0.85s contra os ~1.35s+ da timeline de fechamento), mas
+                // o documento mudou de altura durante o processo. refresh() atualiza
+                // os marcadores do ScrollTrigger e a restauracao IMEDIATA (sem
+                // timeout) da posicao anula qualquer scroll que o proprio refresh
+                // cause. Ao fechar (diferente de abrir) NAO ha scrollIntoView extra —
+                // o usuario ja esta no lugar certo, so nao pode haver salto.
+                if (window.ScrollTrigger) ScrollTrigger.refresh();
                 window.scrollTo({ top: portfolioState.savedScrollY, behavior: 'instant' });
             }
         });
