@@ -79,6 +79,7 @@
         </div>
     </div>
 
+
     <!-- HERO SECTION -->
     <section class="hero-architectural-scene" id="hero" aria-label="Hero principal">
         <div class="hero-canvas" id="heroCanvas">
@@ -164,6 +165,40 @@
         <div class="hero-overlay-gradient"></div>
     </section>
 
+    <!-- CLIENTS CAROUSEL SECTION -->
+    <section class="clients-showcase-section" id="clients" aria-label="Clientes atendidos">
+        <div class="clients-container">
+            <div class="clients-header">
+                <div class="section-tag-reveal"><span class="section-tag">Clientes</span></div>
+                <h2 class="clients-main-title section-title-reveal">Empresas que<br><span
+                        class="text-accent-green">Confiam</span> na Perin</h2>
+            </div>
+            <div class="clients-carousel" role="region" aria-label="Logos de clientes">
+                <div class="clients-carousel-stage" id="clientsStage">
+                    <ul class="clients-carousel-track" id="clientsTrack" role="list">
+                        <li class="clients-carousel-slide" role="group" aria-roledescription="slide">
+                            <img src="assets/images/clients/elektro.webp" alt="Logo cliente 1"
+                                class="clients-carousel-img" loading="lazy">
+                        </li>
+                        <li class="clients-carousel-slide" role="group" aria-roledescription="slide">
+                            <img src="assets/images/clients/eldorado.webp" alt="Logo cliente 2"
+                                class="clients-carousel-img" loading="lazy">
+                        </li>
+                        <li class="clients-carousel-slide" role="group" aria-roledescription="slide">
+                            <img src="assets/images/clients/isa-energia.webp" alt="Logo cliente 3"
+                                class="clients-carousel-img" loading="lazy">
+                        </li>
+                        <li class="clients-carousel-slide" role="group" aria-roledescription="slide">
+                            <img src="assets/images/clients/state-grid.webp" alt="Logo cliente 4"
+                                class="clients-carousel-img" loading="lazy">
+                        </li>
+                        <!-- TODO: adicionar mais 4 logos de clientes (client-05 a client-08 ainda não existem) -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- ABOUT SECTION -->
     <section class="about-narrative-section" id="about" aria-label="Sobre a Perin Construções">
         <div class="about-container">
@@ -202,182 +237,6 @@
                             </div>
                             <div class="about-image-overlay"></div>
                         </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- CLIENTS CAROUSEL SECTION -->
-    <section class="clients-showcase-section" id="clients" aria-label="Clientes atendidos">
-        <div class="clients-container">
-            <div class="clients-header">
-                <div class="section-tag-reveal"><span class="section-tag">Clientes</span></div>
-                <h2 class="clients-main-title section-title-reveal">Empresas que<br><span
-                        class="text-accent-green">Confiam</span> na Perin</h2>
-            </div>
-            <div class="clients-carousel" role="region" aria-label="Logos de clientes">
-                <div class="clients-carousel-stage" id="clientsStage">
-                    <ul class="clients-carousel-track" id="clientsTrack" role="list">
-                        <li class="clients-carousel-slide" role="group" aria-roledescription="slide">
-                            <img src="assets/images/clients/elektro.webp" alt="Logo cliente 1"
-                                class="clients-carousel-img" loading="lazy">
-                        </li>
-                        <li class="clients-carousel-slide" role="group" aria-roledescription="slide">
-                            <img src="assets/images/clients/eldorado.webp" alt="Logo cliente 2"
-                                class="clients-carousel-img" loading="lazy">
-                        </li>
-                        <li class="clients-carousel-slide" role="group" aria-roledescription="slide">
-                            <img src="assets/images/clients/isa-energia.webp" alt="Logo cliente 3"
-                                class="clients-carousel-img" loading="lazy">
-                        </li>
-                        <li class="clients-carousel-slide" role="group" aria-roledescription="slide">
-                            <img src="assets/images/clients/state-grid.webp" alt="Logo cliente 4"
-                                class="clients-carousel-img" loading="lazy">
-                        </li>
-                        <!-- TODO: adicionar mais 4 logos de clientes (client-05 a client-08 ainda não existem) -->
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- DIFFERENTIALS SECTION -->
-    <section class="differentials-showcase-section" id="differentials" aria-label="Diferenciais">
-        <div class="differentials-container">
-            <div class="differentials-header">
-                <div class="section-tag-reveal"><span class="section-tag">Diferenciais</span></div>
-                <h2 class="differentials-main-title section-title-reveal">Por que<br><span
-                        class="text-accent-green">Escolher</span> a Perin</h2>
-            </div>
-            <div class="differentials-grid">
-                <div class="differential-item">
-                    <div class="differential-visual"><svg viewBox="0 0 120 120" fill="none">
-                            <circle cx="60" cy="60" r="50" stroke="#262626" stroke-width="0.5" />
-                            <path d="M60 10 L60 110" stroke="#2A873E" stroke-width="1" opacity="0.5" />
-                            <path d="M10 60 L110 60" stroke="#2A873E" stroke-width="1" opacity="0.5" />
-                            <circle cx="60" cy="60" r="20" stroke="#2A873E" stroke-width="1" />
-                            <circle cx="60" cy="60" r="8" fill="#2A873E" />
-                        </svg></div>
-                    <h3 class="differential-title">Engenharia Antes do Canteiro</h3>
-                    <p class="differential-description">Não começamos a construir até o projeto estar tecnicamente
-                        validado — evitando retrabalho, atraso e custo extra no meio da obra.</p>
-                </div>
-                <div class="differential-item">
-                    <div class="differential-visual"><svg viewBox="0 0 120 120" fill="none">
-                            <rect x="20" y="40" width="80" height="60" rx="4" stroke="#262626" stroke-width="0.5" />
-                            <polygon points="20,40 60,15 100,40" stroke="#2A873E" stroke-width="1" fill="none" />
-                            <line x1="60" y1="40" x2="60" y2="100" stroke="#262626" stroke-width="0.5" />
-                        </svg></div>
-                    <h3 class="differential-title">Experiência em Obras de Alta Exigência</h3>
-                    <p class="differential-description">Atendemos empresas como Elektro, Eldorado, ISA Energia e State
-                        Grid — o mesmo padrão se aplica a toda obra que fazemos, inclusive as residenciais.</p>
-                </div>
-                <div class="differential-item">
-                    <div class="differential-visual"><svg viewBox="0 0 120 120" fill="none">
-                            <circle cx="60" cy="60" r="45" stroke="#262626" stroke-width="0.5" />
-                            <path d="M60 15 L60 60 L90 75" stroke="#2A873E" stroke-width="1.5" stroke-linecap="round" />
-                            <circle cx="60" cy="60" r="3" fill="#2A873E" />
-                        </svg></div>
-                    <h3 class="differential-title">Equipe Própria, Não Terceirizada</h3>
-                    <p class="differential-description">Mão de obra qualificada, supervisionada diretamente pela Perin
-                        do início ao fim — sem intermediários que dificultam a responsabilidade.</p>
-                </div>
-                <div class="differential-item">
-                    <div class="differential-visual"><svg viewBox="0 0 120 120" fill="none">
-                            <rect x="25" y="25" width="70" height="70" rx="4" stroke="#262626" stroke-width="0.5" />
-                            <rect x="35" y="35" width="50" height="50" rx="2" stroke="#2A873E" stroke-width="1" />
-                            <path d="M35 60 L50 75 L85 40" stroke="#2A873E" stroke-width="1.5" stroke-linecap="round"
-                                stroke-linejoin="round" />
-                        </svg></div>
-                    <h3 class="differential-title">Comunicação Ativa Durante a Obra</h3>
-                    <p class="differential-description">Relatórios periódicos e registro fotográfico, para você
-                        acompanhar o avanço real sem precisar visitar o canteiro toda semana.</p>
-                </div>
-                <div class="differential-item">
-                    <div class="differential-visual"><svg viewBox="0 0 120 120" fill="none">
-                            <path d="M20 90 L40 30 L60 70 L80 20 L100 90" stroke="#2A873E" stroke-width="1.5"
-                                stroke-linecap="round" stroke-linejoin="round" />
-                            <line x1="20" y1="90" x2="100" y2="90" stroke="#262626" stroke-width="0.5" />
-                        </svg></div>
-                    <h3 class="differential-title">Consultoria Técnica Independente</h3>
-                    <p class="differential-description">Pareceres técnicos e segunda opinião para quem já tem uma obra
-                        em andamento com outra construtora e precisa de uma análise confiável.</p>
-                </div>
-                <div class="differential-item">
-                    <div class="differential-visual"><svg viewBox="0 0 120 120" fill="none">
-                            <circle cx="60" cy="60" r="45" stroke="#262626" stroke-width="0.5" />
-                            <path d="M30 60 C30 40 45 25 60 25 C75 25 90 40 90 60" stroke="#2A873E" stroke-width="1"
-                                fill="none" />
-                            <path d="M60 25 L60 45" stroke="#2A873E" stroke-width="1" stroke-linecap="round" />
-                            <circle cx="60" cy="60" r="15" stroke="#262626" stroke-width="0.5" />
-                            <circle cx="60" cy="60" r="5" fill="#2A873E" />
-                        </svg></div>
-                    <h3 class="differential-title">Entrega com Documentação Completa</h3>
-                    <p class="differential-description">Vistoria final, documentação técnica e garantia — a obra só é
-                        considerada entregue quando tudo isso está no lugar.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- PORTFOLIO SECTION — Galeria + Visualizador com Transição Contínua -->
-    <section class="portfolio-gallery-section" id="portfolio" aria-label="Portfólio">
-        <div class="portfolio-container">
-            <div class="portfolio-header">
-                <div class="section-tag-reveal"><span class="section-tag">Portfólio</span></div>
-                <h2 class="portfolio-main-title section-title-reveal">Projetos que<br><span
-                        class="text-accent-green">Definem</span> Nosso Legado</h2>
-            </div>
-
-            <!-- PALCO ÚNICO — Galeria e Viewer são camadas sobrepostas, nunca empilhadas -->
-            <div class="portfolio-stage" id="portfolioStage">
-                <!-- Estado A: Galeria de Projetos -->
-                <div class="portfolio-gallery" id="portfolioGallery" aria-label="Galeria de projetos">
-                    <div class="portfolio-gallery-grid" id="portfolioGrid">
-                        <!-- Cards serão gerados dinamicamente via JS -->
-                    </div>
-                </div>
-
-                <!-- Estado B: Visualizador do Projeto (sobrepõe a galeria) — é a nova viewport -->
-                <div class="portfolio-viewer" id="portfolioViewer" aria-hidden="true">
-                    <button class="portfolio-viewer-back" id="portfolioBackBtn" aria-label="Voltar à galeria">
-                        <svg class="portfolio-viewer-back-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
-                            <path d="M12 4L6 10L12 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
-                                stroke-linejoin="round" />
-                        </svg>
-                        <span class="portfolio-viewer-back-text">Voltar à Galeria</span>
-                    </button>
-                    <div class="portfolio-viewer-title" id="portfolioViewerTitle"></div>
-                    <div class="portfolio-viewer-subtitle" id="portfolioViewerSubtitle"></div>
-
-                    <!-- Carrossel Premium (reutilizado) -->
-                    <div class="cascading-slider" aria-label="Fotos do projeto" aria-roledescription="carousel">
-                        <div class="cascading-slider-collection">
-                            <div class="cascading-slider-list" id="cascadingSliderList">
-                                <!-- Slides populados dinamicamente via JS -->
-                            </div>
-                        </div>
-                        <nav class="cascading-slider-nav" aria-label="slider navigation">
-                            <button class="cascading-slider-button cascading-slider-button-prev"
-                                aria-label="previous slide">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                    <path d="M14 19L21 12L14 5" stroke="currentColor" stroke-miterlimit="10"
-                                        stroke-width="1.5" />
-                                    <path d="M21 12H2" stroke="currentColor" stroke-miterlimit="10"
-                                        stroke-width="1.5" />
-                                </svg>
-                            </button>
-                            <button class="cascading-slider-button cascading-slider-button-next"
-                                aria-label="next slide">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                    <path d="M14 19L21 12L14 5" stroke="currentColor" stroke-miterlimit="10"
-                                        stroke-width="1.5" />
-                                    <path d="M21 12H2" stroke="currentColor" stroke-miterlimit="10"
-                                        stroke-width="1.5" />
-                                </svg>
-                            </button>
-                        </nav>
                     </div>
                 </div>
             </div>
@@ -533,62 +392,63 @@
         </div>
     </section>
 
-    <!-- SEGMENTS SECTION -->
-    <section class="segments-section" id="segments" aria-label="Segmentos de atuação">
-        <div class="segments-container">
-            <div class="segments-header">
-                <div class="section-tag-reveal"><span class="section-tag">Um Portfólio, Três Escalas</span></div>
-                <h2 class="segments-main-title section-title-reveal">A mesma engenharia,<br><span
-                        class="text-accent-green">três contextos</span> diferentes</h2>
+    <!-- PORTFOLIO SECTION — Galeria + Visualizador com Transição Contínua -->
+    <section class="portfolio-gallery-section" id="portfolio" aria-label="Portfólio">
+        <div class="portfolio-container">
+            <div class="portfolio-header">
+                <div class="section-tag-reveal"><span class="section-tag">Portfólio</span></div>
+                <h2 class="portfolio-main-title section-title-reveal">Projetos que<br><span
+                        class="text-accent-green">Definem</span> Nosso Legado</h2>
             </div>
-            <div class="segments-tabs" role="tablist">
-                <button class="segment-tab active" data-segment="residencial" role="tab"
-                    aria-selected="true">Residencial</button>
-                <button class="segment-tab" data-segment="comercial" role="tab" aria-selected="false">Comercial</button>
-                <button class="segment-tab" data-segment="industrial" role="tab" aria-selected="false">Industrial /
-                    Infraestrutura</button>
-            </div>
-            <div class="segments-panels">
-                <div class="segment-panel active" data-segment-panel="residencial">
-                    <div>
-                        <h3 class="segment-panel-title">Residencial</h3>
-                        <p class="segment-panel-text">Casas e reformas onde o detalhe de acabamento importa tanto
-                            quanto o cálculo estrutural por trás dele. Acompanhamento próximo, do projeto à entrega
-                            das chaves.</p>
-                    </div>
-                    <div class="segment-panel-visual">
-                        <svg width="120" height="120" viewBox="0 0 200 200" fill="none">
-                            <rect x="40" y="80" width="120" height="100" rx="2" stroke="#262626" stroke-width="1" />
-                            <polygon points="20,80 100,30 180,80" stroke="#2A873E" stroke-width="1" fill="none" />
-                        </svg>
+
+            <!-- PALCO ÚNICO — Galeria e Viewer são camadas sobrepostas, nunca empilhadas -->
+            <div class="portfolio-stage" id="portfolioStage">
+                <!-- Estado A: Galeria de Projetos -->
+                <div class="portfolio-gallery" id="portfolioGallery" aria-label="Galeria de projetos">
+                    <div class="portfolio-gallery-grid" id="portfolioGrid">
+                        <!-- Cards serão gerados dinamicamente via JS -->
                     </div>
                 </div>
-                <div class="segment-panel" data-segment-panel="comercial">
-                    <div>
-                        <h3 class="segment-panel-title">Comercial</h3>
-                        <p class="segment-panel-text">Espaços pensados para operar: fluxo de pessoas, prazos de
-                            abertura e adequação a normas comerciais fazem parte do projeto desde a primeira reunião.
-                        </p>
-                    </div>
-                    <div class="segment-panel-visual">
-                        <svg width="120" height="120" viewBox="0 0 200 200" fill="none">
-                            <rect x="30" y="50" width="140" height="130" rx="2" stroke="#262626" stroke-width="1" />
-                            <rect x="50" y="70" width="100" height="30" rx="1" stroke="#2A873E" stroke-width="0.5" />
+
+                <!-- Estado B: Visualizador do Projeto (sobrepõe a galeria) — é a nova viewport -->
+                <div class="portfolio-viewer" id="portfolioViewer" aria-hidden="true">
+                    <button class="portfolio-viewer-back" id="portfolioBackBtn" aria-label="Voltar à galeria">
+                        <svg class="portfolio-viewer-back-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M12 4L6 10L12 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                                stroke-linejoin="round" />
                         </svg>
-                    </div>
-                </div>
-                <div class="segment-panel" data-segment-panel="industrial">
-                    <div>
-                        <h3 class="segment-panel-title">Industrial / Infraestrutura</h3>
-                        <p class="segment-panel-text">O mesmo padrão técnico usado em projetos para empresas como
-                            Elektro, Eldorado, ISA Energia e State Grid — obras que não toleram margem de erro na
-                            execução.</p>
-                    </div>
-                    <div class="segment-panel-visual">
-                        <svg width="120" height="120" viewBox="0 0 200 200" fill="none">
-                            <rect x="30" y="90" width="140" height="90" rx="2" stroke="#262626" stroke-width="1" />
-                            <rect x="30" y="40" width="140" height="50" rx="1" stroke="#2A873E" stroke-width="1" />
-                        </svg>
+                        <span class="portfolio-viewer-back-text">Voltar à Galeria</span>
+                    </button>
+                    <div class="portfolio-viewer-title" id="portfolioViewerTitle"></div>
+                    <div class="portfolio-viewer-subtitle" id="portfolioViewerSubtitle"></div>
+
+                    <!-- Carrossel Premium (reutilizado) -->
+                    <div class="cascading-slider" aria-label="Fotos do projeto" aria-roledescription="carousel">
+                        <div class="cascading-slider-collection">
+                            <div class="cascading-slider-list" id="cascadingSliderList">
+                                <!-- Slides populados dinamicamente via JS -->
+                            </div>
+                        </div>
+                        <nav class="cascading-slider-nav" aria-label="slider navigation">
+                            <button class="cascading-slider-button cascading-slider-button-prev"
+                                aria-label="previous slide">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <path d="M14 19L21 12L14 5" stroke="currentColor" stroke-miterlimit="10"
+                                        stroke-width="1.5" />
+                                    <path d="M21 12H2" stroke="currentColor" stroke-miterlimit="10"
+                                        stroke-width="1.5" />
+                                </svg>
+                            </button>
+                            <button class="cascading-slider-button cascading-slider-button-next"
+                                aria-label="next slide">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <path d="M14 19L21 12L14 5" stroke="currentColor" stroke-miterlimit="10"
+                                        stroke-width="1.5" />
+                                    <path d="M21 12H2" stroke="currentColor" stroke-miterlimit="10"
+                                        stroke-width="1.5" />
+                                </svg>
+                            </button>
+                        </nav>
                     </div>
                 </div>
             </div>
@@ -672,56 +532,84 @@
         </div>
     </section>
 
-    <!-- TESTIMONIALS SECTION -->
-    <section class="testimonials-section" id="testimonials" aria-label="Depoimentos">
-        <div class="testimonials-container">
-            <div class="testimonials-header">
-                <div class="section-tag-reveal"><span class="section-tag">Depoimentos</span></div>
-                <h2 class="testimonials-main-title section-title-reveal">O Que Nossos<br><span
-                        class="text-accent-green">Clientes</span> Dizem</h2>
+    <!-- DIFFERENTIALS SECTION -->
+    <section class="differentials-showcase-section" id="differentials" aria-label="Diferenciais">
+        <div class="differentials-container">
+            <div class="differentials-header">
+                <div class="section-tag-reveal"><span class="section-tag">Diferenciais</span></div>
+                <h2 class="differentials-main-title section-title-reveal">Por que<br><span
+                        class="text-accent-green">Escolher</span> a Perin</h2>
             </div>
-            <div class="testimonials-grid">
-                <div class="testimonial-card">
-                    <div class="testimonial-rating"><span class="testimonial-star">★</span><span
-                            class="testimonial-star">★</span><span class="testimonial-star">★</span><span
-                            class="testimonial-star">★</span><span class="testimonial-star">★</span></div>
-                    <p class="testimonial-text">"[Inserir depoimento real do cliente]"</p>
-                    <div class="testimonial-author">
-                        <div class="testimonial-avatar testimonial-avatar-residential">
-                            <svg viewBox="0 0 48 48" fill="none">
-                                <rect x="3" y="3" width="42" height="42" rx="14" stroke="#2A873E" stroke-width="1" />
-                                <path d="M14 26L24 16L34 26" stroke="#2A873E" stroke-width="1.5" stroke-linecap="round"
-                                    stroke-linejoin="round" />
-                                <path d="M18 24V33H30V24" stroke="#262626" stroke-width="1" stroke-linecap="round"
-                                    stroke-linejoin="round" />
-                            </svg>
-                        </div>
-                        <div><span class="testimonial-name">[Inserir Nome]</span><span
-                                class="testimonial-project">[Inserir Tipo de Projeto]</span></div>
-                    </div>
+            <div class="differentials-grid">
+                <div class="differential-item">
+                    <div class="differential-visual"><svg viewBox="0 0 120 120" fill="none">
+                            <circle cx="60" cy="60" r="50" stroke="#262626" stroke-width="0.5" />
+                            <path d="M60 10 L60 110" stroke="#2A873E" stroke-width="1" opacity="0.5" />
+                            <path d="M10 60 L110 60" stroke="#2A873E" stroke-width="1" opacity="0.5" />
+                            <circle cx="60" cy="60" r="20" stroke="#2A873E" stroke-width="1" />
+                            <circle cx="60" cy="60" r="8" fill="#2A873E" />
+                        </svg></div>
+                    <h3 class="differential-title">Engenharia Antes do Canteiro</h3>
+                    <p class="differential-description">Não começamos a construir até o projeto estar tecnicamente
+                        validado — evitando retrabalho, atraso e custo extra no meio da obra.</p>
                 </div>
-                <div class="testimonial-card">
-                    <div class="testimonial-rating"><span class="testimonial-star">★</span><span
-                            class="testimonial-star">★</span><span class="testimonial-star">★</span><span
-                            class="testimonial-star">★</span><span class="testimonial-star">★</span></div>
-                    <p class="testimonial-text">"[Inserir depoimento real do cliente]"</p>
-                    <div class="testimonial-author">
-                        <div class="testimonial-avatar testimonial-avatar-commercial">
-                            <svg viewBox="0 0 48 48" fill="none">
-                                <circle cx="24" cy="24" r="21" stroke="#1E6B30" stroke-width="1" />
-                                <rect x="17" y="14" width="14" height="20" rx="1" stroke="#1E6B30" stroke-width="1.5" />
-                                <path d="M21 19H27M21 23H27M21 27H27" stroke="#262626" stroke-width="1"
-                                    stroke-linecap="round" />
-                            </svg>
-                        </div>
-                        <div><span class="testimonial-name">[Inserir Nome]</span><span
-                                class="testimonial-project">[Inserir Tipo de Projeto]</span></div>
-                    </div>
+                <div class="differential-item">
+                    <div class="differential-visual"><svg viewBox="0 0 120 120" fill="none">
+                            <rect x="20" y="40" width="80" height="60" rx="4" stroke="#262626" stroke-width="0.5" />
+                            <polygon points="20,40 60,15 100,40" stroke="#2A873E" stroke-width="1" fill="none" />
+                            <line x1="60" y1="40" x2="60" y2="100" stroke="#262626" stroke-width="0.5" />
+                        </svg></div>
+                    <h3 class="differential-title">Experiência em Obras de Alta Exigência</h3>
+                    <p class="differential-description">Atendemos empresas como Elektro, Eldorado, ISA Energia e State
+                        Grid — o mesmo padrão se aplica a toda obra que fazemos, inclusive as residenciais.</p>
+                </div>
+                <div class="differential-item">
+                    <div class="differential-visual"><svg viewBox="0 0 120 120" fill="none">
+                            <circle cx="60" cy="60" r="45" stroke="#262626" stroke-width="0.5" />
+                            <path d="M60 15 L60 60 L90 75" stroke="#2A873E" stroke-width="1.5" stroke-linecap="round" />
+                            <circle cx="60" cy="60" r="3" fill="#2A873E" />
+                        </svg></div>
+                    <h3 class="differential-title">Equipe Própria, Não Terceirizada</h3>
+                    <p class="differential-description">Mão de obra qualificada, supervisionada diretamente pela Perin
+                        do início ao fim — sem intermediários que dificultam a responsabilidade.</p>
+                </div>
+                <div class="differential-item">
+                    <div class="differential-visual"><svg viewBox="0 0 120 120" fill="none">
+                            <rect x="25" y="25" width="70" height="70" rx="4" stroke="#262626" stroke-width="0.5" />
+                            <rect x="35" y="35" width="50" height="50" rx="2" stroke="#2A873E" stroke-width="1" />
+                            <path d="M35 60 L50 75 L85 40" stroke="#2A873E" stroke-width="1.5" stroke-linecap="round"
+                                stroke-linejoin="round" />
+                        </svg></div>
+                    <h3 class="differential-title">Comunicação Ativa Durante a Obra</h3>
+                    <p class="differential-description">Relatórios periódicos e registro fotográfico, para você
+                        acompanhar o avanço real sem precisar visitar o canteiro toda semana.</p>
+                </div>
+                <div class="differential-item">
+                    <div class="differential-visual"><svg viewBox="0 0 120 120" fill="none">
+                            <path d="M20 90 L40 30 L60 70 L80 20 L100 90" stroke="#2A873E" stroke-width="1.5"
+                                stroke-linecap="round" stroke-linejoin="round" />
+                            <line x1="20" y1="90" x2="100" y2="90" stroke="#262626" stroke-width="0.5" />
+                        </svg></div>
+                    <h3 class="differential-title">Consultoria Técnica Independente</h3>
+                    <p class="differential-description">Pareceres técnicos e segunda opinião para quem já tem uma obra
+                        em andamento com outra construtora e precisa de uma análise confiável.</p>
+                </div>
+                <div class="differential-item">
+                    <div class="differential-visual"><svg viewBox="0 0 120 120" fill="none">
+                            <circle cx="60" cy="60" r="45" stroke="#262626" stroke-width="0.5" />
+                            <path d="M30 60 C30 40 45 25 60 25 C75 25 90 40 90 60" stroke="#2A873E" stroke-width="1"
+                                fill="none" />
+                            <path d="M60 25 L60 45" stroke="#2A873E" stroke-width="1" stroke-linecap="round" />
+                            <circle cx="60" cy="60" r="15" stroke="#262626" stroke-width="0.5" />
+                            <circle cx="60" cy="60" r="5" fill="#2A873E" />
+                        </svg></div>
+                    <h3 class="differential-title">Entrega com Documentação Completa</h3>
+                    <p class="differential-description">Vistoria final, documentação técnica e garantia — a obra só é
+                        considerada entregue quando tudo isso está no lugar.</p>
                 </div>
             </div>
         </div>
     </section>
-
 
     <!-- FAQ SECTION -->
     <section class="faq-section" id="faq" aria-label="Perguntas frequentes">
@@ -1023,6 +911,7 @@
             </div>
         </div>
     </footer>
+
 
     <!-- SCRIPTS -->
     <!-- GSAP vendorizado localmente (v3.12.5, baixado em 17/07/2026) — elimina dependência
