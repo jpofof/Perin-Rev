@@ -996,12 +996,6 @@ h6 {
     color: var(--color-text-primary);
 }
 
-.about-text-container {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
 .about-text {
     font-size: 18px;
     font-weight: 400;
@@ -1019,16 +1013,31 @@ h6 {
     overflow: hidden;
     background: var(--color-bg-surface);
     box-shadow: 0 4px 24px var(--color-shadow);
+    aspect-ratio: 4 / 3;
 }
 
-.about-image-placeholder svg {
-    display: block;
+.about-image-placeholder {
     width: 100%;
-    height: auto;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    background: #111111;
 }
 
-.about-image-placeholder svg rect:first-child {
-    fill: var(--color-bg-surface);
+.about-image-placeholder-icon {
+    width: 40px;
+    height: 40px;
+    opacity: 0.6;
+}
+
+.about-image-placeholder-text {
+    font-family: var(--font-secondary);
+    font-size: 13px;
+    color: #6B6B6B;
+    letter-spacing: 0.3px;
 }
 
 .about-image-overlay {
