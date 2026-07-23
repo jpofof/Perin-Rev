@@ -1140,7 +1140,6 @@ h6 {
     border: 1px solid var(--color-border-light);
     border-radius: 16px;
     overflow: hidden;
-    cursor: pointer;
     transition: all var(--transition-medium);
     min-height: 320px;
     box-shadow: 0 2px 12px var(--color-shadow);
@@ -1208,27 +1207,10 @@ h6 {
     margin-bottom: 24px;
 }
 
-.service-mosaic-cta {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--color-accent-primary);
-    transition: all var(--transition-fast);
-}
-
-.service-mosaic-cta::after {
-    content: '→';
-    transition: transform var(--transition-fast);
-}
-
-.service-mosaic-cta:hover {
-    color: var(--color-accent-hover);
-}
-
-.service-mosaic-cta:hover::after {
-    transform: translateX(4px);
+.services-cta {
+    display: flex;
+    justify-content: center;
+    margin-top: 64px;
 }
 
 .service-mosaic-visual {
