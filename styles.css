@@ -1890,13 +1890,7 @@ h6 {
 }
 
 .clients-header {
-    margin-bottom: 64px;
-}
-
-.clients-main-title {
-    font-size: clamp(36px, 5vw, 56px);
-    font-weight: 700;
-    color: var(--color-text-primary);
+    margin-bottom: 40px;
 }
 
 /* Wrapper externo: clip sem cortar o peek */
@@ -1959,6 +1953,13 @@ h6 {
     height: 100%;
     object-fit: contain;
     padding: 24px;
+    opacity: 0.7;
+    transition: opacity 0.25s ease;
+}
+
+.clients-carousel-slide:hover .clients-carousel-img,
+.clients-carousel-slide:focus-within .clients-carousel-img {
+    opacity: 1;
 }
 
 /* === Responsivo === */
