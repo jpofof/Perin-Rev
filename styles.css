@@ -1630,18 +1630,11 @@ h6 {
     cursor: pointer;
     background: var(--color-bg-surface);
     border: 1px solid var(--color-border-subtle);
-    transition: box-shadow 0.45s cubic-bezier(0.33, 0, 0.3, 1),
-        transform 0.45s cubic-bezier(0.33, 0, 0.3, 1),
-        border-color 0.45s cubic-bezier(0.33, 0, 0.3, 1);
+    transition: transform 0.3s var(--ease-premium),
+        border-color 0.3s var(--ease-premium);
     aspect-ratio: 16 / 10;
     will-change: transform;
     backface-visibility: hidden;
-}
-
-.portfolio-card:hover {
-    box-shadow: 0 12px 40px var(--color-shadow-hover);
-    transform: translateY(-2px);
-    border-color: rgba(42, 135, 62, 0.25);
 }
 
 .portfolio-card-image-wrap {
@@ -1656,16 +1649,17 @@ h6 {
     height: 100%;
     object-fit: cover;
     object-position: center center;
-    transition: transform 0.7s cubic-bezier(0.33, 0, 0.3, 1);
+    transition: transform 0.7s var(--ease-premium);
     will-change: transform;
     backface-visibility: hidden;
 }
 
-.portfolio-card:hover .portfolio-card-image-wrap img {
-    transform: scale(1.04);
-}
-
-/* Overlay escuro no hover */
+/* Overlay escuro — existe sutilmente em repouso (0.3) e so intensifica no
+   hover (0.75), em vez de partir do zero. Partir do zero era o que criava o
+   efeito de "puxao": o card ia de imagem limpa pra escurecida de uma vez so.
+   Sem box-shadow animado aqui (caro de renderizar, ja causou problema de
+   performance antes) — a profundidade no hover vem so de transform (GPU) +
+   border-color, ambos baratos. */
 .portfolio-card-overlay {
     position: absolute;
     inset: 0;
@@ -1673,38 +1667,33 @@ h6 {
             rgba(0, 0, 0, 0.70) 0%,
             rgba(0, 0, 0, 0.25) 50%,
             rgba(0, 0, 0, 0.05) 100%);
-    opacity: 0;
-    transition: opacity 0.40s cubic-bezier(0.33, 0, 0.3, 1);
+    opacity: 0.3;
+    transition: opacity 0.3s var(--ease-premium);
     pointer-events: none;
     z-index: 1;
 }
 
-.portfolio-card:hover .portfolio-card-overlay {
-    opacity: 1;
-}
-
-/* Nome do projeto (sempre visível) */
+/* Nome do projeto (sempre visível) — precisa de contraste garantido mesmo
+   sobre fotos/logos de fundo claro, entao carrega seu proprio scrim
+   permanente (independente do .portfolio-card-overlay acima). text-shadow
+   sozinho nao bastava sobre fundos brancos. Nao se move nem pisca no hover —
+   fica onde esta, so o overlay por baixo intensifica o contraste. */
 .portfolio-card-name {
     position: absolute;
     bottom: 0;
     left: 0;
     right: 0;
-    padding: 16px 20px;
+    padding: 40px 20px 16px;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.60) 0%, rgba(0, 0, 0, 0) 100%);
     font-family: var(--font-primary);
     font-size: 15px;
     font-weight: 600;
     color: #FFFFFF;
     z-index: 2;
     text-shadow: 0 1px 4px rgba(0, 0, 0, 0.30);
-    transition: transform 0.40s cubic-bezier(0.33, 0, 0.3, 1),
-        opacity 0.40s cubic-bezier(0.33, 0, 0.3, 1);
 }
 
-.portfolio-card:hover .portfolio-card-name {
-    transform: translateY(-48px);
-}
-
-/* Botão "Ver Projeto" (aparece no hover) */
+/* Botão "Ver Projeto" */
 .portfolio-card-cta {
     position: absolute;
     top: 50%;
@@ -1713,14 +1702,8 @@ h6 {
     z-index: 3;
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.45s cubic-bezier(0.33, 0, 0.3, 1),
-        transform 0.45s cubic-bezier(0.33, 0, 0.3, 1);
-}
-
-.portfolio-card:hover .portfolio-card-cta {
-    opacity: 1;
-    transform: translate(-50%, -50%) translateY(0);
-    transition-delay: 0.08s;
+    transition: opacity 0.3s var(--ease-premium),
+        transform 0.3s var(--ease-premium);
 }
 
 .portfolio-card-cta-btn {
@@ -1741,9 +1724,35 @@ h6 {
     white-space: nowrap;
 }
 
-.portfolio-card-cta-btn:hover {
-    background: #3FCC5B;
-    transform: scale(1.04);
+/* Estados de hover — restritos a dispositivos com hover real (mouse/trackpad).
+   Em touch (hover:none), :hover pode ficar "grudado" apos o tap ate o usuario
+   tocar em outro lugar, atrapalhando a navegacao. Mesmo motivo pelo qual os
+   botoes do slider (cascading-slider-button) usam classe JS em vez de :hover
+   puro — aqui a guarda de media query resolve sem precisar de JS. */
+@media (hover: hover) and (pointer: fine) {
+    .portfolio-card:hover {
+        transform: translateY(-2px);
+        border-color: rgba(42, 135, 62, 0.25);
+    }
+
+    .portfolio-card:hover .portfolio-card-image-wrap img {
+        transform: scale(1.04);
+    }
+
+    .portfolio-card:hover .portfolio-card-overlay {
+        opacity: 0.75;
+    }
+
+    .portfolio-card:hover .portfolio-card-cta {
+        opacity: 1;
+        transform: translate(-50%, -50%) translateY(0);
+        transition-delay: 0.05s;
+    }
+
+    .portfolio-card-cta-btn:hover {
+        background: #3FCC5B;
+        transform: scale(1.04);
+    }
 }
 
 .portfolio-card-cta-btn:active {
