@@ -2147,93 +2147,6 @@ h6 {
     line-height: 1.7;
 }
 
-/* === TESTIMONIALS SECTION === */
-.testimonials-section {
-    padding: var(--section-padding);
-    background: var(--color-bg-secondary);
-    position: relative;
-}
-
-.testimonials-container {
-    max-width: var(--container-max);
-    margin: 0 auto;
-}
-
-.testimonials-header {
-    margin-bottom: 80px;
-}
-
-.testimonials-main-title {
-    font-size: clamp(36px, 5vw, 56px);
-    font-weight: 700;
-    color: var(--color-text-primary);
-}
-
-.testimonials-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 32px;
-}
-
-.testimonial-card {
-    padding: 48px 40px;
-    background: var(--color-bg-surface);
-    border: 1px solid var(--color-border-light);
-    border-radius: 16px;
-    transition: all 0.4s var(--ease-premium);
-    box-shadow: 0 2px 12px var(--color-shadow);
-}
-
-.testimonial-card:hover {
-    border-color: rgba(42, 135, 62, 0.2);
-    transform: translateY(-4px);
-    box-shadow: 0 20px 60px var(--color-shadow-hover);
-}
-
-.testimonial-rating {
-    display: flex;
-    gap: 4px;
-    margin-bottom: 20px;
-}
-
-.testimonial-star {
-    color: #E0C75A;
-    font-size: 16px;
-}
-
-.testimonial-text {
-    font-size: 18px;
-    color: var(--color-text-secondary);
-    line-height: 1.8;
-    margin-bottom: 32px;
-    font-style: italic;
-}
-
-.testimonial-author {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-}
-
-.testimonial-avatar svg {
-    width: 48px;
-    height: 48px;
-}
-
-.testimonial-name {
-    display: block;
-    font-family: var(--font-primary);
-    font-size: 16px;
-    font-weight: 700;
-    color: var(--color-text-primary);
-    margin-bottom: 4px;
-}
-
-.testimonial-project {
-    font-size: 13px;
-    color: var(--color-text-muted);
-}
-
 /* === CONTACT SECTION === */
 .premium-contact-experience {
     padding: var(--section-padding);
@@ -2911,7 +2824,6 @@ h6 {
     .process-journey-section,
     .portfolio-gallery-section,
     .differentials-showcase-section,
-    .testimonials-section,
     .premium-contact-experience {
         padding: var(--section-padding-mobile);
     }
@@ -2935,10 +2847,6 @@ h6 {
     }
 
     .differentials-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .testimonials-grid {
         grid-template-columns: 1fr;
     }
 

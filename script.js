@@ -1223,11 +1223,11 @@ function initPortfolioGallery() {
 
     // #portfolioGrid fica vazio no HTML estatico — os cards so existem depois
     // desta chamada. initPortfolioGallery roda na fila idle (script.js:1934+),
-    // DEPOIS que initServicesReveal/initDifferentialsAnimation/
-    // initTestimonialsReveal (itens anteriores da mesma fila) ja criaram seus
-    // ScrollTrigger medindo a pagina SEM a grade do portfolio. Como portfolio
-    // fica acima de services/segments/process/testimonials no DOM (index.html),
-    // adicionar essa altura desloca a posicao real de todas essas secoes,
+    // DEPOIS que initServicesReveal/initDifferentialsAnimation (itens
+    // anteriores da mesma fila) ja criaram seus ScrollTrigger medindo a
+    // pagina SEM a grade do portfolio. Como portfolio fica acima de
+    // services/segments/process no DOM (index.html), adicionar essa altura
+    // desloca a posicao real de todas essas secoes,
     // deixando os marcadores de ScrollTrigger ja criados desatualizados — a
     // causa raiz de secoes nao revelarem ao rolar ate que o fallback de 1.5s
     // (initScrollRevealFallback) force a revelacao. Disparar o refresh aqui
@@ -2071,10 +2071,6 @@ function initServicesReveal() {
     batchReveal('.service-mosaic-item', { y: 40, duration: 0.6, stagger: 0.1, ease: 'power2.out', start: 'top 85%' });
 }
 
-function initTestimonialsReveal() {
-    batchReveal('.testimonial-card', { y: 40, duration: 0.6, stagger: 0.15, ease: 'power2.out', start: 'top 85%' });
-}
-
 // === SERVICE MOSAIC GRID - DYNAMIC SIZING ===
 function initServiceGridAdjust() {
     const adjustGrid = () => {
@@ -2321,7 +2317,7 @@ function initClientsCarousel() {
 // elemento ainda fique retido perto da viewport sem revelar.
 function initScrollRevealFallback() {
     const GRACE_PERIOD_MS = 1500;
-    const selector = '.differential-item, .service-mosaic-item, .testimonial-card, .process-step';
+    const selector = '.differential-item, .service-mosaic-item, .process-step';
     const elements = document.querySelectorAll(selector);
     if (!elements.length) return;
 
@@ -2482,7 +2478,6 @@ function initPage() {
             initCounters,
             initServicesReveal,
             initDifferentialsAnimation,
-            initTestimonialsReveal,
             initServiceGridAdjust,
             initPortfolioGallery,
             initClientsCarousel,
