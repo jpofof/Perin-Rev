@@ -82,6 +82,14 @@ html {
     scroll-behavior: auto;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    /* Desativa o CSS Scroll Anchoring nativo do navegador em toda a pagina.
+       Confirmado via ?debug=scroll (script.js) que o navegador ajusta
+       window.scrollY sozinho, em varias fases de uma unica transicao (ex:
+       fechamento do portfolio-viewer), sem passar por scrollTo/scrollIntoView/
+       scrollTop — invisivel para qualquer guard em JS. O site ja gerencia sua
+       propria restauracao de scroll manualmente (openProject/closeProject em
+       script.js), entao a compensacao automatica do navegador so atrapalha. */
+    overflow-anchor: none;
 }
 
 body {
@@ -1583,17 +1591,21 @@ h6 {
 }
 
 /* === PORTFOLIO GALLERY GRID === */
-/* Gallery começa no fluxo (relative) para definir altura do stage */
+/* Ocupa a mesma grid-area do .portfolio-viewer (sobreposicao) — ver
+   .portfolio-stage acima. Nunca vira position:absolute (isso a tiraria do
+   calculo de altura do grid); a galeria fica sempre presente no fluxo,
+   mesmo com o viewer visualmente por cima. */
 .portfolio-gallery {
+    grid-area: 1 / 1 / 2 / 2;
     position: relative;
     z-index: 1;
 }
 
-/* Quando viewer assume, gallery vai para absolute mantendo altura */
-/* Gallery permanece visível atrás do viewer — o overlay dim cuida do escurecimento */
+/* .staged: so cuida de nao deixar a galeria (que fica por baixo,
+   escurecida) capturar cliques enquanto o viewer esta ativo por cima —
+   pointer-events already tambem setado inline via JS (openProject/
+   closeProject), esta regra e so a rede de seguranca via CSS. */
 .portfolio-gallery.staged {
-    position: absolute;
-    inset: 0;
     pointer-events: none;
 }
 
@@ -1741,11 +1753,13 @@ h6 {
 /* === PORTFOLIO VIEWER (Estado 2) === */
 /* Viewer sempre absolute — sobrepõe a galeria. É a nova viewport. */
 .portfolio-viewer {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    min-height: 100%;
+    grid-area: 1 / 1 / 2 / 2;
+    /* position:relative (nao absolute) de proposito — precisa continuar
+       contribuindo pro calculo de altura do grid o tempo todo, mesmo
+       fechado/invisivel (opacity:0), pra a celula sempre reservar o maior
+       entre galeria e viewer. Sobreposicao visual com a galeria vem so da
+       mesma grid-area, nao de position:absolute. */
+    position: relative;
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
@@ -1766,13 +1780,18 @@ h6 {
     width: 100%;
     overflow: hidden;
     /* clipa a cortina durante a transição */
-    /* Altura definida pelo conteúdo da galeria (grid natural) */
-    /* min-height é travado/liberado via JS (openProject/closeProject) ao trocar
-       entre a altura da galeria e a do viewer — anima os dois sentidos em vez de
-       saltar, empurrando o que vem depois (CTA) de forma fluida. Mesmo timing do
-       VP_DURATION/VP_CURVE do viewer (script.js) para os dois movimentos ficarem
-       sincronizados. */
-    transition: min-height 0.85s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    /* display:grid com galeria e viewer sobrepostos na MESMA celula (1/1/2/2,
+       ver .portfolio-gallery/.portfolio-viewer abaixo) — a altura da celula
+       (e portanto do palco) e sempre o MAIOR entre os dois, o tempo todo,
+       repouso ou aberto. Nenhum dos dois pode usar position:absolute (isso
+       os tiraria do calculo de tamanho do grid); a sobreposicao visual e
+       so pela mesma grid-area, sem precisar tira-los do fluxo. Efeito
+       colateral aceito: pode sobrar espaco em branco abaixo do menor dos
+       dois — ver AGENTS.md/registro do commit pra decisao de design
+       separada sobre isso. Zero JS mede ou anima altura aqui; a altura
+       literalmente nunca muda ao abrir/fechar um projeto, entao nao ha
+       deslocamento de conteudo abaixo da secao pra evitar. */
+    display: grid;
 }
 
 /* Container ancora o palco */
@@ -1824,6 +1843,16 @@ h6 {
     font-weight: 700;
     color: var(--color-text-primary);
     margin-bottom: 6px;
+    /* Reserva a altura de 1 linha mesmo com textContent vazio (fica assim
+       entre fechar um projeto e abrir o proximo) — um <div> de bloco sem
+       texto colapsa pra 0px de altura, mesmo com font-size definido. Sem
+       isso, o .portfolio-stage (grid overlay, ver styles.css) mediria uma
+       altura menor em repouso do que quando o viewer esta com titulo real,
+       reintroduzindo o deslocamento de conteudo abaixo da secao ao abrir.
+       1.6 = mesmo multiplicador do line-height herdado do body; 1em
+       resolve para o font-size deste elemento (responsivo via clamp() acima,
+       sem numero fixo). */
+    min-height: 1.6em;
     opacity: 0;
     transform: translateY(10px);
     transition: opacity 0.50s cubic-bezier(0.33, 0, 0.3, 1),
@@ -1843,6 +1872,9 @@ h6 {
     font-weight: 400;
     color: var(--color-text-muted);
     margin-bottom: 18px;
+    /* Mesmo motivo do .portfolio-viewer-title acima — reserva 1 linha mesmo
+       vazio. */
+    min-height: 1.6em;
     opacity: 0;
     transform: translateY(10px);
     transition: opacity 0.50s cubic-bezier(0.33, 0, 0.3, 1),
