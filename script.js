@@ -2097,7 +2097,7 @@ function initClientsCarousel() {
 
     let slideWidth = originalSlides[0].offsetWidth;
     const totalOriginal = originalSlides.length;
-    const setWidth = totalOriginal * slideWidth;
+    let setWidth = totalOriginal * slideWidth;
 
     // Clone all slides twice for seamless infinite loop (3 sets total)
     for (let i = 0; i < 2; i++) {
@@ -2248,9 +2248,19 @@ function initClientsCarousel() {
     // Prevent text selection while dragging
     track.addEventListener('dragstart', (e) => e.preventDefault());
 
-    // Resize
+    // Resize — recalcula tudo que depende da largura do slide (--slide-w/-h,
+    // setWidth do wrap infinito) e reescala currentX na mesma proporcao, senao
+    // o wrap continua usando a largura antiga enquanto o card real ja mudou de
+    // tamanho — os clones do loop infinito saem de alinhamento e sobrepoem uns
+    // aos outros visualmente.
     const resizeObserver = new ResizeObserver(() => {
-        slideWidth = originalSlides[0].offsetWidth;
+        const newSlideWidth = originalSlides[0].offsetWidth;
+        if (!newSlideWidth || newSlideWidth === slideWidth) return;
+        const ratio = newSlideWidth / slideWidth;
+        slideWidth = newSlideWidth;
+        setSlideDimensions();
+        setWidth = totalOriginal * slideWidth;
+        currentX *= ratio;
     });
     resizeObserver.observe(track);
 
