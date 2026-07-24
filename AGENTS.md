@@ -367,106 +367,60 @@ Antes de entregar qualquer código, responda mentalmente:
 - [ ] Sugeri uma mensagem de commit no padrão Conventional Commits?
 
 ---
-## Carrossel de Projetos — Implementação Oficial
+## Cascading Slider (Fotos do Projeto Aberto) — Implementação Oficial
 
 > **Status:** Aprovada. Esta é a referência definitiva do componente.
-> **Arquivos:** `index.html` (portfolio-section), `styles.css` (cascading-slider), `script.js` (`createCascadingSlider()` / `initCascadingSlider()`)
-> **Data de aprovação:** 23/06/2026
-> **Última sincronização com o código:** 07/07/2026 — valores abaixo conferidos linha a linha contra `script.js:293-546` e `tests/regression/slider.regression.test.js`.
+> **Substitui:** o "Foto Slider" (slide horizontal simples, CSS transition, sem loop) — descontinuado em 24/07/2026, no mesmo dia em que havia sido promovido a oficial, por decisão explícita do usuário. Motivo: adotar a implementação do Modus Projects já testada e validada isoladamente pelo usuário (`cascading-slider/` na raiz do projeto) — efeito visual de cascata via `clip-path` + GSAP, card central maior com vizinhos parcialmente visíveis, navegação circular sem travessia problemática.
+> **Arquivos:** `index.html` (`.cascading-slider` dentro de `#portfolioViewer`), `styles.css` (`.cascading-slider__*`), `script.js` (`initCascadingSlider()`)
+> **Fonte de referência:** `cascading-slider/js/cascading-slider.js` e `cascading-slider/css/cascading-slider.css` (export do Modus Projects, ver `cascading-slider/auditoria-cascading-slider.md` para o levantamento completo do componente original)
+> **Data de aprovação:** 24/07/2026
 
 ### Estrutura visual
 
-O carrossel tem **4 tiers de largura** conforme `getBreakpoint()`/`getPCT()` (`script.js:349-365`), cada um com distribuição fixa em porcentagem da largura útil do container (descontados os gaps de 8px entre slides, `gap = 8` em `script.js:310`):
+Slots posicionados via `position: absolute` + `transform: translateX()` calculado em JS (`measure()`), com `clip-path: inset(0 var(--clip) round var(--radius))` recortando as bordas dos cards vizinhos/distantes — não é um `flex` simples. O card ativo (offset `0`) é o maior; os offsets `-2..2` ficam visíveis com larguras decrescentes; offsets `-3`/`3` ficam "estacionados" fora da viewport para a próxima transição.
 
-| Tier | Breakpoint | Slots visíveis | Proporções |
+| Tier | Breakpoint (`window.innerWidth`) | `activeWidth` | `siblingWidth` |
 |---|---|---|---|
-| **Desktop** | `window.innerWidth > 1200` | 5 | `6.5% / 13.5% / 60% / 13.5% / 6.5%` |
-| **Notebook** | `1024px < largura ≤ 1200px` | 5 | `8% / 16% / 52% / 16% / 8%` |
-| **Tablet** | `750px < largura ≤ 1024px` | 3 | `15% / 70% / 15%` |
-| **Mobile** | `largura ≤ 750px` | 3 | `10% / 80% / 10%` (slots extremos ocultos, sem gap) |
+| **Desktop** | `> 991px` | `60%` | `13%` |
+| **Tablet** | `≤ 991px` | `60%` | `10%` |
+| **Mobile** | `≤ 767px` | `70%` | `10%` |
+| **Small** | `≤ 479px` | `78%` | `8%` |
 
-```
-Desktop:  [ 6,5% ] [ 13,5% ] [      60%      ] [ 13,5% ] [ 6,5% ]
-Notebook: [  8%  ] [  16%  ] [      52%      ] [  16%  ] [  8%  ]
-Tablet/Mobile (3 slots): [ 15 ou 10% ] [ 70 ou 80% ] [ 15 ou 10% ]
-```
-
-A soma totaliza 100% da largura útil do container em qualquer tier.
+Responsividade é controlada inteiramente pelo array `breakpoints` no JS (`initCascadingSlider()`), não por media query — o CSS não define larguras dos slides.
 
 ### Comportamento de navegação
 
-- Qualquer slide visível pode ser **clicado** para se tornar o slide central.
-- Botões `←` `→` abaixo do carrossel navegam sequencialmente.
-- Teclas **ArrowLeft** / **ArrowRight** também navegam.
-- Durante a transição, **cliques são bloqueados** para evitar conflitos.
-- A transição usa GSAP com `overwrite: 'auto'` — sem `killTweens`, sem salto visual.
-- Na primeira renderização, `gsap.set` posiciona instantaneamente (sem animação).
-- Nas navegações subsequentes, `gsap.to` anima `left` e `width` de cada slide.
+- Cada slide é posicionado individualmente (offset relativo ao `activeIndex`); não há um "trilho" que se move inteiro.
+- Botões `←` `→` (`[data-cascading-slider-prev]` / `[data-cascading-slider-next]`) navegam sequencialmente.
+- Tecla **ArrowLeft** / **ArrowRight** também navegam.
+- **Navegação circular (loop infinito)** — `goTo()` normaliza o índice com módulo; ao chegar no último slide, avançar volta ao primeiro. Se houver menos de 9 fotos, o JS clona o conjunto original (`data-clone`) até completar 9, garantindo cascata visível em ambas as direções.
+- Sem contador de fotos (o Modus original não usa; com clones, um contador "N / total" seria enganoso).
+- Card ativo recebe `data-status="active"` (`cursor: default`; os demais ficam `cursor: pointer` e navegam ao serem clicados).
 
 ### Transição
 
 | Propriedade | Valor |
 |---|---|
-| Duração | `0.70s` (`DURATION`, `script.js:302`) |
-| Curva | `cubic-bezier(0.40, 0.00, 0.30, 1.00)` (`CURVE`, `script.js:303`) |
-| Sensação | Aceleração progressiva suave, sem impacto, sem tranco |
+| Mecanismo | **GSAP** (`gsap.to`/`gsap.set` em `x`, `--clip`, `zIndex`) — não CSS transition |
+| Duração | `0.65s` |
+| Easing | `power3.inOut` |
 
-Valores confirmados também em `tests/regression/slider.regression.test.js:325-330` (`CURVE is cubic-bezier(0.40, 0.00, 0.30, 1.00)` e `DURATION is 0.70`) — qualquer alteração futura de duração/curva deve atualizar **os três lugares** (código, este documento e o teste) juntos.
+A montagem inicial e o reposicionamento em `resize` aplicam `measure()` + `layout(false)` (via `gsap.set`, sem animação) — evitando salto visual no load/rotação de tela. Apenas a navegação real (clique/teclado) anima com `gsap.to`. O listener de `resize` só recalcula em mudança de **largura** (`window.innerWidth === lastWidth` → ignora), mesma proteção usada no listener global de `ScrollTrigger.refresh()` — evita reflow no aparecer/sumir da barra de endereço mobile.
 
-### Regras de animação aprovadas
+### Ciclo de vida (integração com `openProject()` / `closeProject()`)
 
-- Apenas `left` e `width` dos slides são animados.
-- Nenhuma outra propriedade CSS é animada nos slides (sem `transform`, `scale`, `filter`, `opacity`).
-- A imagem **NUNCA** é animada — permanece estática durante toda a transição.
-- O overlay, filtros e escurecimento foram **completamente removidos**.
-- Textos (título e subtítulo) aparecem/desaparecem via CSS transition com `transition-delay: 0.1s`.
-- O estado ativo do botão de navegação persiste durante toda a transição.
-
-### Comportamento das imagens (REGRAS IMOBILIÁRIAS)
-
-⚠️ **Estas regras são imutáveis.** Qualquer alteração futura deve respeitá-las:
-
-1. **Mesma escala base** — todas as imagens usam exatamente o mesmo fator de escala, calculado via `Math.max(scaleW, scaleH)` com base nas dimensões naturais e no tamanho do slide central (60%).
-2. **Mesma altura visual** — a altura percebida da imagem é idêntica em todos os 5 slides.
-3. **Escala fixa** — nenhuma imagem altera sua escala durante a navegação.
-4. **Sem zoom** — a imagem nunca cresce ou encolhe visualmente.
-5. **Sem deformação** — a proporção original é sempre preservada.
-6. **Centralizadas** — `translate(-50%, -50%)` mantém todas as imagens centralizadas.
-7. **Preenchimento total** — calcula-se o menor fator que cobre simultaneamente largura (60%) e altura do slide. Zero gaps em qualquer borda.
-8. **Janela de visualização** — o slide central revela mais área horizontal da fotografia; slides laterais revelam menos. A imagem é estática; o card funciona como moldura.
-9. **CSS mínimo nas imagens** — apenas `display: block` na folha de estilos. Todo dimensionamento é inline via JavaScript, calculado no `positionSlides()`.
-
-### Responsividade
-
-| Breakpoint (`getBreakpoint()`, `script.js:349-355`) | Slots | Comportamento |
-|---|---|---|
-| **Desktop** (`> 1200px`) | 5 | Experiência completa, proporções 6.5/13.5/60/13.5/6.5% |
-| **Notebook** (`1024px–1200px`) | 5 | Mesma lógica de 5 slots, proporções mais compactas: 8/16/52/16/8% |
-| **Tablet** (`750px–1024px`) | 3 | 3 slides visíveis, proporções 15/70/15% |
-| **Mobile** (`≤ 750px`) | 3 | 3 slides visíveis, proporções 10/80/10% |
-| **Small** (`≤ 480px`) | 3 (mesmo tier "mobile") | Mesmas proporções do mobile; só a fonte dos textos reduz via CSS |
-
-- Nos tiers de 3 slots, apenas as distâncias `-1, 0, 1` em relação ao slide ativo são exibidas; os demais slides ficam com `opacity: 0` e `pointer-events: none` (`script.js:426-436`) — não existe um array `hidden` separado, o efeito é obtido simplesmente não atribuindo slot a essas distâncias.
-- `getPCT()` (`script.js:357-365`) mapeia o breakpoint para `{ pct, slots }`; não há um `getProportions()` nem um parâmetro `hidden` no código atual.
-- **Altura do container:** o CSS define `.cascading-slider-collection { height: clamp(280px, 42vw, 420px); }` (`styles.css:1208`), mas o JavaScript sobrescreve isso com um valor **fixo de 420px** em todos os breakpoints via inline style (`const ch = 420;`, `script.js:370`, aplicado em `script.js:384-387`) — como estilo inline tem precedência sobre a regra de classe, **a altura não é responsiva na prática hoje**, apesar do clamp existir no CSS. Qualquer mudança futura que queira reativar a altura responsiva do CSS precisa remover essa sobrescrita fixa em `getSizes()`/`positionSlides()`.
-- As imagens são redimensionadas proporcionalmente a cada `positionSlides()`, garantindo que sempre cubram o slide (ver "Comportamento das imagens" acima).
-
-### Posicionamento
-
-- Slides usam `position: absolute` dentro de `.cascading-slider-list`.
-- Cada slide tem `top: 50%` e `transform: translateY(-50%)` para centralização vertical.
-- `z-index` é baseado na distância do centro (centro = 10, adjacentes = 9, extremos = 8).
-- `data-status` (active/near) é gerenciado pelo JavaScript e usado apenas para estilo do card ativo e visibilidade do texto.
+- `openProject()` cria a instância: `portfolioState.sliderInstance = initCascadingSlider(sliderList, project.photos)`, destruindo a anterior antes (`sliderInstance.destroy()`).
+- `closeProject()` chama `sliderInstance.destroy()` e zera `sliderList.innerHTML`.
+- `destroy()` remove: listeners dos botões prev/next, o `keydown` no `document` (única fonte de vazamento entre trocas de projeto — cada `initCascadingSlider()` registra o seu próprio, por isso a remoção explícita é obrigatória), o `resize` na `window`, e os `click` de cada slide.
 
 ### Regras para futuras alterações
 
-1. **Consulte esta documentação antes de modificar o carrossel.**
-2. Se uma alteração conflitar com estas regras, **as regras têm prioridade.**
-3. O comportamento das imagens (seção acima) é **imutável** — não alterar escala, altura visual, preenchimento ou centralização.
-4. A estrutura de 5 slides com proporções fixas **não deve ser alterada**.
-5. A curva de easing e duração podem ser ajustadas **apenas com aprovação explícita**.
-6. GSAP é a biblioteca oficial de animação para este componente — não migrar para CSS transitions, WAAPI ou outras.
-7. Testar em desktop, tablet, mobile e ultrawide antes de aprovar qualquer mudança.
+1. **Consulte esta documentação antes de modificar o cascading slider.**
+2. Se uma alteração conflitar com estas regras, **as regras têm prioridade**, salvo aprovação explícita do usuário em contrário.
+3. Manter o modelo "cada slide posicionado individualmente via `transform`/`clip-path` calculado em JS" — não reintroduzir um trilho `flex` com `transform` único.
+4. Manter a navegação circular com clonagem — não remover o loop sem aprovação explícita (é o oposto do que foi descontinuado em 24/07/2026: já houve reversão nos dois sentidos no mesmo dia).
+5. GSAP é a abordagem oficial deste componente — não trocar por CSS transition sem aprovação explícita.
+6. Testar em desktop, tablet e mobile antes de aprovar qualquer mudança.
 
 Sempre que algum codigo for alterado rodar os testes
 

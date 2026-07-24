@@ -405,6 +405,75 @@ function __perfCheckpoint(label) {
     console.log('[DEBUG-PERF] instrumentacao ativa. Use o site normalmente por 15-20s e toque no botao para copiar o log.');
 })();
 
+// === DEBUG TEMPORARIO — FASE 3, vao vazio abaixo do carrossel em Safari/
+// iPhone real (remover apos diagnostico) ===
+// So ativa com ?debug=layout ou ?debug=all na URL — nunca roda para usuarios
+// normais. Bloco autocontido, mesma estrategia dos blocos ?debug=scroll/
+// ?debug=perf acima: sem Mac disponivel pra abrir o Web Inspector do Safari
+// iOS, entao a captura roda direto no dispositivo real e o resultado sai via
+// clipboard. Botao aparece imediatamente (nao depende de detectar uma
+// anomalia) — abra o projeto no portfolio mobile, toque no botao, cole o
+// resultado. Nao regenerar script.min.js so por causa deste bloco — e
+// temporario, some quando o vao for diagnosticado/corrigido.
+(function initLayoutDebug() {
+    var params = new URLSearchParams(location.search);
+    var __dbg = params.get('debug');
+    if (__dbg !== 'layout' && __dbg !== 'all') return;
+
+    function collectSnapshot() {
+        var stage = document.querySelector('.portfolio-stage');
+        var gallery = document.querySelector('.portfolio-gallery');
+        var viewer = document.querySelector('.portfolio-viewer');
+        var header = document.querySelector('.portfolio-header');
+        return JSON.stringify({
+            stage: stage ? stage.getBoundingClientRect() : null,
+            gallery: gallery ? gallery.getBoundingClientRect() : null,
+            viewer: viewer ? viewer.getBoundingClientRect() : null,
+            header: header ? header.getBoundingClientRect() : null,
+            fontsReady: document.fonts.status,
+            windowHeight: window.innerHeight,
+            scrollY: window.scrollY,
+        });
+    }
+
+    function showCopyButton() {
+        var btn = document.createElement('button');
+        btn.textContent = '📐 Copiar snapshot de layout';
+        btn.style.cssText = 'position:fixed;top:20px;right:20px;z-index:999999;' +
+            'padding:14px 18px;background:#7C3AED;color:#fff;border:none;border-radius:8px;' +
+            'font-size:15px;font-weight:600;box-shadow:0 4px 12px rgba(0,0,0,0.3);';
+        btn.addEventListener('click', function () {
+            var payload = collectSnapshot();
+            console.log('[DEBUG-LAYOUT] ' + payload);
+
+            // navigator.clipboard.writeText() exige contexto seguro (HTTPS) —
+            // indisponivel testando via IP local em HTTP no Safari iOS. Fallback
+            // classico: textarea temporario com o texto selecionado (permite
+            // copiar manualmente com o gesto nativo de selecao do iOS) + alert()
+            // mostrando o mesmo conteudo, caso a selecao/copia manual falhe.
+            var textarea = document.createElement('textarea');
+            textarea.value = payload;
+            textarea.style.cssText = 'position:fixed;top:70px;right:20px;left:20px;' +
+                'z-index:999999;height:120px;font-size:12px;padding:8px;';
+            document.body.appendChild(textarea);
+            textarea.focus();
+            textarea.select();
+            textarea.setSelectionRange(0, payload.length);
+
+            btn.textContent = '📋 Selecionado — copie manualmente';
+            alert(payload);
+        });
+        document.body.appendChild(btn);
+    }
+
+    // Botao sempre disponivel desde o inicio — captura manual apos abrir um
+    // projeto no portfolio, sem necessidade de deteccao automatica.
+    if (document.body) showCopyButton();
+    else document.addEventListener('DOMContentLoaded', showCopyButton, { once: true });
+
+    console.log('[DEBUG-LAYOUT] instrumentacao ativa. Abra um projeto no portfolio e toque no botao para copiar o snapshot de layout.');
+})();
+
 // === DESIGN TOKENS (referência para edição) ===
 // Cores: --cor-preto-puro, --cor-branco-gelo, --cor-verde-floresta, --cor-verde-brilhante, --cor-verde-neon, --cor-bege-escuro, --cor-cinza-acastanhado, --cor-creme
 
@@ -833,292 +902,268 @@ const portfolioProjects = [
     }
 ];
 
-// === CASCADING SLIDER ENGINE (reusable) ===
-function createCascadingSlider(listEl, collectionEl, skipInitialRefresh) {
-    const slides = listEl.querySelectorAll('.cascading-slide');
-    const prevBtn = document.querySelector('.cascading-slider-button-prev');
-    const nextBtn = document.querySelector('.cascading-slider-button-next');
-    let currentIndex = 0;
-    const total = slides.length;
-
-    if (total === 0) return { goTo: function () { }, destroy: function () { } };
-
-    const DURATION = 0.70;
-    const CURVE = 'cubic-bezier(0.40, 0.00, 0.30, 1.00)';
-    let isTransitioning = false;
-
-    const PCT_DESKTOP = [0.065, 0.135, 0.60, 0.135, 0.065];
-    const PCT_NOTEBOOK = [0.08, 0.16, 0.52, 0.16, 0.08];
-    const PCT_TABLET = [0.15, 0.70, 0.15];
-    const PCT_MOBILE = [0.10, 0.80, 0.10];
-    const gap = 8;
-
-    listEl.style.display = '';
-    listEl.style.willChange = '';
-    listEl.style.backfaceVisibility = '';
-    listEl.style.transform = '';
-    listEl.style.width = '';
-    listEl.style.overflow = '';
-
-    slides.forEach((slide) => {
-        slide.style.position = 'absolute';
-        slide.style.flex = '';
-        slide.style.display = '';
-        slide.style.border = 'none';
-        slide.style.boxShadow = 'none';
-        slide.style.filter = 'none';
-        slide.style.margin = '0';
-        slide.style.willChange = 'left, width, opacity';
-        slide.style.backfaceVisibility = 'hidden';
-        slide.style.transform = '';
-        slide.style.transition = 'none';
-        slide.style.pointerEvents = '';
-
-        const img = slide.querySelector('.cascading-slide-image img');
-        if (img) {
-            img.style.width = 'auto';
-            img.style.height = '100%';
-            img.style.minWidth = '';
-            img.style.maxWidth = 'none';
-        }
-        const svg = slide.querySelector('.cascading-slide-image svg');
-        if (svg) {
-            svg.removeAttribute('viewBox');
-            svg.style.width = '100%';
-            svg.style.height = '100%';
-            svg.style.display = 'block';
-        }
-    });
-
-    function getBreakpoint() {
-        const w = window.innerWidth;
-        if (w <= 480) return 'mobile';
-        if (w <= 750) return 'tablet';
-        if (w <= 1200) return 'notebook';
-        return 'desktop';
+// === FOTO SLIDER ENGINE (slide horizontal simples, estilo Modus) ===
+// Substitui o antigo cascading slider (5 slots, GSAP left/width, travessia
+// circular) por um trilho flex unico: todos os cards se movem juntos via
+// transform: translateX() no container, sem card "dando a volta" e sem
+// crescer/encolher individual — o card central ja e maior por padrao (CSS).
+// === CASCADING SLIDER (Modus) ===
+// Extraido de cascading-slider/js/cascading-slider.js, adaptado para
+// inicializacao dinamica (chamado a cada openProject, com destroy() no
+// closeProject) em vez do padrao original "varre o DOM inteiro no
+// DOMContentLoaded". Logica de measure/layout/goTo mantida sem alteracoes.
+function initCascadingSlider(viewport, fotos) {
+    if (!viewport || !fotos || fotos.length === 0) {
+        return { destroy: function () { } };
     }
 
-    function getPCT() {
-        const bp = getBreakpoint();
-        switch (bp) {
-            case 'mobile': return { pct: PCT_MOBILE, slots: 3 };
-            case 'tablet': return { pct: PCT_TABLET, slots: 3 };
-            case 'notebook': return { pct: PCT_NOTEBOOK, slots: 5 };
-            default: return { pct: PCT_DESKTOP, slots: 5 };
-        }
-    }
+    var duration = 0.65;
+    var ease = 'power3.inOut';
+    var breakpoints = [
+        { maxWidth: 479, activeWidth: 0.78, siblingWidth: 0.08 },
+        { maxWidth: 767, activeWidth: 0.70, siblingWidth: 0.10 },
+        { maxWidth: 991, activeWidth: 0.60, siblingWidth: 0.10 },
+        { maxWidth: Infinity, activeWidth: 0.60, siblingWidth: 0.13 },
+    ];
 
-    function getSizes() {
-        const cw = listEl.offsetWidth;
-        const { pct, slots } = getPCT();
-        const ch = 420;
-        const totalGaps = gap * (slots - 1);
-        const usable = cw - totalGaps;
-        const ws = (slots === 3)
-            ? [Math.round(usable * pct[0]), Math.round(usable * pct[1]), Math.round(usable * pct[2])]
-            : pct.slice(0, 5).map(p => Math.round(usable * p));
-        return { containerWidth: cw, containerHeight: ch, ws, slots };
-    }
+    viewport.innerHTML = fotos.map(function (foto, i) {
+        return '<div class="cascading-slider__item" data-cascading-slide="" data-status="inactive" role="listitem" aria-roledescription="slide">' +
+            '<div class="cascading-slider__item-inner">' +
+            '<div class="cascading-slider__item-bg">' +
+            '<img ' + buildResponsiveImgAttrs(foto) + ' alt="Foto ' + (i + 1) + ' de ' + fotos.length + '" class="cascading-slider__img" draggable="false"' + (i === 0 ? ' loading="eager"' : ' loading="lazy"') + '>' +
+            '</div></div></div>';
+    }).join('');
 
-    function positionSlides(index) {
-        const { containerWidth, containerHeight, ws, slots } = getSizes();
+    var prevButton = document.querySelector('[data-cascading-slider-prev]');
+    var nextButton = document.querySelector('[data-cascading-slider-next]');
+    var slides = Array.from(viewport.querySelectorAll('[data-cascading-slide]'));
+    var totalSlides = slides.length;
 
-        slides.forEach((slide) => {
-            slide.style.transition = 'none';
-            slide.style.height = containerHeight + 'px';
-        });
-        listEl.style.height = containerHeight + 'px';
-        if (collectionEl) collectionEl.style.height = containerHeight + 'px';
-
-        const visibleByDist = {};
-        slides.forEach((slide, i) => {
-            let dist = i - index;
-            if (dist < -Math.floor(total / 2)) dist += total;
-            if (dist > Math.floor(total / 2)) dist -= total;
-            visibleByDist[dist] = slide;
-        });
-
-        const showSlide = (dist, slotStyle) => {
-            const slide = visibleByDist[dist];
-            if (!slide || !slotStyle) return;
-            const absDist = Math.abs(dist);
-            slide.style.transition = 'none';
-            slide.style.height = containerHeight + 'px';
-            slide.style.top = '50%';
-            slide.style.transform = 'translateY(-50%)';
-            slide.style.opacity = '1';
-            slide.style.zIndex = Math.max(1, 10 - absDist);
-            slide.style.pointerEvents = 'auto';
-            gsap.killTweensOf(slide);
-            gsap.to(slide, {
-                left: slotStyle.left + 'px',
-                width: slotStyle.width + 'px',
-                duration: DURATION,
-                ease: CURVE,
-                overwrite: true,
+    if (totalSlides < 9) {
+        var originalSlides = slides.slice();
+        while (slides.length < 9) {
+            originalSlides.forEach(function (original) {
+                var clone = original.cloneNode(true);
+                clone.setAttribute('data-clone', '');
+                viewport.appendChild(clone);
+                slides.push(clone);
             });
+        }
+        totalSlides = slides.length;
+    }
+
+    var activeIndex = 0;
+    var isAnimating = false;
+    var slideWidth = 0;
+    var slotCenters = {};
+    var slotWidths = {};
+
+    function readGap() {
+        var raw = getComputedStyle(viewport).getPropertyValue('--gap').trim();
+        if (!raw) return 0;
+        var temp = document.createElement('div');
+        temp.style.width = raw;
+        temp.style.position = 'absolute';
+        temp.style.visibility = 'hidden';
+        viewport.appendChild(temp);
+        var px = temp.offsetWidth;
+        viewport.removeChild(temp);
+        return px;
+    }
+
+    function getSettings() {
+        var windowWidth = window.innerWidth;
+        for (var i = 0; i < breakpoints.length; i++) {
+            if (windowWidth <= breakpoints[i].maxWidth) return breakpoints[i];
+        }
+        return breakpoints[breakpoints.length - 1];
+    }
+
+    function getOffset(slideIndex, fromIndex) {
+        if (fromIndex === undefined) fromIndex = activeIndex;
+        var distance = slideIndex - fromIndex;
+        var half = totalSlides / 2;
+        if (distance > half) distance -= totalSlides;
+        if (distance < -half) distance += totalSlides;
+        return distance;
+    }
+
+    function measure() {
+        var settings = getSettings();
+        var viewportWidth = viewport.offsetWidth;
+        var gap = readGap();
+
+        var activeSlideWidth = viewportWidth * settings.activeWidth;
+        var siblingSlideWidth = viewportWidth * settings.siblingWidth;
+        var farSlideWidth = Math.max(0, (viewportWidth - activeSlideWidth - 2 * siblingSlideWidth - 4 * gap) / 2);
+
+        slideWidth = activeSlideWidth;
+
+        var visibleSlots = [
+            { slot: -2, width: farSlideWidth },
+            { slot: -1, width: siblingSlideWidth },
+            { slot: 0, width: activeSlideWidth },
+            { slot: 1, width: siblingSlideWidth },
+            { slot: 2, width: farSlideWidth },
+        ];
+
+        var x = 0;
+        visibleSlots.forEach(function (def, i) {
+            slotCenters[String(def.slot)] = x + def.width / 2;
+            slotWidths[String(def.slot)] = def.width;
+            if (i < visibleSlots.length - 1) x += def.width + gap;
+        });
+
+        slotCenters['-3'] = slotCenters['-2'] - farSlideWidth / 2 - gap - farSlideWidth / 2;
+        slotWidths['-3'] = farSlideWidth;
+        slotCenters['3'] = slotCenters['2'] + farSlideWidth / 2 + gap + farSlideWidth / 2;
+        slotWidths['3'] = farSlideWidth;
+
+        slides.forEach(function (slide) {
+            slide.style.width = slideWidth + 'px';
+        });
+    }
+
+    function getSlideProps(offset) {
+        var clamped = Math.max(-3, Math.min(3, offset));
+        var slotWidth = slotWidths[String(clamped)];
+        var clipAmount = Math.max(0, (slideWidth - slotWidth) / 2);
+        var translateX = slotCenters[String(clamped)] - slideWidth / 2;
+
+        return {
+            x: translateX,
+            '--clip': clipAmount,
+            zIndex: 10 - Math.abs(clamped),
         };
+    }
 
-        const numSlots = ws.length;
-        const slotStyles = [];
-        let accumulatedLeft = 0;
-        for (let s = 0; s < numSlots; s++) {
-            slotStyles.push({ left: accumulatedLeft, width: ws[s] });
-            accumulatedLeft += ws[s] + gap;
+    function layout(animate, previousIndex) {
+        slides.forEach(function (slide, index) {
+            var offset = getOffset(index);
+
+            if (offset < -3 || offset > 3) {
+                if (animate && previousIndex !== undefined) {
+                    var previousOffset = getOffset(index, previousIndex);
+                    if (previousOffset >= -2 && previousOffset <= 2) {
+                        var exitSlot = previousOffset < 0 ? -3 : 3;
+                        gsap.to(slide, Object.assign({}, getSlideProps(exitSlot), {
+                            duration: duration,
+                            ease: ease,
+                            overwrite: true,
+                        }));
+                        return;
+                    }
+                }
+
+                var parkSlot = offset < 0 ? -3 : 3;
+                gsap.set(slide, getSlideProps(parkSlot));
+                return;
+            }
+
+            var props = getSlideProps(offset);
+            slide.setAttribute('data-status', offset === 0 ? 'active' : 'inactive');
+
+            if (animate) {
+                gsap.to(slide, Object.assign({}, props, {
+                    duration: duration,
+                    ease: ease,
+                    overwrite: true,
+                }));
+            } else {
+                gsap.set(slide, props);
+            }
+        });
+    }
+
+    function goTo(targetIndex) {
+        var normalizedTarget = ((targetIndex % totalSlides) + totalSlides) % totalSlides;
+        if (isAnimating || normalizedTarget === activeIndex) return;
+        isAnimating = true;
+
+        var previousIndex = activeIndex;
+        var travelDirection = getOffset(normalizedTarget, previousIndex) > 0 ? 1 : -1;
+
+        slides.forEach(function (slide, index) {
+            var currentOffset = getOffset(index, previousIndex);
+            var nextOffset = getOffset(index, normalizedTarget);
+            var wasInRange = currentOffset >= -3 && currentOffset <= 3;
+            var willBeVisible = nextOffset >= -2 && nextOffset <= 2;
+
+            if (!wasInRange && willBeVisible) {
+                var entrySlot = travelDirection > 0 ? 3 : -3;
+                gsap.set(slide, getSlideProps(entrySlot));
+            }
+
+            var wasInvisible = Math.abs(currentOffset) >= 3;
+            var willBeStaging = Math.abs(nextOffset) === 3;
+            var crossesSides = currentOffset * nextOffset < 0;
+            if (wasInvisible && willBeStaging && crossesSides) {
+                gsap.set(slide, getSlideProps(nextOffset > 0 ? 3 : -3));
+            }
+        });
+
+        activeIndex = normalizedTarget;
+        layout(true, previousIndex);
+        gsap.delayedCall(duration + 0.05, function () { isAnimating = false; });
+    }
+
+    function onPrevClick() {
+        goTo(activeIndex - 1);
+        if (prevButton) {
+            prevButton.classList.add('hover-active');
+            setTimeout(function () { prevButton.classList.remove('hover-active'); }, 200);
         }
-
-        if (slots === 3) {
-            showSlide(-1, slotStyles[0]);
-            showSlide(0, slotStyles[1]);
-            showSlide(1, slotStyles[2]);
-            slides.forEach(slide => {
-                const sd = parseInt(Object.keys(visibleByDist).find(k => visibleByDist[k] === slide) || '');
-                if (sd < -1 || sd > 1) {
-                    slide.style.opacity = '0';
-                    slide.style.pointerEvents = 'none';
-                }
-            });
-        } else {
-            for (let d = -2; d <= 2; d++) {
-                showSlide(d, slotStyles[d + 2]);
-            }
+    }
+    function onNextClick() {
+        goTo(activeIndex + 1);
+        if (nextButton) {
+            nextButton.classList.add('hover-active');
+            setTimeout(function () { nextButton.classList.remove('hover-active'); }, 200);
         }
-
-        Object.entries(visibleByDist).forEach(([distStr, slide]) => {
-            slide.removeAttribute('data-status');
-            const d = parseInt(distStr);
-            if (d === 0) slide.setAttribute('data-status', 'active');
-            else if (Math.abs(d) <= 1) slide.setAttribute('data-status', 'near');
-        });
-
-        Object.values(visibleByDist).forEach((slide) => {
-            const isActive = slide.getAttribute('data-status') === 'active';
-            const content = slide.querySelector('.cascading-slide-content');
-            if (content) {
-                if (isActive) {
-                    content.style.display = 'block';
-                    content.style.transition = 'opacity ' + DURATION + 's ' + CURVE + ', transform ' + DURATION + 's ' + CURVE;
-                    content.style.transitionDelay = '0.1s';
-                    content.style.opacity = '1';
-                    content.style.transform = 'translateY(0)';
-                } else {
-                    content.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
-                    content.style.transitionDelay = '0s';
-                    content.style.opacity = '0';
-                    content.style.transform = 'translateY(15px)';
-                }
-            }
-        });
-
-        const centerW = ws[Math.floor(ws.length / 2)];
-
-        slides.forEach((slide) => {
-            const img = slide.querySelector('.cascading-slide-image img');
-            if (img) {
-                if (img.complete && img.naturalWidth > 0 && img.naturalHeight > 0) {
-                    const scale = Math.max(
-                        centerW / img.naturalWidth,
-                        containerHeight / img.naturalHeight
-                    );
-                    img.style.width = Math.round(img.naturalWidth * scale) + 'px';
-                    img.style.height = Math.round(img.naturalHeight * scale) + 'px';
-                } else {
-                    img.style.width = centerW + 'px';
-                    img.style.height = containerHeight + 'px';
-                    img.addEventListener('load', function onImgLoad() {
-                        if (img.naturalWidth > 0 && img.naturalHeight > 0) {
-                            const scale = Math.max(
-                                centerW / img.naturalWidth,
-                                containerHeight / img.naturalHeight
-                            );
-                            img.style.width = Math.round(img.naturalWidth * scale) + 'px';
-                            img.style.height = Math.round(img.naturalHeight * scale) + 'px';
-                        }
-                        img.removeEventListener('load', onImgLoad);
-                    });
-                }
-            }
-        });
     }
-
-    function initSlides() {
-        positionSlides(currentIndex);
-    }
-
-    function goTo(idx, btn) {
-        if (isTransitioning || idx === currentIndex || total <= 1) return;
-        isTransitioning = true;
-        // Ancora de scroll: captura a posicao ANTES de qualquer mudanca de DOM,
-        // igual openProject/closeProject. positionSlides() so reposiciona
-        // left/width (a altura do container e fixa via clamp/JS), entao normalmente
-        // nao ha mudanca de altura de documento aqui — mas ancorar continua sendo
-        // uma rede de seguranca de baixo custo contra qualquer desvio de scroll.
-        var scrollAnchor = window.scrollY;
-        currentIndex = idx;
-        positionSlides(currentIndex);
-        if (btn) btn.classList.add('hover-active');
-        setTimeout(function () {
-            isTransitioning = false;
-            if (btn) btn.classList.remove('hover-active');
-            if (window.ScrollTrigger) ScrollTrigger.refresh();
-            window.scrollTo({ top: scrollAnchor, behavior: 'instant' });
-        }, (DURATION + 0.02) * 1000);
-    }
-
-    slides.forEach(function (slide, i) { slide.addEventListener('click', function () { goTo(i); }); });
-    if (prevBtn) prevBtn.addEventListener('click', function () { goTo((currentIndex - 1 + total) % total, prevBtn); });
-    if (nextBtn) nextBtn.addEventListener('click', function () { goTo((currentIndex + 1) % total, nextBtn); });
-
-    var keyHandler = function (e) {
-        if (e.key === 'ArrowLeft') goTo((currentIndex - 1 + total) % total);
-        if (e.key === 'ArrowRight') goTo((currentIndex + 1) % total);
+    var keyHandler = function (event) {
+        if (event.key === 'ArrowLeft') goTo(activeIndex - 1);
+        if (event.key === 'ArrowRight') goTo(activeIndex + 1);
     };
-    document.addEventListener('keydown', keyHandler);
-
-    var resizeTimeout;
+    var slideClickHandlers = slides.map(function (slide, index) {
+        var handler = function () { if (index !== activeIndex) goTo(index); };
+        slide.addEventListener('click', handler);
+        return handler;
+    });
+    // Protecao contra resize disparado so por mudanca de ALTURA (barra de
+    // endereco mobile) — mesmo padrao do listener global de ScrollTrigger.
+    var lastWidth = window.innerWidth;
+    var resizeTimer;
     var resizeHandler = function () {
-        clearTimeout(resizeTimeout);
-        resizeTimeout = setTimeout(function () {
-            initSlides();
-        }, 150);
+        if (window.innerWidth === lastWidth) return;
+        lastWidth = window.innerWidth;
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(function () {
+            measure();
+            layout(false);
+        }, 100);
     };
+
+    if (prevButton) prevButton.addEventListener('click', onPrevClick);
+    if (nextButton) nextButton.addEventListener('click', onNextClick);
+    document.addEventListener('keydown', keyHandler);
     window.addEventListener('resize', resizeHandler);
 
-    requestAnimationFrame(function () {
-        initSlides();
-        // O slider fixa a altura do container em 420px (ver getSizes()), sempre
-        // maior que o clamp() do CSS em telas estreitas — isso muda a altura da
-        // pagina DEPOIS que os ScrollTrigger.refresh() de load/fonts.ready ja
-        // rodaram (initCascadingSlider e chamado na fila idle, depois do load),
-        // deixando os marcadores de todas as secoes abaixo desatualizados. Disparar
-        // o proprio refresh aqui, uma unica vez na montagem inicial, e robusto a
-        // qualquer mudanca futura na ordem/timing do scheduling em initPage().
-        //
-        // skipInitialRefresh: quando o carrossel de fotos do portfolio e (re)criado
-        // a cada abertura de projeto (openProject), esse refresh automatico disparava
-        // sem nenhuma ancora de scroll — causa confirmada de salto ao abrir. openProject
-        // ja faz seu proprio refresh+restauracao de scroll no momento certo (depois da
-        // transicao de altura do palco terminar), entao pula esse aqui nesse caso.
-        if (!skipInitialRefresh && typeof ScrollTrigger !== 'undefined') {
-            ScrollTrigger.refresh();
-        }
-    });
+    measure();
+    layout(false);
 
     return {
-        goTo: goTo,
         destroy: function () {
+            if (prevButton) prevButton.removeEventListener('click', onPrevClick);
+            if (nextButton) nextButton.removeEventListener('click', onNextClick);
             document.removeEventListener('keydown', keyHandler);
             window.removeEventListener('resize', resizeHandler);
+            slides.forEach(function (slide, index) {
+                slide.removeEventListener('click', slideClickHandlers[index]);
+            });
+            viewport.innerHTML = '';
         }
     };
-}
-
-// === CASCADING SLIDER (legacy wrapper for initPage) ===
-function initCascadingSlider() {
-    var list = document.getElementById('cascadingSliderList');
-    if (!list || list.querySelectorAll('.cascading-slide').length === 0) return;
-    var collection = document.querySelector('.cascading-slider-collection');
-    createCascadingSlider(list, collection);
 }
 
 // === PORTFOLIO GALLERY + VIEWER ENGINE ===
@@ -1162,11 +1207,11 @@ function initPortfolioGallery() {
     var backBtn = document.getElementById('portfolioBackBtn');
     var viewerTitle = document.getElementById('portfolioViewerTitle');
     var viewerSubtitle = document.getElementById('portfolioViewerSubtitle');
-    var sliderList = document.getElementById('cascadingSliderList');
-    var sliderCollection = document.querySelector('.cascading-slider-collection');
-    var sliderNav = document.querySelector('.cascading-slider-nav');
-    var prevBtn = document.querySelector('.cascading-slider-button-prev');
-    var nextBtn = document.querySelector('.cascading-slider-button-next');
+    var sliderList = document.getElementById('fotoSliderTrilha');
+    var sliderCollection = document.querySelector('.cascading-slider__collection');
+    var sliderNav = document.querySelector('.cascading-slider__nav');
+    var prevBtn = document.querySelector('[data-cascading-slider-prev]');
+    var nextBtn = document.querySelector('[data-cascading-slider-next]');
 
     if (!grid || !gallery || !viewer || !sliderList) return;
 
@@ -1277,33 +1322,12 @@ function initPortfolioGallery() {
         gsap.set(sliderNav, { opacity: 0, pointerEvents: 'none' });
 
         // === Build slides IMEDIATAMENTE — carrossel montado antes de a viewport cobrir ===
-        sliderList.innerHTML = '';
-        project.photos.forEach(function (photo, i) {
-            var slide = document.createElement('div');
-            slide.className = 'cascading-slide';
-            slide.setAttribute('data-status', i === 0 ? 'active' : 'inactive');
-            slide.innerHTML =
-                '<div class="cascading-slide-inner">' +
-                '<div class="cascading-slide-image">' +
-                '<img ' + buildResponsiveImgAttrs(photo) + ' alt="' + project.name + ' foto ' + (i + 1) + '"' + (i === 0 ? '' : ' loading="lazy"') + '>' +
-                '<div class="cascading-slide-overlay"></div>' +
-                '</div>' +
-                '<div class="cascading-slide-content">' +
-                '<h3 class="cascading-slide-title">' + project.name + '</h3>' +
-                '<p class="cascading-slide-subtitle">' + (i + 1) + ' / ' + project.photos.length + '</p>' +
-                '</div>' +
-                '</div>';
-            sliderList.appendChild(slide);
-        });
-        sliderList.style.display = '';
-
         // Inicia o carrossel imediatamente (atrás da viewport — invisível)
         if (portfolioState.sliderInstance) portfolioState.sliderInstance.destroy();
-        portfolioState.sliderInstance = createCascadingSlider(sliderList, sliderCollection, true);
+        portfolioState.sliderInstance = initCascadingSlider(sliderList, project.photos);
 
-        var allSlides = sliderList.querySelectorAll('.cascading-slide');
-        var activeSlide = sliderList.querySelector('.cascading-slide[data-status="active"]');
-        var sideSlides = sliderList.querySelectorAll('.cascading-slide:not([data-status="active"])');
+        var allSlides = sliderList.querySelectorAll('[data-cascading-slide]');
+        var sideSlides = sliderList.querySelectorAll('[data-cascading-slide]:not([data-status="active"])');
         gsap.set(allSlides, { pointerEvents: 'none' });
         // Slides laterais começam invisíveis — aparecem só no stagger
         gsap.set(sideSlides, { opacity: 0 });
@@ -1386,16 +1410,6 @@ function initPortfolioGallery() {
             }, 'o+=' + (contentBase + 0.32 + i * 0.04));
         });
 
-        // Conteúdo do slide ativo
-        var activeContent = activeSlide ? activeSlide.querySelector('.cascading-slide-content') : null;
-        if (activeContent) {
-            tl.to(activeContent, {
-                opacity: 1,
-                duration: 0.35,
-                ease: 'power2.out'
-            }, 'o+=' + (contentBase + 0.36));
-        }
-
         // Libera pointer events
         tl.set(allSlides, { pointerEvents: 'auto' }, 'o+=' + (contentBase + 0.55));
         tl.set(viewer, { pointerEvents: 'auto' }, 'o+=' + (contentBase + 0.55));
@@ -1412,7 +1426,7 @@ function initPortfolioGallery() {
         stage.style.overflow = 'hidden';
 
         var otherCards = Array.from(grid.querySelectorAll('.portfolio-card:not([data-project-index="' + portfolioState.currentProjectIndex + '"])'));
-        var allSlides = sliderList.querySelectorAll('.cascading-slide');
+        var allSlides = sliderList.querySelectorAll('[data-cascading-slide]');
 
         viewer.style.pointerEvents = 'none';
         gsap.set(allSlides, { pointerEvents: 'none' });
@@ -2493,9 +2507,10 @@ function initPage() {
         ]);
 
         // Grupo B — decorativo ou sem urgencia de estar pronto ao rolar
-        // (particulas do hero, handlers de clique/hover/form, o carrossel
-        // cascata do portfolio que nunca tem slides no load, e o fallback de
+        // (particulas do hero, handlers de clique/hover/form, e o fallback de
         // seguranca que so importa como rede depois que o Grupo A ja rodou).
+        // O foto-slider (fotos do projeto aberto) nao entra aqui: ele so e
+        // criado sob demanda em openProject, nunca no load da pagina.
         // Mantido no scheduling individual encadeado original.
         runQueueWhenIdle([
             createParticles,
@@ -2503,7 +2518,6 @@ function initPage() {
             initServicesInteraction,
             initContactForm,
             initCustomSelect,
-            initCascadingSlider,
             initScrollRevealFallback,
         ]);
     }

@@ -1393,159 +1393,71 @@ h6 {
     color: var(--color-text-primary);
 }
 
-/* === CASCADING SLIDER === */
+/* === Cascading Slider (Modus) === */
 .cascading-slider {
     position: relative;
     width: 100%;
 }
 
-.cascading-slider-collection {
+.cascading-slider__collection {
+    width: 100%;
+}
+
+.cascading-slider__list {
     width: 100%;
     height: clamp(280px, 42vw, 420px);
+    position: relative;
     overflow: hidden;
     border-radius: 8px;
     background: transparent;
     border: 1px solid var(--color-border-light);
+    --gap: 0.5em;
 }
 
-.cascading-slider-list {
-    position: relative;
-    width: 100%;
-}
-
-.cascading-slide {
-    border-radius: 8px;
-    overflow: hidden;
+.cascading-slider__item {
+    color: var(--cor-branco-gelo);
     cursor: pointer;
+    will-change: transform, clip-path, width;
+    height: 100%;
+    clip-path: inset(0px calc(var(--clip) * 1px) round var(--radius));
+    -webkit-user-select: none;
+    user-select: none;
+    position: absolute;
+    inset: 0% auto auto 0%;
+    --clip: 0;
+    --radius: 8px;
 }
 
-.cascading-slide[data-status="active"] {
-    box-shadow: 0 20px 60px var(--color-shadow-hover);
-    border: 1px solid rgba(42, 135, 62, 0.2);
+.cascading-slider__item[data-status="active"] {
+    cursor: default;
 }
 
-.cascading-slide-inner {
+.cascading-slider__item-inner {
     width: 100%;
     height: 100%;
     position: relative;
+    overflow: hidden;
+    border-radius: 8px;
     background: var(--color-bg-surface);
-    border-radius: 8px;
-    overflow: hidden;
 }
 
-.cascading-slide-image {
+.cascading-slider__item-bg {
+    z-index: 0;
     position: absolute;
-    inset: 0;
-    overflow: hidden;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    inset: 0%;
 }
 
-.cascading-slide-image img {
+.cascading-slider__img {
     display: block;
-    width: auto;
-    height: 100%;
-    max-width: none;
-    max-height: none;
     object-fit: cover;
-    object-position: center center;
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-}
-
-.cascading-slide-image svg {
-    display: block;
     width: 100%;
     height: 100%;
-}
-
-.cascading-slide-image svg rect:first-child {
-    fill: var(--color-bg-surface);
-}
-
-.cascading-slide-overlay {
     position: absolute;
-    inset: 0;
-    background: transparent;
-    pointer-events: none;
-    border-radius: 8px;
-    z-index: 1;
-}
-
-.cascading-slide-content {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    padding: 14px 18px;
-    pointer-events: none;
-    opacity: 0;
-    transform: translateY(15px);
-    z-index: 2;
-    transition: opacity 0.70s cubic-bezier(0.33, 0.00, 0.30, 1.00), transform 0.70s cubic-bezier(0.33, 0.00, 0.30, 1.00);
-}
-
-.cascading-slide[data-status="active"] .cascading-slide-content {
-    opacity: 1;
-    transform: translateY(0);
-    transition-delay: 0.15s;
-}
-
-@media (max-width: 750px) {
-    .cascading-slide-title {
-        font-size: 14px;
-    }
-
-    .cascading-slide-subtitle {
-        font-size: 11px;
-    }
-}
-
-@media (max-width: 480px) {
-    .cascading-slide-title {
-        font-size: 13px;
-        margin-bottom: 2px;
-    }
-
-    .cascading-slide-subtitle {
-        font-size: 10px;
-    }
-}
-
-.cascading-slide-content::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.65) 0%, rgba(0, 0, 0, 0.15) 60%, transparent 100%);
-    pointer-events: none;
-    border-radius: 0 0 8px 8px;
-}
-
-.cascading-slide-title {
-    font-family: var(--font-primary);
-    font-size: 18px;
-    font-weight: 700;
-    color: #FFFFFF;
-    margin-bottom: 4px;
-    position: relative;
-    z-index: 1;
-    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.25), 0 2px 12px rgba(0, 0, 0, 0.12);
-}
-
-.cascading-slide-subtitle {
-    font-size: 13px;
-    color: #FFFFFF;
-    position: relative;
-    z-index: 1;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+    inset: 0%;
 }
 
 /* Navigation */
-.cascading-slider-nav {
+.cascading-slider__nav {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1553,9 +1465,10 @@ h6 {
     margin-top: 30px;
 }
 
-.cascading-slider-button {
+.cascading-slider__button {
     width: 52px;
     height: 52px;
+    padding: 12px;
     border: 1px solid var(--color-border-subtle);
     border-radius: 17%;
     background: var(--color-bg-surface);
@@ -1569,24 +1482,18 @@ h6 {
     -webkit-tap-highlight-color: transparent;
 }
 
-.cascading-slider-button.hover-active {
+.cascading-slider__button.hover-active {
     border-color: var(--color-accent-primary);
     background: rgba(42, 135, 62, 0.04);
     transform: scale(1.1);
 }
 
-.cascading-slider-button.touch-active {
-    border-color: var(--color-accent-primary);
-    background: rgba(42, 135, 62, 0.08);
-    transform: scale(1.08);
-}
-
-.cascading-slider-button svg {
+.cascading-slider__button-arrow {
     width: 24px;
     height: 24px;
 }
 
-.cascading-slider-button-prev svg {
+.cascading-slider__button-arrow.is--prev {
     transform: rotate(180deg);
 }
 
@@ -1904,10 +1811,46 @@ h6 {
     }
 }
 
+/* Mantido em 2 colunas (nao 1) abaixo de 640px de proposito: .portfolio-stage
+   e .portfolio-viewer compartilham grid-area (ver .portfolio-stage acima) e a
+   altura da celula e sempre o MAIOR entre galeria e viewer, sem excecao — essa
+   invariante e o que evita salto de scroll ao abrir/fechar projeto (ver commit
+   867b5f2). Com 1 coluna, os 6 cards empilhados ficavam bem mais altos que o
+   viewer aberto, sobrando um vao vazio grande abaixo do carrossel. Em 2
+   colunas a galeria fica proxima da altura do viewer, sem precisar tirar
+   nenhum dos dois do fluxo do grid. */
 @media (max-width: 640px) {
     .portfolio-gallery-grid {
-        grid-template-columns: 1fr;
         gap: 16px;
+    }
+
+    /* Cards mais altos em mobile — 16/10 deixava os cards baixos demais em
+       2 colunas (167x104px em 390px de viewport); 4/3 preenche melhor o
+       espaco sem ficar quadrado. Nao altera desktop/tablet (aspect-ratio
+       base continua 16/10 em .portfolio-card). */
+    .portfolio-card {
+        aspect-ratio: 4 / 3;
+    }
+}
+
+/* Label do card 10% menor em mobile (15px -> 13.5px) — pedido explicito
+   apos revisao de screenshot real em iPhone; nao mexe no font-size base
+   (desktop/tablet) em .portfolio-card-name. */
+@media (max-width: 767px) {
+    .portfolio-card-name {
+        font-size: 13.5px;
+    }
+
+    /* Causa real do vao vazio abaixo dos cards, confirmada com dados de
+       Safari/iPhone real via ?debug=layout: .portfolio-stage mede exatamente
+       igual a galeria (515px, sem sobra) — nao e um bug de altura do grid.
+       O vao vem do padding-bottom de 100px herdado de --section-padding
+       (@media max-width:768px, ver .portfolio-gallery-section acima),
+       somado ao padding-top da proxima secao. Reduzido so aqui (nao na
+       variavel global --section-padding, que e compartilhada por todas as
+       secoes do site) para nao afetar o espacamento de nenhuma outra secao. */
+    .portfolio-gallery-section {
+        padding-bottom: 40px;
     }
 }
 

@@ -430,26 +430,30 @@
                     <div class="portfolio-viewer-title" id="portfolioViewerTitle"></div>
                     <div class="portfolio-viewer-subtitle" id="portfolioViewerSubtitle"></div>
 
-                    <!-- Carrossel Premium (reutilizado) -->
-                    <div class="cascading-slider" aria-label="Fotos do projeto" aria-roledescription="carousel">
-                        <div class="cascading-slider-collection">
-                            <div class="cascading-slider-list" id="cascadingSliderList">
+                    <!-- Cascading Slider (Modus) -->
+                    <div class="cascading-slider" data-cascading-slider-wrap="" aria-label="Fotos do projeto"
+                        aria-roledescription="carousel">
+                        <div class="cascading-slider__collection">
+                            <div class="cascading-slider__list" id="fotoSliderTrilha" data-cascading-viewport=""
+                                role="list">
                                 <!-- Slides populados dinamicamente via JS -->
                             </div>
                         </div>
-                        <nav class="cascading-slider-nav" aria-label="slider navigation">
-                            <button class="cascading-slider-button cascading-slider-button-prev"
-                                aria-label="previous slide">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <nav class="cascading-slider__nav" aria-label="slider navigation">
+                            <button class="cascading-slider__button" data-cascading-slider-prev=""
+                                aria-label="Foto anterior">
+                                <svg class="cascading-slider__button-arrow is--prev" width="24" height="24"
+                                    viewBox="0 0 24 24" fill="none">
                                     <path d="M14 19L21 12L14 5" stroke="currentColor" stroke-miterlimit="10"
                                         stroke-width="1.5" />
                                     <path d="M21 12H2" stroke="currentColor" stroke-miterlimit="10"
                                         stroke-width="1.5" />
                                 </svg>
                             </button>
-                            <button class="cascading-slider-button cascading-slider-button-next"
-                                aria-label="next slide">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <button class="cascading-slider__button" data-cascading-slider-next=""
+                                aria-label="Próxima foto">
+                                <svg class="cascading-slider__button-arrow" width="24" height="24" viewBox="0 0 24 24"
+                                    fill="none">
                                     <path d="M14 19L21 12L14 5" stroke="currentColor" stroke-miterlimit="10"
                                         stroke-width="1.5" />
                                     <path d="M21 12H2" stroke="currentColor" stroke-miterlimit="10"

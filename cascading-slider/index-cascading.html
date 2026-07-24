@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cascading Slider — Demo</title>
+  <link rel="stylesheet" href="css/cascading-slider.css">
+
+  <!-- Estilos apenas para a página de demonstração (NÃO fazem parte do componente) -->
+  <style>
+    body {
+      margin: 0;
+      background: #14141a;
+      font-family: Arial, sans-serif;
+      padding: 4rem 1.5rem;
+      box-sizing: border-box;
+    }
+    p {
+      margin: 0;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===================== INÍCIO DO COMPONENTE CASCADING SLIDER ===================== -->
+  <div aria-label="Featured content" aria-roledescription="carousel" class="cascading-slider" data-cascading-slider-wrap="">
+    <div class="cascading-slider__collection">
+      <div class="cascading-slider__list" data-cascading-viewport="" role="list">
+
+        <div aria-roledescription="slide" class="cascading-slider__item" data-cascading-slide="" role="listitem">
+          <div class="cascading-slider__item-inner">
+            <div class="cascading-slider__item-bg">
+              <img draggable="false" loading="eager" alt="" class="cascading-slider__img"
+                   src="https://cdn.prod.website-files.com/69a1a5fdd9259a187d153f58/69de3bbb57eaa943de0215f0_Silo%20Amerika.jpg">
+            </div>
+            <div class="cascading-slider__item-content">
+              <h3 class="cascading-slider__h">Silo Amerika</h3>
+              <p class="margin-none">Rotterdam</p>
+            </div>
+          </div>
+        </div>
+
+        <div aria-roledescription="slide" class="cascading-slider__item" data-cascading-slide="" role="listitem">
+          <div class="cascading-slider__item-inner">
+            <div class="cascading-slider__item-bg">
+              <img draggable="false" loading="eager" alt="" class="cascading-slider__img"
+                   src="https://cdn.prod.website-files.com/69a1a5fdd9259a187d153f58/69de3ba72232e9886613baa0_Open%20Studios.jpg">
+            </div>
+            <div class="cascading-slider__item-content">
+              <h3 class="cascading-slider__h">Johann Siegerstraat 16-18</h3>
+              <p class="margin-none">Amsterdam</p>
+            </div>
+          </div>
+        </div>
+
+        <div aria-roledescription="slide" class="cascading-slider__item" data-cascading-slide="" role="listitem">
+          <div class="cascading-slider__item-inner">
+            <div class="cascading-slider__item-bg">
+              <img draggable="false" loading="eager" alt="" class="cascading-slider__img"
+                   src="https://cdn.prod.website-files.com/69a1a5fdd9259a187d153f58/69de3b99bb0a66cbe9ab6aac_Based%20In.jpg">
+            </div>
+            <div class="cascading-slider__item-content">
+              <h3 class="cascading-slider__h">Based In</h3>
+              <p class="margin-none">Hoogvliet Rotterdam</p>
+            </div>
+          </div>
+        </div>
+
+        <div aria-roledescription="slide" class="cascading-slider__item" data-cascading-slide="" role="listitem">
+          <div class="cascading-slider__item-inner">
+            <div class="cascading-slider__item-bg">
+              <img draggable="false" loading="eager" alt="" class="cascading-slider__img"
+                   src="https://cdn.prod.website-files.com/69a1a5fdd9259a187d153f58/69a58d0ff41a0976eda2e6f5_ChatGPT%20Image%20Mar%202%2C%202026%2C%2002_13_30%20PM.avif">
+            </div>
+            <div class="cascading-slider__item-content">
+              <h3 class="cascading-slider__h">Van Aerssenstraat</h3>
+              <p class="margin-none">Den Haag</p>
+            </div>
+          </div>
+        </div>
+
+        <div aria-roledescription="slide" class="cascading-slider__item" data-cascading-slide="" role="listitem">
+          <div class="cascading-slider__item-inner">
+            <div class="cascading-slider__item-bg">
+              <img draggable="false" loading="eager" alt="" class="cascading-slider__img"
+                   src="https://cdn.prod.website-files.com/69a1a5fdd9259a187d153f58/69de3b8d661e9e021cc142a5_Glasgebouw.jpg">
+            </div>
+            <div class="cascading-slider__item-content">
+              <h3 class="cascading-slider__h">Glasgebouw</h3>
+              <p class="margin-none">Eindhoven</p>
+            </div>
+          </div>
+        </div>
+
+        <div aria-roledescription="slide" class="cascading-slider__item" data-cascading-slide="" role="listitem">
+          <div class="cascading-slider__item-inner">
+            <div class="cascading-slider__item-bg">
+              <img draggable="false" loading="eager" alt="" class="cascading-slider__img"
+                   src="https://cdn.prod.website-files.com/69a1a5fdd9259a187d153f58/69de3b83f491f8a8eec224a5_Amstelwood.jpg">
+            </div>
+            <div class="cascading-slider__item-content">
+              <h3 class="cascading-slider__h">Amstelwood</h3>
+              <p class="margin-none">Amstelveen</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <nav aria-label="slider navigation" class="cascading-slider__nav">
+      <button aria-label="previous slide" class="cascading-slider__button" data-cascading-slider-prev="">
+        <svg xmlns="http://www.w3.org/2000/svg" width="100%" viewBox="0 0 24 24" fill="none" class="cascading-slider__button-arrow is--prev">
+          <path d="M14 19L21 12L14 5" stroke="currentColor" stroke-miterlimit="10" stroke-width="1.5"></path>
+          <path d="M21 12H2" stroke="currentColor" stroke-miterlimit="10" stroke-width="1.5"></path>
+        </svg>
+      </button>
+      <button aria-label="next slide" class="cascading-slider__button" data-cascading-slider-next="">
+        <svg xmlns="http://www.w3.org/2000/svg" width="100%" viewBox="0 0 24 24" fill="none" class="cascading-slider__button-arrow">
+          <path d="M14 19L21 12L14 5" stroke="currentColor" stroke-miterlimit="10" stroke-width="1.5"></path>
+          <path d="M21 12H2" stroke="currentColor" stroke-miterlimit="10" stroke-width="1.5"></path>
+        </svg>
+      </button>
+    </nav>
+  </div>
+  <!-- ===================== FIM DO COMPONENTE CASCADING SLIDER ===================== -->
+
+  <!-- GSAP core: obrigatório, deve ser carregado ANTES do script do slider -->
+  <script src="js/gsap.min.js"></script>
+  <script src="js/cascading-slider.js"></script>
+
+</body>
+</html>
