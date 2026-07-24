@@ -780,12 +780,11 @@ function initCounters() {
     });
 }
 
-// Gera atributos srcset/sizes para imagens de placeholder que têm variantes -mobile/-desktop geradas no build manual de otimização (ver RELATORIO-PERFORMANCE.md)
+// As variantes -mobile/-desktop dos placeholders (ver RELATORIO-PERFORMANCE.md)
+// foram removidas do repositorio numa limpeza de assets; so a versao base
+// .webp existe hoje, entao o srcset foi removido e cada imagem usa apenas src.
 function buildResponsiveImgAttrs(src) {
-    var match = src.match(/^(.*\/placeholder-obra-\d+)\.webp$/);
-    if (!match) return 'src="' + src + '"';
-    var base = match[1];
-    return 'src="' + base + '-desktop.webp" srcset="' + base + '-mobile.webp 800w, ' + base + '-desktop.webp 1280w" sizes="(max-width: 750px) 80vw, 60vw"';
+    return 'src="' + src + '"';
 }
 
 // === PORTFOLIO PROJECTS DATA ===
