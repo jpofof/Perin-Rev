@@ -2183,7 +2183,7 @@ h6 {
 
 .form-static-input {
     width: 100%;
-    padding: 14px 20px;
+    padding: 18px 20px;
     background: var(--color-bg-surface);
     border: 1px solid var(--color-border-light);
     border-radius: 12px;
@@ -2273,7 +2273,7 @@ h6 {
 
 .custom-select-trigger {
     width: 100%;
-    padding: 30px 48px 10px 20px;
+    padding: 22px 48px 10px 20px;
     background: var(--color-bg-surface);
     border: 1px solid var(--color-border-light);
     border-radius: 12px;
@@ -2597,7 +2597,7 @@ h6 {
 }
 
 .form-static-group .form-valid-icon {
-    top: calc(50% + 6px);
+    top: calc(50% + 13px);
 }
 
 @keyframes errorSlideIn {
