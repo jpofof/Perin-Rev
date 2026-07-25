@@ -3029,7 +3029,7 @@ h6 {
 }
 
 .faq-header {
-    margin-bottom: 48px;
+    margin-bottom: 56px;
 }
 
 .faq-main-title {
@@ -3053,13 +3053,13 @@ h6 {
 
 .faq-question {
     font-family: var(--font-primary);
-    font-size: 17px;
-    font-weight: 600;
+    font-size: 18px;
+    font-weight: 700;
     color: var(--color-text-primary);
     cursor: pointer;
     list-style: none;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: space-between;
     gap: 16px;
 }
@@ -3073,6 +3073,7 @@ h6 {
     flex-shrink: 0;
     width: 20px;
     height: 20px;
+    margin-top: 4px;
 }
 
 .faq-icon::before,
