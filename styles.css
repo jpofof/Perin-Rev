@@ -1493,7 +1493,11 @@ h6 {
     color: var(--color-text-primary);
 }
 
-/* === Cascading Slider (Modus) === */
+/* === Cascading Slider (Modus) — galeria do portfolio === */
+/* Cada slide e um projeto (uma foto de conclusao + nome), nao mais fotos de
+   um projeto aberto — o viewer de segunda tela (openProject/closeProject)
+   foi removido; clicar num card lateral so chama goTo() (ja existente no
+   engine), levando aquele projeto ao centro, sem abrir nada. */
 .cascading-slider {
     position: relative;
     width: 100%;
@@ -1556,6 +1560,33 @@ h6 {
     inset: 0%;
 }
 
+/* Nome do projeto + tipo/ano — sobreposto no proprio slide (nao existe mais
+   um header de viewer separado acima do slider para carregar esse texto). */
+.cascading-slider__item-overlay {
+    position: absolute;
+    inset: auto 0 0 0;
+    z-index: 1;
+    padding: 28px 24px 20px;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.70) 0%, transparent 100%);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    pointer-events: none;
+}
+
+.cascading-slider__item-nome {
+    font-family: var(--font-primary);
+    font-size: clamp(1rem, 2vw, 1.5rem);
+    font-weight: 600;
+    color: #ffffff;
+}
+
+.cascading-slider__item-tipo {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.75);
+    font-family: var(--font-secondary);
+}
+
 /* Navigation */
 .cascading-slider__nav {
     display: flex;
@@ -1597,372 +1628,9 @@ h6 {
     transform: rotate(180deg);
 }
 
-/* === PORTFOLIO GALLERY GRID === */
-/* Ocupa a mesma grid-area do .portfolio-viewer (sobreposicao) — ver
-   .portfolio-stage acima. Nunca vira position:absolute (isso a tiraria do
-   calculo de altura do grid); a galeria fica sempre presente no fluxo,
-   mesmo com o viewer visualmente por cima. */
-.portfolio-gallery {
-    grid-area: 1 / 1 / 2 / 2;
-    position: relative;
-    z-index: 1;
-}
-
-/* .staged: so cuida de nao deixar a galeria (que fica por baixo,
-   escurecida) capturar cliques enquanto o viewer esta ativo por cima —
-   pointer-events already tambem setado inline via JS (openProject/
-   closeProject), esta regra e so a rede de seguranca via CSS. */
-.portfolio-gallery.staged {
-    pointer-events: none;
-}
-
-.portfolio-gallery-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 24px;
-    transition: opacity 0.5s cubic-bezier(0.4, 0, 0.3, 1);
-}
-
-.portfolio-gallery-grid.fading {
-    opacity: 0.15;
-    pointer-events: none;
-    transition: opacity 0.45s cubic-bezier(0.4, 0, 0.3, 1);
-}
-
-/* Card do Projeto */
-.portfolio-card {
-    position: relative;
-    border-radius: 8px;
-    overflow: hidden;
-    cursor: pointer;
-    background: var(--color-bg-surface);
-    border: 1px solid var(--color-border-subtle);
-    transition: transform 0.3s var(--ease-premium),
-        border-color 0.3s var(--ease-premium);
-    aspect-ratio: 16 / 10;
-    will-change: transform;
-    backface-visibility: hidden;
-}
-
-.portfolio-card-image-wrap {
-    position: absolute;
-    inset: 0;
-    overflow: hidden;
-}
-
-.portfolio-card-image-wrap img {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center center;
-    transition: transform 0.7s var(--ease-premium);
-    will-change: transform;
-    backface-visibility: hidden;
-}
-
-/* Overlay escuro — existe sutilmente em repouso (0.3) e so intensifica no
-   hover (0.75), em vez de partir do zero. Partir do zero era o que criava o
-   efeito de "puxao": o card ia de imagem limpa pra escurecida de uma vez so.
-   Sem box-shadow animado aqui (caro de renderizar, ja causou problema de
-   performance antes) — a profundidade no hover vem so de transform (GPU) +
-   border-color, ambos baratos. */
-.portfolio-card-overlay {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to top,
-            rgba(0, 0, 0, 0.70) 0%,
-            rgba(0, 0, 0, 0.25) 50%,
-            rgba(0, 0, 0, 0.05) 100%);
-    opacity: 0.3;
-    transition: opacity 0.3s var(--ease-premium);
-    pointer-events: none;
-    z-index: 1;
-}
-
-/* Nome do projeto (sempre visível) — precisa de contraste garantido mesmo
-   sobre fotos/logos de fundo claro, entao carrega seu proprio scrim
-   permanente (independente do .portfolio-card-overlay acima). text-shadow
-   sozinho nao bastava sobre fundos brancos. Nao se move nem pisca no hover —
-   fica onde esta, so o overlay por baixo intensifica o contraste. */
-.portfolio-card-name {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    padding: 40px 20px 16px;
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.60) 0%, rgba(0, 0, 0, 0) 100%);
-    font-family: var(--font-primary);
-    font-size: 15px;
-    font-weight: 600;
-    color: #FFFFFF;
-    z-index: 2;
-    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.30);
-}
-
-/* Botão "Ver Projeto" */
-.portfolio-card-cta {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) translateY(10px);
-    z-index: 3;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s var(--ease-premium),
-        transform 0.3s var(--ease-premium);
-}
-
-.portfolio-card-cta-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 22px;
-    background: var(--color-accent-primary);
-    color: #FFFFFF;
-    font-family: var(--font-primary);
-    font-size: 14px;
-    font-weight: 600;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    letter-spacing: 0.02em;
-    transition: background 0.25s ease, transform 0.25s ease;
-    white-space: nowrap;
-}
-
-/* Estados de hover — restritos a dispositivos com hover real (mouse/trackpad).
-   Em touch (hover:none), :hover pode ficar "grudado" apos o tap ate o usuario
-   tocar em outro lugar, atrapalhando a navegacao. Mesmo motivo pelo qual os
-   botoes do slider (cascading-slider-button) usam classe JS em vez de :hover
-   puro — aqui a guarda de media query resolve sem precisar de JS. */
-@media (hover: hover) and (pointer: fine) {
-    .portfolio-card:hover {
-        transform: translateY(-2px);
-        border-color: rgba(42, 135, 62, 0.25);
-    }
-
-    .portfolio-card:hover .portfolio-card-image-wrap img {
-        transform: scale(1.04);
-    }
-
-    .portfolio-card:hover .portfolio-card-overlay {
-        opacity: 0.75;
-    }
-
-    .portfolio-card:hover .portfolio-card-cta {
-        opacity: 1;
-        transform: translate(-50%, -50%) translateY(0);
-        transition-delay: 0.05s;
-    }
-
-    .portfolio-card-cta-btn:hover {
-        background: #3FCC5B;
-        transform: scale(1.04);
-    }
-}
-
-.portfolio-card-cta-btn:active {
-    transform: scale(0.97);
-}
-
-/* === PORTFOLIO VIEWER (Estado 2) === */
-/* Viewer sempre absolute — sobrepõe a galeria. É a nova viewport. */
-.portfolio-viewer {
-    grid-area: 1 / 1 / 2 / 2;
-    /* position:relative (nao absolute) de proposito — precisa continuar
-       contribuindo pro calculo de altura do grid o tempo todo, mesmo
-       fechado/invisivel (opacity:0), pra a celula sempre reservar o maior
-       entre galeria e viewer. Sobreposicao visual com a galeria vem so da
-       mesma grid-area, nao de position:absolute. */
-    position: relative;
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-    z-index: 3;
-    background: var(--color-bg-secondary);
-    /* mesmo fundo bege da seção — cobre a galeria */
-}
-
-.portfolio-viewer.active {
-    opacity: 1;
-    visibility: visible;
-    pointer-events: auto;
-}
-
-/* Palco único — gallery e viewer são camadas sobrepostas */
-.portfolio-stage {
-    position: relative;
-    width: 100%;
-    overflow: hidden;
-    /* clipa a cortina durante a transição */
-    /* display:grid com galeria e viewer sobrepostos na MESMA celula (1/1/2/2,
-       ver .portfolio-gallery/.portfolio-viewer abaixo) — a altura da celula
-       (e portanto do palco) e sempre o MAIOR entre os dois, o tempo todo,
-       repouso ou aberto. Nenhum dos dois pode usar position:absolute (isso
-       os tiraria do calculo de tamanho do grid); a sobreposicao visual e
-       so pela mesma grid-area, sem precisar tira-los do fluxo. Efeito
-       colateral aceito: pode sobrar espaco em branco abaixo do menor dos
-       dois — ver AGENTS.md/registro do commit pra decisao de design
-       separada sobre isso. Zero JS mede ou anima altura aqui; a altura
-       literalmente nunca muda ao abrir/fechar um projeto, entao nao ha
-       deslocamento de conteudo abaixo da secao pra evitar. */
-    display: grid;
-}
-
-/* Container ancora o palco */
-.portfolio-container {
-    max-width: var(--container-max);
-    margin: 0 auto;
-}
-
-/* Botão Voltar à Galeria */
-.portfolio-viewer-back {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 0;
-    margin-bottom: 14px;
-    background: none;
-    border: none;
-    color: var(--color-text-secondary);
-    font-family: var(--font-primary);
-    font-size: 15px;
-    font-weight: 500;
-    cursor: pointer;
-    letter-spacing: 0.01em;
-    transition: color 0.25s ease;
-    -webkit-tap-highlight-color: transparent;
-}
-
-.portfolio-viewer-back:hover {
-    color: var(--color-accent-primary);
-}
-
-.portfolio-viewer-back:hover .portfolio-viewer-back-icon {
-    transform: translateX(-4px);
-}
-
-.portfolio-viewer-back-icon {
-    transition: transform 0.30s cubic-bezier(0.33, 0, 0.3, 1);
-    flex-shrink: 0;
-}
-
-.portfolio-viewer-back-text {
-    white-space: nowrap;
-}
-
-/* Título do projeto no visualizador */
-.portfolio-viewer-title {
-    font-family: var(--font-primary);
-    font-size: clamp(28px, 4vw, 40px);
-    font-weight: 700;
-    color: var(--color-text-primary);
-    margin-bottom: 6px;
-    /* Reserva a altura de 1 linha mesmo com textContent vazio (fica assim
-       entre fechar um projeto e abrir o proximo) — um <div> de bloco sem
-       texto colapsa pra 0px de altura, mesmo com font-size definido. Sem
-       isso, o .portfolio-stage (grid overlay, ver styles.css) mediria uma
-       altura menor em repouso do que quando o viewer esta com titulo real,
-       reintroduzindo o deslocamento de conteudo abaixo da secao ao abrir.
-       1.6 = mesmo multiplicador do line-height herdado do body; 1em
-       resolve para o font-size deste elemento (responsivo via clamp() acima,
-       sem numero fixo). */
-    min-height: 1.6em;
-    opacity: 0;
-    transform: translateY(10px);
-    transition: opacity 0.50s cubic-bezier(0.33, 0, 0.3, 1),
-        transform 0.50s cubic-bezier(0.33, 0, 0.3, 1);
-    transition-delay: 0.15s;
-}
-
-.portfolio-viewer-title.visible {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-/* Subtítulo do projeto */
-.portfolio-viewer-subtitle {
-    font-family: var(--font-secondary);
-    font-size: 14px;
-    font-weight: 400;
-    color: var(--color-text-muted);
-    margin-bottom: 18px;
-    /* Mesmo motivo do .portfolio-viewer-title acima — reserva 1 linha mesmo
-       vazio. */
-    min-height: 1.6em;
-    opacity: 0;
-    transform: translateY(10px);
-    transition: opacity 0.50s cubic-bezier(0.33, 0, 0.3, 1),
-        transform 0.50s cubic-bezier(0.33, 0, 0.3, 1);
-    transition-delay: 0.20s;
-}
-
-.portfolio-viewer-subtitle.visible {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-/* Responsivo: Galeria */
-@media (max-width: 1024px) {
-    .portfolio-gallery-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 20px;
-    }
-}
-
-/* Mantido em 2 colunas (nao 1) abaixo de 640px de proposito: .portfolio-stage
-   e .portfolio-viewer compartilham grid-area (ver .portfolio-stage acima) e a
-   altura da celula e sempre o MAIOR entre galeria e viewer, sem excecao — essa
-   invariante e o que evita salto de scroll ao abrir/fechar projeto (ver commit
-   867b5f2). Com 1 coluna, os 6 cards empilhados ficavam bem mais altos que o
-   viewer aberto, sobrando um vao vazio grande abaixo do carrossel. Em 2
-   colunas a galeria fica proxima da altura do viewer, sem precisar tirar
-   nenhum dos dois do fluxo do grid. */
-@media (max-width: 640px) {
-    .portfolio-gallery-grid {
-        gap: 16px;
-    }
-
-    /* Cards mais altos em mobile — 16/10 deixava os cards baixos demais em
-       2 colunas (167x104px em 390px de viewport); 4/3 preenche melhor o
-       espaco sem ficar quadrado. Nao altera desktop/tablet (aspect-ratio
-       base continua 16/10 em .portfolio-card). */
-    .portfolio-card {
-        aspect-ratio: 4 / 3;
-    }
-}
-
-/* Label do card 10% menor em mobile (15px -> 13.5px) — pedido explicito
-   apos revisao de screenshot real em iPhone; nao mexe no font-size base
-   (desktop/tablet) em .portfolio-card-name. */
 @media (max-width: 767px) {
-    .portfolio-card-name {
-        font-size: 13.5px;
-    }
-
-    /* Causa real do vao vazio abaixo dos cards, confirmada com dados de
-       Safari/iPhone real via ?debug=layout: .portfolio-stage mede exatamente
-       igual a galeria (515px, sem sobra) — nao e um bug de altura do grid.
-       O vao vem do padding-bottom de 100px herdado de --section-padding
-       (@media max-width:768px, ver .portfolio-gallery-section acima),
-       somado ao padding-top da proxima secao. Reduzido so aqui (nao na
-       variavel global --section-padding, que e compartilhada por todas as
-       secoes do site) para nao afetar o espacamento de nenhuma outra secao. */
     .portfolio-gallery-section {
         padding-bottom: 40px;
-    }
-}
-
-/* Responsivo: Visualizador */
-@media (max-width: 750px) {
-    .portfolio-viewer-back {
-        margin-bottom: 20px;
-        font-size: 14px;
-    }
-
-    .portfolio-viewer-subtitle {
-        margin-bottom: 24px;
     }
 }
 
@@ -2745,6 +2413,38 @@ h6 {
     font-size: 15px;
     color: var(--color-text-muted);
     line-height: 1.6;
+}
+
+.footer-endereco {
+    margin-top: 16px;
+    font-style: normal;
+}
+
+.footer-endereco-texto {
+    font-size: 14px;
+    color: var(--color-text-muted);
+    line-height: 1.6;
+    margin-bottom: 12px;
+}
+
+.footer-mapa-container {
+    width: 100%;
+    max-width: 280px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--color-border-light);
+}
+
+.footer-mapa {
+    display: block;
+    width: 100%;
+    height: 160px;
+}
+
+@media (max-width: 767px) {
+    .footer-mapa-container {
+        max-width: 100%;
+    }
 }
 
 .footer-links-title {

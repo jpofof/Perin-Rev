@@ -857,63 +857,59 @@ function buildResponsiveImgAttrs(src) {
 }
 
 // === PORTFOLIO PROJECTS DATA ===
+// Uma foto por projeto (a de conclusao) — sem galeria de multiplas fotos por
+// projeto, sem viewer de segunda tela. O cascading slider abaixo e a propria
+// galeria do portfolio: cada slide e um projeto.
 const portfolioProjects = [
     {
         id: 'eldorado',
         name: 'Eldorado Brasil',
         subtitle: 'Obra Industrial • 2024',
         cover: 'assets/images/clients/eldorado.webp',
-        photos: ['assets/images/clients/eldorado.webp', 'assets/images/placeholders/placeholder-obra-01.webp', 'assets/images/placeholders/placeholder-obra-02.webp', 'assets/images/placeholders/placeholder-obra-03.webp', 'assets/images/placeholders/placeholder-obra-04.webp']
     },
     {
         id: 'elektro',
         name: 'Elektro Redes',
         subtitle: 'Infraestrutura Elétrica • 2023',
         cover: 'assets/images/clients/elektro.webp',
-        photos: ['assets/images/clients/elektro.webp', 'assets/images/placeholders/placeholder-obra-02.webp', 'assets/images/placeholders/placeholder-obra-03.webp', 'assets/images/placeholders/placeholder-obra-04.webp', 'assets/images/placeholders/placeholder-obra-05.webp']
     },
     {
         id: 'isa-energia',
         name: 'ISA Energia',
         subtitle: 'Subestação • 2023',
         cover: 'assets/images/clients/isa-energia.webp',
-        photos: ['assets/images/clients/isa-energia.webp', 'assets/images/placeholders/placeholder-obra-03.webp', 'assets/images/placeholders/placeholder-obra-04.webp', 'assets/images/placeholders/placeholder-obra-05.webp', 'assets/images/placeholders/placeholder-obra-01.webp']
     },
     {
         id: 'state-grid',
         name: 'State Grid',
         subtitle: 'Linha de Transmissão • 2022',
         cover: 'assets/images/clients/state-grid.webp',
-        photos: ['assets/images/clients/state-grid.webp', 'assets/images/placeholders/placeholder-obra-04.webp', 'assets/images/placeholders/placeholder-obra-05.webp', 'assets/images/placeholders/placeholder-obra-01.webp', 'assets/images/placeholders/placeholder-obra-02.webp']
     },
     {
         id: 'perin-sede',
         name: 'Sede Perin',
         subtitle: 'Construção Comercial • 2021',
         cover: 'assets/images/brand/logo-perin-principal.webp',
-        photos: ['assets/images/brand/logo-perin-principal.webp', 'assets/images/placeholders/placeholder-obra-05.webp', 'assets/images/placeholders/placeholder-obra-01.webp', 'assets/images/placeholders/placeholder-obra-02.webp', 'assets/images/placeholders/placeholder-obra-03.webp']
     },
     {
         id: 'obra-residencial',
         name: 'Residencial Villaggio',
         subtitle: 'Construção Residencial • 2024',
         cover: 'assets/images/placeholders/placeholder-obra-01.webp',
-        photos: ['assets/images/placeholders/placeholder-obra-01.webp', 'assets/images/placeholders/placeholder-obra-02.webp', 'assets/images/placeholders/placeholder-obra-03.webp', 'assets/images/placeholders/placeholder-obra-04.webp', 'assets/images/placeholders/placeholder-obra-05.webp']
-    }
+    },
 ];
 
-// === FOTO SLIDER ENGINE (slide horizontal simples, estilo Modus) ===
-// Substitui o antigo cascading slider (5 slots, GSAP left/width, travessia
-// circular) por um trilho flex unico: todos os cards se movem juntos via
-// transform: translateX() no container, sem card "dando a volta" e sem
-// crescer/encolher individual — o card central ja e maior por padrao (CSS).
-// === CASCADING SLIDER (Modus) ===
-// Extraido de cascading-slider/js/cascading-slider.js, adaptado para
-// inicializacao dinamica (chamado a cada openProject, com destroy() no
-// closeProject) em vez do padrao original "varre o DOM inteiro no
-// DOMContentLoaded". Logica de measure/layout/goTo mantida sem alteracoes.
-function initCascadingSlider(viewport, fotos) {
-    if (!viewport || !fotos || fotos.length === 0) {
+// === CASCADING SLIDER (Modus) — galeria do portfolio ===
+// Extraido de cascading-slider/js/cascading-slider.js. Ate a v4 este engine
+// so era usado para as fotos de um projeto aberto no viewer (openProject/
+// closeProject); o viewer de segunda tela foi removido e o slider passou a
+// SER a propria galeria do portfolio — cada slide e um projeto (uma foto +
+// nome + tipo/ano), nao mais fotos de um unico projeto. Clicar num card
+// lateral chama goTo() (ja existia no engine original) e so navega aquele
+// projeto ao centro — nunca abre nada. Logica de measure/layout/goTo mantida
+// sem alteracoes.
+function initCascadingSlider(viewport, projects) {
+    if (!viewport || !projects || projects.length === 0) {
         return { destroy: function () { } };
     }
 
@@ -926,12 +922,17 @@ function initCascadingSlider(viewport, fotos) {
         { maxWidth: Infinity, activeWidth: 0.60, siblingWidth: 0.13 },
     ];
 
-    viewport.innerHTML = fotos.map(function (foto, i) {
+    viewport.innerHTML = projects.map(function (project, i) {
         return '<div class="cascading-slider__item" data-cascading-slide="" data-status="inactive" role="listitem" aria-roledescription="slide">' +
             '<div class="cascading-slider__item-inner">' +
             '<div class="cascading-slider__item-bg">' +
-            '<img ' + buildResponsiveImgAttrs(foto) + ' alt="Foto ' + (i + 1) + ' de ' + fotos.length + '" class="cascading-slider__img" draggable="false"' + (i === 0 ? ' loading="eager"' : ' loading="lazy"') + '>' +
-            '</div></div></div>';
+            '<img ' + buildResponsiveImgAttrs(project.cover) + ' alt="' + project.name + '" class="cascading-slider__img" draggable="false"' + (i === 0 ? ' loading="eager"' : ' loading="lazy"') + '>' +
+            '</div>' +
+            '<div class="cascading-slider__item-overlay">' +
+            '<span class="cascading-slider__item-nome">' + project.name + '</span>' +
+            '<span class="cascading-slider__item-tipo">' + project.subtitle + '</span>' +
+            '</div>' +
+            '</div></div>';
     }).join('');
 
     var prevButton = document.querySelector('[data-cascading-slider-prev]');
@@ -1166,373 +1167,12 @@ function initCascadingSlider(viewport, fotos) {
     };
 }
 
-// === PORTFOLIO GALLERY + VIEWER ENGINE ===
-var portfolioSliderInstance = null;
-var portfolioSavedScrollY = 0;
-
-// === PORTFOLIO: Shared Element Transition Engine ===
-// The card is the single protagonist — it never disappears.
-// The carousel is born around it during expansion.
-
-var portfolioState = {
-    active: false,
-    transitioning: false,
-    currentProjectIndex: -1,
-    currentProject: null,
-    cardEl: null,
-    cardImg: null,
-    sliderInstance: null,
-    sliderPopulated: false,
-    // Cached references
-    grid: null,
-    gallery: null,
-    viewer: null,
-    backBtn: null,
-    viewerTitle: null,
-    viewerSubtitle: null,
-    sliderList: null,
-    sliderCollection: null,
-    sliderNav: null,
-    prevBtn: null,
-    nextBtn: null,
-    // Cached rects
-    cardOrigRect: null,
-    viewerContainerRect: null
-};
-
-function initPortfolioGallery() {
-    var grid = document.getElementById('portfolioGrid');
-    var gallery = document.getElementById('portfolioGallery');
-    var viewer = document.getElementById('portfolioViewer');
-    var backBtn = document.getElementById('portfolioBackBtn');
-    var viewerTitle = document.getElementById('portfolioViewerTitle');
-    var viewerSubtitle = document.getElementById('portfolioViewerSubtitle');
-    var sliderList = document.getElementById('fotoSliderTrilha');
-    var sliderCollection = document.querySelector('.cascading-slider__collection');
-    var sliderNav = document.querySelector('.cascading-slider__nav');
-    var prevBtn = document.querySelector('[data-cascading-slider-prev]');
-    var nextBtn = document.querySelector('[data-cascading-slider-next]');
-
-    if (!grid || !gallery || !viewer || !sliderList) return;
-
-    // Cache all refs
-    portfolioState.grid = grid;
-    portfolioState.gallery = gallery;
-    portfolioState.viewer = viewer;
-    portfolioState.backBtn = backBtn;
-    portfolioState.viewerTitle = viewerTitle;
-    portfolioState.viewerSubtitle = viewerSubtitle;
-    portfolioState.sliderList = sliderList;
-    portfolioState.sliderCollection = sliderCollection;
-    portfolioState.sliderNav = sliderNav;
-    portfolioState.prevBtn = prevBtn;
-    portfolioState.nextBtn = nextBtn;
-
-    // Viewer: absolute overlay via CSS — apenas visibilidade
-    viewer.style.display = '';
-    viewer.style.position = '';
-    viewer.style.opacity = '';
-    viewer.style.visibility = '';
-    viewer.style.pointerEvents = '';
-    viewer.setAttribute('aria-hidden', 'true');
-    sliderNav.style.opacity = '0';
-    sliderNav.style.pointerEvents = 'none';
-
-    // --- Render gallery cards ---
-    grid.innerHTML = '';
-    portfolioProjects.forEach(function (project, index) {
-        var card = document.createElement('div');
-        card.className = 'portfolio-card';
-        card.setAttribute('data-project-index', index);
-        card.setAttribute('data-project-id', project.id);
-
-        card.innerHTML =
-            '<div class="portfolio-card-image-wrap">' +
-            '<img ' + buildResponsiveImgAttrs(project.cover) + ' alt="' + project.name + '" loading="lazy">' +
-            '</div>' +
-            '<div class="portfolio-card-overlay"></div>' +
-            '<div class="portfolio-card-name">' + project.name + '</div>' +
-            '<div class="portfolio-card-cta">' +
-            '<span class="portfolio-card-cta-btn">Ver Projeto</span>' +
-            '</div>';
-
-        card.addEventListener('click', function (e) {
-            if (portfolioState.transitioning) return;
-            e.preventDefault();
-            openProject(index, card);
-        });
-
-        grid.appendChild(card);
-    });
-
-    // #portfolioGrid fica vazio no HTML estatico — os cards so existem depois
-    // desta chamada. initPortfolioGallery roda na fila idle (script.js:1934+),
-    // DEPOIS que initServicesReveal/initDifferentialsAnimation (itens
-    // anteriores da mesma fila) ja criaram seus ScrollTrigger medindo a
-    // pagina SEM a grade do portfolio. Como portfolio fica acima de
-    // services/segments/process no DOM (index.html), adicionar essa altura
-    // desloca a posicao real de todas essas secoes,
-    // deixando os marcadores de ScrollTrigger ja criados desatualizados — a
-    // causa raiz de secoes nao revelarem ao rolar ate que o fallback de 1.5s
-    // (initScrollRevealFallback) force a revelacao. Disparar o refresh aqui
-    // corrige a causa, nao so o sintoma.
-    if (typeof ScrollTrigger !== 'undefined') {
-        ScrollTrigger.refresh();
-    }
-
-    // --- Back button ---
-    backBtn.addEventListener('click', function () {
-        if (portfolioState.transitioning) return;
-        closeProject();
-    });
-
-    // === VIEWPORT TRANSITION (eduardbodak-style) ===
-    // O viewer é a nova viewport — ele desliza cobrindo a seção inteira.
-    // A galeria antiga apenas escurece levemente enquanto fica para trás.
-    // Conteúdo do viewer só aparece depois que a viewport termina de entrar.
-    // O carrossel é montado durante o movimento, nunca antes.
-
-    var VP_CURVE = 'cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-    var VP_DURATION = 0.85; // duração do movimento da viewport
-    var VP_DIM_COLOR = 'rgba(0, 0, 0, 0.18)'; // escurecimento da galeria antiga
-
-    function openProject(index, cardEl) {
-        var project = portfolioProjects[index];
-        if (!project) return;
-
-        portfolioState.transitioning = true;
-        portfolioState.currentProjectIndex = index;
-        portfolioState.currentProject = project;
-        portfolioState.cardEl = cardEl;
-
-        var stage = document.getElementById('portfolioStage');
-
-        // Gallery vai para staged (atrás, será coberta pela viewport)
-        gallery.classList.add('staged');
-
-        // Prepara viewer como nova viewport — começa abaixo, fundo bege (já no CSS)
-        viewer.setAttribute('aria-hidden', 'false');
-        viewerTitle.textContent = project.name;
-        viewerSubtitle.textContent = project.subtitle;
-        gsap.set(viewer, { y: '100%', opacity: 1, visibility: 'visible', pointerEvents: 'none' });
-        // Conteúdo começa invisível
-        gsap.set(viewerTitle, { opacity: 0, y: 20 });
-        gsap.set(viewerSubtitle, { opacity: 0, y: 20 });
-        gsap.set(backBtn, { opacity: 0 });
-        gsap.set(sliderNav, { opacity: 0, pointerEvents: 'none' });
-
-        // === Build slides IMEDIATAMENTE — carrossel montado antes de a viewport cobrir ===
-        // Inicia o carrossel imediatamente (atrás da viewport — invisível)
-        if (portfolioState.sliderInstance) portfolioState.sliderInstance.destroy();
-        portfolioState.sliderInstance = initCascadingSlider(sliderList, project.photos);
-
-        var allSlides = sliderList.querySelectorAll('[data-cascading-slide]');
-        var sideSlides = sliderList.querySelectorAll('[data-cascading-slide]:not([data-status="active"])');
-        gsap.set(allSlides, { pointerEvents: 'none' });
-        // Slides laterais começam invisíveis — aparecem só no stagger
-        gsap.set(sideSlides, { opacity: 0 });
-
-        // === MASTER TIMELINE ===
-        var tl = gsap.timeline({
-            onComplete: function () {
-                portfolioState.transitioning = false;
-                portfolioState.active = true;
-                gsap.set(viewer, { y: '0%', pointerEvents: 'auto' });
-                gsap.set(gallery, { visibility: 'hidden', pointerEvents: 'none' });
-                // rAF garante que GSAP finalizou todas as escritas de estilo
-                // antes de liberar a constraint de overflow
-                requestAnimationFrame(function () {
-                    stage.style.overflow = 'visible';
-                    // Altura do palco e sempre o maior entre galeria/viewer, via
-                    // CSS grid (ver .portfolio-stage em styles.css) — nao muda ao
-                    // abrir, entao nao ha scroll pra corrigir aqui.
-                });
-            }
-        });
-
-        // FASE 1 (0→250ms): Galeria antiga escurece levemente — indica que vai para segundo plano
-        tl.to(gallery, {
-            opacity: 0.65,
-            duration: 0.25,
-            ease: 'power2.out'
-        }, 'o');
-
-        // FASE 2 (50ms→): VIEWPORT SOBE — viewer desliza de baixo, cobrindo toda a seção
-        tl.to(viewer, {
-            y: '0%',
-            duration: VP_DURATION,
-            ease: VP_CURVE
-        }, 'o+=0.05');
-
-        // FASE 3 (durante a subida): Galeria escurece mais — a nova tela está tomando o lugar
-        tl.to(gallery, {
-            opacity: 0.3,
-            duration: VP_DURATION * 0.9,
-            ease: 'power2.out'
-        }, 'o+=0.06');
-
-        // FASE 4: STAGGER — conteúdo aparece só depois da viewport terminar de entrar
-        var contentBase = VP_DURATION + 0.05;
-
-        tl.to(viewerTitle, {
-            opacity: 1,
-            y: 0,
-            duration: 0.35,
-            ease: VP_CURVE
-        }, 'o+=' + contentBase);
-
-        tl.to(viewerSubtitle, {
-            opacity: 1,
-            y: 0,
-            duration: 0.35,
-            ease: VP_CURVE
-        }, 'o+=' + (contentBase + 0.08));
-
-        tl.to(backBtn, {
-            opacity: 1,
-            duration: 0.30,
-            ease: 'power2.out'
-        }, 'o+=' + (contentBase + 0.16));
-
-        tl.to(sliderNav, {
-            opacity: 1,
-            duration: 0.35,
-            ease: 'power2.out'
-        }, 'o+=' + (contentBase + 0.24));
-        tl.set(sliderNav, { pointerEvents: 'auto' }, 'o+=' + (contentBase + 0.24));
-
-        // Slides laterais
-        sideSlides.forEach(function (slide, i) {
-            tl.to(slide, {
-                opacity: 1,
-                duration: 0.40,
-                ease: VP_CURVE
-            }, 'o+=' + (contentBase + 0.32 + i * 0.04));
-        });
-
-        // Libera pointer events
-        tl.set(allSlides, { pointerEvents: 'auto' }, 'o+=' + (contentBase + 0.55));
-        tl.set(viewer, { pointerEvents: 'auto' }, 'o+=' + (contentBase + 0.55));
-    }
-
-    // === VIEWPORT CLOSE — reverso ===
-    function closeProject() {
-        if (!portfolioState.active || !portfolioState.cardEl) return;
-
-        portfolioState.transitioning = true;
-
-        // Restaura overflow:hidden no stage para clipar o viewer durante a animação de descida
-        var stage = document.getElementById('portfolioStage');
-        stage.style.overflow = 'hidden';
-
-        var otherCards = Array.from(grid.querySelectorAll('.portfolio-card:not([data-project-index="' + portfolioState.currentProjectIndex + '"])'));
-        var allSlides = sliderList.querySelectorAll('[data-cascading-slide]');
-
-        viewer.style.pointerEvents = 'none';
-        gsap.set(allSlides, { pointerEvents: 'none' });
-
-        // Gallery atrás do viewer — vai para staged (absoluta), visível mas escurecida
-        gallery.classList.add('staged');
-        gallery.style.opacity = '0.3';
-        gallery.style.visibility = 'visible';
-        gallery.style.pointerEvents = 'none';
-
-        var clickedIndex = portfolioState.currentProjectIndex;
-        var sortedOtherCards = otherCards.slice().sort(function (a, b) {
-            return Math.abs(parseInt(a.getAttribute('data-project-index')) - clickedIndex) -
-                Math.abs(parseInt(b.getAttribute('data-project-index')) - clickedIndex);
-        });
-        gsap.set(sortedOtherCards, { opacity: 0, scale: 0.98 });
-
-        // === REVERSE TIMELINE ===
-        var tl = gsap.timeline({
-            onComplete: function () {
-                portfolioState.transitioning = false;
-                portfolioState.active = false;
-
-                gallery.classList.remove('staged');
-                gallery.style.opacity = '';
-                gallery.style.pointerEvents = '';
-                gallery.style.visibility = '';
-
-                viewer.style.opacity = '';
-                viewer.style.visibility = '';
-                viewer.style.pointerEvents = '';
-                viewer.style.y = '';
-                viewer.setAttribute('aria-hidden', 'true');
-
-                viewerTitle.style.opacity = '';
-                viewerTitle.style.y = '';
-                // Limpa o texto do titulo/subtitulo no fechamento — sem isso, o
-                // titulo do ultimo projeto visto fica "fantasma" no viewer em
-                // repouso (invisivel, mas com texto real, min-height:1.6em do
-                // CSS reserva o espaco de qualquer forma, entao a limpeza aqui
-                // nao afeta a altura do grid overlay do .portfolio-stage).
-                viewerTitle.textContent = '';
-                viewerSubtitle.style.opacity = '';
-                viewerSubtitle.style.y = '';
-                viewerSubtitle.textContent = '';
-                backBtn.style.opacity = '';
-                sliderNav.style.opacity = '';
-
-                gsap.set(allSlides, { clearProps: 'all' });
-                gsap.set(sortedOtherCards, { clearProps: 'all' });
-                gsap.set(viewer, { clearProps: 'opacity,visibility,y,pointerEvents' });
-
-                if (portfolioState.sliderInstance) {
-                    portfolioState.sliderInstance.destroy();
-                    portfolioState.sliderInstance = null;
-                }
-                sliderList.innerHTML = '';
-
-                var stageClose = document.getElementById('portfolioStage');
-                stageClose.style.overflow = '';
-                // Sem restauracao de scroll aqui: a altura do palco nunca muda
-                // (CSS grid, ver .portfolio-stage em styles.css), entao nao ha
-                // nada pra "corrigir". Um scrollTo pra um valor capturado no
-                // clique de fechar so serviria pra descartar qualquer scroll
-                // legitimo que o usuario fizesse durante a animacao (~1.3s) —
-                // bug real, ja reproduzido: usuario rola durante o fechamento
-                // e e puxado de volta pra posicao de quando clicou.
-            }
-        });
-
-        // FASE 1 (0→200ms): Conteúdo desaparece
-        tl.to(viewerTitle, { opacity: 0, y: 20, duration: 0.20, ease: 'power2.in' }, 'c');
-        tl.to(viewerSubtitle, { opacity: 0, y: 20, duration: 0.20, ease: 'power2.in' }, 'c+=0.04');
-        tl.to(backBtn, { opacity: 0, duration: 0.18, ease: 'power2.in' }, 'c+=0.08');
-        tl.to(sliderNav, { opacity: 0, duration: 0.18, ease: 'power2.in' }, 'c+=0.12');
-        tl.to(allSlides, { opacity: 0, duration: 0.25, ease: 'power2.in', stagger: 0.03 }, 'c+=0.14');
-
-        // FASE 2 (250ms→): VIEWPORT DESCE — viewer desliza para baixo, revelando galeria escurecida
-        tl.to(viewer, {
-            y: '100%',
-            duration: VP_DURATION,
-            ease: VP_CURVE
-        }, 'c+=0.30');
-
-        // Gallery clareia de volta durante a descida
-        tl.to(gallery, {
-            opacity: 1,
-            duration: VP_DURATION * 0.8,
-            ease: VP_CURVE
-        }, 'c+=0.32');
-
-        // FASE 3: Cards da galeria voltam com stagger
-        tl.to(sortedOtherCards, {
-            opacity: 1,
-            scale: 1,
-            duration: 0.45,
-            ease: VP_CURVE,
-            stagger: 0.06
-        }, 'c+=' + (VP_DURATION * 0.70));
-
-        // FINAL — viewer some, galeria pronta
-        tl.set(viewer, { visibility: 'hidden' }, 'c+=' + (VP_DURATION + 0.20));
-        tl.set(gallery, { pointerEvents: 'auto' }, 'c+=' + (VP_DURATION + 0.20));
-    }
+// === PORTFOLIO — monta a galeria (cascading slider) no load da pagina ===
+function initPortfolioSlider() {
+    var viewport = document.getElementById('portfolioSliderTrilha');
+    if (!viewport) return;
+    initCascadingSlider(viewport, portfolioProjects);
 }
-
 // === SERVICE MOSAIC INTERACTIONS ===
 function initServicesInteraction() {
     document.querySelectorAll('.service-mosaic-item').forEach(item => {
@@ -2502,15 +2142,13 @@ function initPage() {
             initServicesReveal,
             initDifferentialsAnimation,
             initServiceGridAdjust,
-            initPortfolioGallery,
+            initPortfolioSlider,
             initClientsCarousel,
         ]);
 
         // Grupo B — decorativo ou sem urgencia de estar pronto ao rolar
         // (particulas do hero, handlers de clique/hover/form, e o fallback de
         // seguranca que so importa como rede depois que o Grupo A ja rodou).
-        // O foto-slider (fotos do projeto aberto) nao entra aqui: ele so e
-        // criado sob demanda em openProject, nunca no load da pagina.
         // Mantido no scheduling individual encadeado original.
         runQueueWhenIdle([
             createParticles,

@@ -1,7 +1,16 @@
 /**
  * @jest-environment jsdom
  *
- * Regression Tests — Cascading Slider Portfolio (v4 — Gallery + Viewer, Modus)
+ * Regression Tests — Cascading Slider Portfolio (v6 — galeria unica, 1 foto
+ * por projeto, sem viewer de segunda tela)
+ *
+ * v5 (carrossel flex simples, sem GSAP) foi revertido a pedido do usuario —
+ * o cascading slider Modus (card central maior via clip-path/GSAP, laterais
+ * visiveis) e a implementacao correta e permanece intacto. A unica mudanca
+ * real e que ele agora popula os 6 projetos diretamente (uma foto de
+ * conclusao + nome + tipo/ano cada), sem grid de selecao e sem viewer
+ * (openProject/closeProject removidos) — clicar num card lateral so chama
+ * goTo(), levando aquele projeto ao centro.
  *
  * Guard against visual and functional regressions.
  * Static analysis of CSS, DOM, and structural integrity.
@@ -102,7 +111,7 @@ describe('REGRESSION — Overflow Rules (CSS Static)', () => {
 });
 
 // ────────────────────────────────────
-// Regression: DOM Structure (v4)
+// Regression: DOM Structure (v6)
 // ────────────────────────────────────
 describe('REGRESSION — DOM Structure', () => {
   beforeAll(() => {
@@ -110,24 +119,8 @@ describe('REGRESSION — DOM Structure', () => {
   });
 
   test('slider viewport (trilha) exists in the DOM', () => {
-    const trilha = document.getElementById('fotoSliderTrilha');
+    const trilha = document.getElementById('portfolioSliderTrilha');
     expect(trilha).not.toBeNull();
-  });
-
-  test('gallery grid exists', () => {
-    const grid = document.getElementById('portfolioGrid');
-    expect(grid).not.toBeNull();
-  });
-
-  test('viewer exists and defaults to aria-hidden', () => {
-    const viewer = document.getElementById('portfolioViewer');
-    expect(viewer).not.toBeNull();
-    expect(viewer.getAttribute('aria-hidden')).toBe('true');
-  });
-
-  test('back button exists', () => {
-    const backBtn = document.getElementById('portfolioBackBtn');
-    expect(backBtn).not.toBeNull();
   });
 
   test('navigation buttons exist with correct data attributes', () => {
@@ -154,6 +147,14 @@ describe('REGRESSION — DOM Structure', () => {
   test('nav menu has aria-label', () => {
     const nav = document.querySelector('.cascading-slider__nav');
     expect(nav.getAttribute('aria-label')).toBe('slider navigation');
+  });
+
+  test('gallery grid, viewer, and stage from the old openProject/closeProject flow no longer exist', () => {
+    expect(document.getElementById('portfolioGrid')).toBeNull();
+    expect(document.getElementById('portfolioGallery')).toBeNull();
+    expect(document.getElementById('portfolioViewer')).toBeNull();
+    expect(document.getElementById('portfolioStage')).toBeNull();
+    expect(document.getElementById('portfolioBackBtn')).toBeNull();
   });
 });
 
@@ -185,10 +186,10 @@ describe('REGRESSION — Portfolio Section', () => {
     expect(section.querySelector('.cascading-slider__list')).not.toBeNull();
   });
 
-  test('contains gallery and viewer', () => {
+  test('does not contain the old gallery grid or viewer', () => {
     const section = document.getElementById('portfolio');
-    expect(section.querySelector('.portfolio-gallery')).not.toBeNull();
-    expect(section.querySelector('.portfolio-viewer')).not.toBeNull();
+    expect(section.querySelector('.portfolio-gallery-grid')).toBeNull();
+    expect(section.querySelector('.portfolio-viewer')).toBeNull();
   });
 });
 
@@ -198,10 +199,6 @@ describe('REGRESSION — Portfolio Section', () => {
 describe('REGRESSION — Image Assets', () => {
   test('placeholder-obra-01.webp file exists', () => {
     expect(fs.existsSync(path.join(__dirname, '..', '..', 'assets', 'images', 'placeholders', 'placeholder-obra-01.webp'))).toBe(true);
-  });
-
-  test('placeholder-obra-02.webp file exists', () => {
-    expect(fs.existsSync(path.join(__dirname, '..', '..', 'assets', 'images', 'placeholders', 'placeholder-obra-02.webp'))).toBe(true);
   });
 
   test('logo files exist', () => {
@@ -230,18 +227,17 @@ describe('REGRESSION — Script Integrity', () => {
     expect(js).toMatch(/gsap\.set\(slide/);
   });
 
-  test('initPortfolioGallery function exists (gallery engine)', () => {
-    expect(js).toMatch(/function initPortfolioGallery/);
+  test('initPortfolioSlider mounts the gallery on page load (no grid, no viewer)', () => {
+    expect(js).toMatch(/function initPortfolioSlider/);
+    expect(js).toMatch(/initCascadingSlider\(viewport, portfolioProjects\)/);
   });
 
-  test('portfolioProjects data array exists with 6 projects', () => {
+  test('portfolioProjects data array exists with 6 projects, one photo each', () => {
     expect(js).toContain("id: 'eldorado'");
     expect(js).toContain("id: 'obra-residencial'");
-  });
-
-  test('old foto-slider engine has been fully removed', () => {
-    expect(js).not.toMatch(/function initFotoSlider/);
-    expect(js).not.toMatch(/foto-slide"/);
+    const block = js.match(/const portfolioProjects = \[([\s\S]*?)\n\];/);
+    expect(block).not.toBeNull();
+    expect(block[1]).not.toMatch(/photos:\s*\[/);
   });
 
   test('slide clones are marked with data-clone (min. 9 slides for the cascading effect)', () => {
@@ -250,7 +246,7 @@ describe('REGRESSION — Script Integrity', () => {
 
   test('destroy() clears the slider container (no residual state on reopen)', () => {
     const startIdx = js.indexOf('function initCascadingSlider');
-    const endIdx = js.indexOf('// === PORTFOLIO GALLERY', startIdx);
+    const endIdx = js.indexOf('function initPortfolioSlider', startIdx);
     expect(startIdx).toBeGreaterThan(-1);
     expect(endIdx).toBeGreaterThan(startIdx);
     const fnSrc = js.slice(startIdx, endIdx);
@@ -259,10 +255,25 @@ describe('REGRESSION — Script Integrity', () => {
 
   test('destroy() removes the document-level keydown listener (no leak across projects)', () => {
     const startIdx = js.indexOf('function initCascadingSlider');
-    const endIdx = js.indexOf('// === PORTFOLIO GALLERY', startIdx);
+    const endIdx = js.indexOf('function initPortfolioSlider', startIdx);
     const fnSrc = js.slice(startIdx, endIdx);
     expect(fnSrc).toMatch(/document\.addEventListener\('keydown', keyHandler\)/);
     expect(fnSrc).toMatch(/document\.removeEventListener\('keydown', keyHandler\)/);
+  });
+
+  test('clicking a side slide navigates via goTo — no viewer/second screen opens', () => {
+    const startIdx = js.indexOf('function initCascadingSlider');
+    const endIdx = js.indexOf('function initPortfolioSlider', startIdx);
+    const fnSrc = js.slice(startIdx, endIdx);
+    expect(fnSrc).toMatch(/slide\.addEventListener\('click',\s*handler\)/);
+    expect(fnSrc).not.toMatch(/openProject/);
+  });
+
+  test('old gallery/viewer engine (openProject/closeProject/initPortfolioGallery) has been fully removed', () => {
+    expect(js).not.toMatch(/function openProject\(/);
+    expect(js).not.toMatch(/function closeProject\(/);
+    expect(js).not.toMatch(/function initPortfolioGallery\(/);
+    expect(js).not.toMatch(/portfolioState/);
   });
 });
 

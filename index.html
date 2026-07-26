@@ -409,60 +409,35 @@
                         class="text-accent-green">Definem</span> Nosso Legado</h2>
             </div>
 
-            <!-- PALCO ÚNICO — Galeria e Viewer são camadas sobrepostas, nunca empilhadas -->
-            <div class="portfolio-stage" id="portfolioStage">
-                <!-- Estado A: Galeria de Projetos -->
-                <div class="portfolio-gallery" id="portfolioGallery" aria-label="Galeria de projetos">
-                    <div class="portfolio-gallery-grid" id="portfolioGrid">
-                        <!-- Cards serão gerados dinamicamente via JS -->
+            <!-- Cascading Slider (Modus) — galeria do portfolio (1 foto por projeto,
+                 sem viewer de segunda tela: clicar num card lateral so leva aquele
+                 projeto ao centro) -->
+            <div class="cascading-slider" data-cascading-slider-wrap="" aria-label="Projetos do portfólio"
+                aria-roledescription="carousel">
+                <div class="cascading-slider__collection">
+                    <div class="cascading-slider__list" id="portfolioSliderTrilha" data-cascading-viewport=""
+                        role="list">
+                        <!-- Slides (1 por projeto) populados dinamicamente via JS -->
                     </div>
                 </div>
-
-                <!-- Estado B: Visualizador do Projeto (sobrepõe a galeria) — é a nova viewport -->
-                <div class="portfolio-viewer" id="portfolioViewer" aria-hidden="true">
-                    <button class="portfolio-viewer-back" id="portfolioBackBtn" aria-label="Voltar à galeria">
-                        <svg class="portfolio-viewer-back-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
-                            <path d="M12 4L6 10L12 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
-                                stroke-linejoin="round" />
+                <nav class="cascading-slider__nav" aria-label="slider navigation">
+                    <button class="cascading-slider__button" data-cascading-slider-prev="" aria-label="Projeto anterior">
+                        <svg class="cascading-slider__button-arrow is--prev" width="24" height="24" viewBox="0 0 24 24"
+                            fill="none">
+                            <path d="M14 19L21 12L14 5" stroke="currentColor" stroke-miterlimit="10"
+                                stroke-width="1.5" />
+                            <path d="M21 12H2" stroke="currentColor" stroke-miterlimit="10" stroke-width="1.5" />
                         </svg>
-                        <span class="portfolio-viewer-back-text">Voltar à Galeria</span>
                     </button>
-                    <div class="portfolio-viewer-title" id="portfolioViewerTitle"></div>
-                    <div class="portfolio-viewer-subtitle" id="portfolioViewerSubtitle"></div>
-
-                    <!-- Cascading Slider (Modus) -->
-                    <div class="cascading-slider" data-cascading-slider-wrap="" aria-label="Fotos do projeto"
-                        aria-roledescription="carousel">
-                        <div class="cascading-slider__collection">
-                            <div class="cascading-slider__list" id="fotoSliderTrilha" data-cascading-viewport=""
-                                role="list">
-                                <!-- Slides populados dinamicamente via JS -->
-                            </div>
-                        </div>
-                        <nav class="cascading-slider__nav" aria-label="slider navigation">
-                            <button class="cascading-slider__button" data-cascading-slider-prev=""
-                                aria-label="Foto anterior">
-                                <svg class="cascading-slider__button-arrow is--prev" width="24" height="24"
-                                    viewBox="0 0 24 24" fill="none">
-                                    <path d="M14 19L21 12L14 5" stroke="currentColor" stroke-miterlimit="10"
-                                        stroke-width="1.5" />
-                                    <path d="M21 12H2" stroke="currentColor" stroke-miterlimit="10"
-                                        stroke-width="1.5" />
-                                </svg>
-                            </button>
-                            <button class="cascading-slider__button" data-cascading-slider-next=""
-                                aria-label="Próxima foto">
-                                <svg class="cascading-slider__button-arrow" width="24" height="24" viewBox="0 0 24 24"
-                                    fill="none">
-                                    <path d="M14 19L21 12L14 5" stroke="currentColor" stroke-miterlimit="10"
-                                        stroke-width="1.5" />
-                                    <path d="M21 12H2" stroke="currentColor" stroke-miterlimit="10"
-                                        stroke-width="1.5" />
-                                </svg>
-                            </button>
-                        </nav>
-                    </div>
-                </div>
+                    <button class="cascading-slider__button" data-cascading-slider-next="" aria-label="Próximo projeto">
+                        <svg class="cascading-slider__button-arrow" width="24" height="24" viewBox="0 0 24 24"
+                            fill="none">
+                            <path d="M14 19L21 12L14 5" stroke="currentColor" stroke-miterlimit="10"
+                                stroke-width="1.5" />
+                            <path d="M21 12H2" stroke="currentColor" stroke-miterlimit="10" stroke-width="1.5" />
+                        </svg>
+                    </button>
+                </nav>
             </div>
         </div>
     </section>
@@ -891,6 +866,26 @@
                     </a>
                     <p class="footer-tagline">Engenharia que sustenta grandes empresas. Cuidado que sustenta cada lar.
                     </p>
+                    <address class="footer-endereco">
+                        <p class="footer-endereco-texto">
+                            Rua Dr. Orensy Rodrigues da Silva, 917<br>
+                            Centro — Andradina/SP — CEP 16901-003
+                        </p>
+                        <div class="footer-mapa-container">
+                            <iframe
+                                class="footer-mapa"
+                                src="https://maps.google.com/maps?q=Rua+Dr.+Orensy+Rodrigues+da+Silva%2C+917+-+Centro%2C+Andradina+-+SP%2C+16901-003&output=embed"
+                                width="100%"
+                                height="160"
+                                style="border:0;"
+                                allowfullscreen=""
+                                loading="lazy"
+                                referrerpolicy="no-referrer-when-downgrade"
+                                title="Localização da Perin Construções"
+                                aria-label="Mapa mostrando a localização da Perin Construções em Andradina/SP">
+                            </iframe>
+                        </div>
+                    </address>
                 </div>
                 <div class="footer-links">
                     <h4 class="footer-links-title">Navegação</h4>

@@ -1,7 +1,18 @@
 /**
  * @jest-environment jsdom
  *
- * Unit Tests — Cascading Slider Portfolio (v4 — Gallery + Viewer, Modus)
+ * Unit Tests — Cascading Slider Portfolio (v6 — galeria unica, 1 foto por
+ * projeto, sem viewer de segunda tela)
+ *
+ * v5 (carrossel flex simples) foi revertido a pedido do usuario: o visual
+ * (card central maior, laterais visiveis, clip-path via GSAP) do cascading
+ * slider Modus e o correto e deve ser mantido. A unica mudanca real em
+ * relacao ao componente original (que so populava "fotos de um projeto
+ * aberto" dentro de um viewer) e que agora ele populam DIRETO os 6
+ * projetos (uma foto de conclusao + nome + tipo/ano cada) como a propria
+ * galeria da secao — sem grid de selecao, sem viewer/openProject/
+ * closeProject. Clicar num card lateral so chama goTo() (comportamento
+ * ja existente no engine original) e leva aquele projeto ao centro.
  *
  * Validate logic in isolation: DOM structure (dynamic slides), CSS rules,
  * accessibility, image assets.
@@ -47,74 +58,51 @@ global.ResizeObserver = class ResizeObserver {
 };
 
 // Load the script (it will execute initPage immediately). Non-critical inits
-// (gallery, below-the-fold ScrollTrigger) run via requestIdleCallback,
+// (portfolio slider, below-the-fold ScrollTrigger) run via requestIdleCallback,
 // which jsdom doesn't implement — runWhenIdle() falls back to setTimeout(fn, 0).
 // Fake timers flush that synchronously so the rest of this file can assert on
 // the fully-initialized DOM, matching what happens for real in a browser a tick
 // later.
-// runOnlyPendingTimers (nao runAllTimers) em loop bem limitado: as inicializacoes
-// nao-criticas rodam encadeadas, uma por requestIdleCallback (setTimeout(fn,0) no
-// fallback do jsdom, que nao tem requestIdleCallback) — precisa de varias rodadas
-// pra atravessar a cadeia toda. runAllTimers() nao serve aqui: o clients carousel
-// tem um loop de requestAnimationFrame que se reagenda indefinidamente e abortaria
-// com "infinite loop". O loop abaixo e bounded (nao "ate esvaziar"), entao nao
-// persegue esse RAF para sempre.
 jest.useFakeTimers();
 require('../../script.js');
 for (let i = 0; i < 20; i++) jest.runOnlyPendingTimers();
 jest.useRealTimers();
 
 // ────────────────────────────────────
-// DOM Structure (v4: dynamic gallery + cascading slider)
+// DOM Structure
 // ────────────────────────────────────
 describe('DOM Structure', () => {
-  test('fotoSliderTrilha (viewport) exists in DOM', () => {
-    const trilha = document.getElementById('fotoSliderTrilha');
-    expect(trilha).not.toBeNull();
-  });
-
   test('cascading slider wrapper exists with data-cascading-slider-wrap', () => {
     expect(document.querySelector('[data-cascading-slider-wrap]')).not.toBeNull();
   });
 
-  test('viewport has data-cascading-viewport attribute', () => {
-    const trilha = document.getElementById('fotoSliderTrilha');
+  test('slider viewport (trilha) exists in the DOM', () => {
+    const trilha = document.getElementById('portfolioSliderTrilha');
+    expect(trilha).not.toBeNull();
     expect(trilha.hasAttribute('data-cascading-viewport')).toBe(true);
   });
 
-  test('portfolio gallery grid exists', () => {
-    const grid = document.getElementById('portfolioGrid');
-    expect(grid).not.toBeNull();
+  test('at least 6 project slides are mounted (one photo per project)', () => {
+    const slides = document.querySelectorAll('[data-cascading-slide]');
+    expect(slides.length).toBeGreaterThanOrEqual(6);
   });
 
-  test('portfolio gallery exists', () => {
-    const gallery = document.getElementById('portfolioGallery');
-    expect(gallery).not.toBeNull();
-  });
-
-  test('portfolio viewer exists', () => {
-    const viewer = document.getElementById('portfolioViewer');
-    expect(viewer).not.toBeNull();
-  });
-
-  test('gallery cards are rendered dynamically (6 projects)', () => {
-    const cards = document.querySelectorAll('.portfolio-card');
-    expect(cards.length).toBe(6);
-  });
-
-  test('each gallery card has an image and project name', () => {
-    const cards = document.querySelectorAll('.portfolio-card');
-    cards.forEach(card => {
-      expect(card.querySelector('img')).not.toBeNull();
-      expect(card.querySelector('.portfolio-card-name')).not.toBeNull();
+  test('each slide has exactly one image and a name + type overlay', () => {
+    document.querySelectorAll('[data-cascading-slide]').forEach((slide) => {
+      expect(slide.querySelectorAll('img').length).toBe(1);
+      expect(slide.querySelector('.cascading-slider__item-nome')).not.toBeNull();
+      expect(slide.querySelector('.cascading-slider__item-tipo')).not.toBeNull();
     });
   });
 
-  test('navigation buttons exist', () => {
-    const prev = document.querySelector('[data-cascading-slider-prev]');
-    const next = document.querySelector('[data-cascading-slider-next]');
-    expect(prev).not.toBeNull();
-    expect(next).not.toBeNull();
+  test('exactly one slide is active at a time', () => {
+    const active = document.querySelectorAll('[data-status="active"]');
+    expect(active.length).toBe(1);
+  });
+
+  test('navigation buttons exist with correct data attributes', () => {
+    expect(document.querySelector('[data-cascading-slider-prev]')).not.toBeNull();
+    expect(document.querySelector('[data-cascading-slider-next]')).not.toBeNull();
   });
 
   test('nav buttons have aria-labels', () => {
@@ -124,14 +112,18 @@ describe('DOM Structure', () => {
     expect(next.getAttribute('aria-label')).toBeTruthy();
   });
 
-  test('cascading-slider__nav exists', () => {
-    expect(document.querySelector('.cascading-slider__nav')).not.toBeNull();
+  test('cascading-slider__nav exists with aria-label', () => {
+    const nav = document.querySelector('.cascading-slider__nav');
+    expect(nav).not.toBeNull();
+    expect(nav.getAttribute('aria-label')).toBe('slider navigation');
   });
 
-  test('back-to-gallery button exists', () => {
-    const backBtn = document.getElementById('portfolioBackBtn');
-    expect(backBtn).not.toBeNull();
-    expect(backBtn.getAttribute('aria-label')).toBeTruthy();
+  test('gallery grid, viewer, and stage from the old openProject/closeProject flow no longer exist', () => {
+    expect(document.getElementById('portfolioGrid')).toBeNull();
+    expect(document.getElementById('portfolioGallery')).toBeNull();
+    expect(document.getElementById('portfolioViewer')).toBeNull();
+    expect(document.getElementById('portfolioBackBtn')).toBeNull();
+    expect(document.querySelector('.portfolio-card')).toBeNull();
   });
 });
 
@@ -180,16 +172,18 @@ describe('CSS Rules', () => {
     expect(css).toMatch(/\.cascading-slider__item-inner\s*\{[^}]*overflow:\s*hidden/);
   });
 
-  test('portfolio-card uses aspect-ratio 16/10', () => {
-    expect(css).toMatch(/\.portfolio-card\s*\{[^}]*aspect-ratio:\s*16\s*\/\s*10/);
+  test('per-slide name/type overlay rule exists (new: text lives on the slide, no viewer header)', () => {
+    expect(css).toMatch(/\.cascading-slider__item-overlay\s*\{/);
+    expect(css).toMatch(/\.cascading-slider__item-nome\s*\{/);
+    expect(css).toMatch(/\.cascading-slider__item-tipo\s*\{/);
   });
 
-  test('portfolio-gallery-grid uses 3 columns on desktop', () => {
-    expect(css).toMatch(/\.portfolio-gallery-grid\s*\{[^}]*grid-template-columns:\s*repeat\(3,\s*1fr\)/);
-  });
-
-  test('portfolio-viewer-back exists with styling', () => {
-    expect(css).toMatch(/\.portfolio-viewer-back\s*\{/);
+  test('old gallery/viewer/card/stage CSS has been fully removed', () => {
+    expect(css).not.toMatch(/\.portfolio-card\b/);
+    expect(css).not.toMatch(/\.portfolio-gallery\s*[.{]/);
+    expect(css).not.toMatch(/\.portfolio-gallery-grid\b/);
+    expect(css).not.toMatch(/\.portfolio-viewer\b/);
+    expect(css).not.toMatch(/\.portfolio-stage\b/);
   });
 });
 
@@ -206,25 +200,12 @@ describe('Responsive Breakpoints (JS)', () => {
     expect(js).toMatch(/maxWidth:\s*Infinity/);
   });
 
-  test('desktop tier uses 60% active width', () => {
+  test('desktop tier uses 60% active width (card central maior, laterais visiveis)', () => {
     expect(js).toMatch(/maxWidth:\s*Infinity,\s*activeWidth:\s*0\.60/);
   });
 
   test('smallest tier (<=479px) uses 78% active width', () => {
     expect(js).toMatch(/maxWidth:\s*479,\s*activeWidth:\s*0\.78/);
-  });
-});
-
-// ────────────────────────────────────
-// Touch Device Detection
-// ────────────────────────────────────
-describe('Touch Device Detection', () => {
-  test('touchstart is available in window', () => {
-    expect('ontouchstart' in window).toBe(false); // jsdom default
-  });
-
-  test('maxTouchPoints defaults to 0 in jsdom', () => {
-    expect(navigator.maxTouchPoints).toBe(0);
   });
 });
 
@@ -241,20 +222,42 @@ describe('Accessibility', () => {
     const section = document.getElementById('portfolio');
     expect(section.getAttribute('aria-label')).toBeTruthy();
   });
+});
 
-  test('nav has aria-label for slider navigation', () => {
-    const nav = document.querySelector('.cascading-slider__nav');
-    expect(nav.getAttribute('aria-label')).toBe('slider navigation');
+// ────────────────────────────────────
+// Script Integrity
+// ────────────────────────────────────
+describe('Script Integrity', () => {
+  const js = fs.readFileSync(path.join(__dirname, '..', '..', 'script.js'), 'utf8');
+
+  test('initCascadingSlider and initPortfolioSlider exist', () => {
+    expect(js).toMatch(/function initCascadingSlider\(/);
+    expect(js).toMatch(/function initPortfolioSlider\(/);
   });
 
-  test('gallery has aria-label', () => {
-    const gallery = document.getElementById('portfolioGallery');
-    expect(gallery.getAttribute('aria-label')).toBeTruthy();
+  test('slide click handler navigates via goTo (no viewer opens)', () => {
+    const startIdx = js.indexOf('function initCascadingSlider');
+    const endIdx = js.indexOf('function initPortfolioSlider');
+    const fnSrc = js.slice(startIdx, endIdx);
+    expect(fnSrc).toMatch(/slide\.addEventListener\('click',\s*handler\)/);
+    expect(fnSrc).toMatch(/if \(index !== activeIndex\) goTo\(index\)/);
   });
 
-  test('viewer defaults to aria-hidden="true"', () => {
-    const viewer = document.getElementById('portfolioViewer');
-    expect(viewer.getAttribute('aria-hidden')).toBe('true');
+  test('old viewer/gallery-grid engine (openProject/closeProject) has been fully removed', () => {
+    expect(js).not.toMatch(/function openProject\(/);
+    expect(js).not.toMatch(/function closeProject\(/);
+    expect(js).not.toMatch(/function initPortfolioGallery\(/);
+    expect(js).not.toMatch(/portfolioState/);
+  });
+
+  test('portfolioProjects data array exists with 6 projects, one cover photo each', () => {
+    expect(js).toContain("id: 'eldorado'");
+    expect(js).toContain("id: 'obra-residencial'");
+    const match = js.match(/const portfolioProjects = \[([\s\S]*?)\n\];/);
+    expect(match).not.toBeNull();
+    // 6 objects => 6 "cover:" occurrences, no "photos:" array (single photo per project)
+    expect((match[1].match(/cover:/g) || []).length).toBe(6);
+    expect(match[1]).not.toMatch(/photos:/);
   });
 });
 
@@ -264,11 +267,6 @@ describe('Accessibility', () => {
 describe('Image Assets', () => {
   test('placeholder-obra-01.webp exists', () => {
     const exists = fs.existsSync(path.join(__dirname, '..', '..', 'assets', 'images', 'placeholders', 'placeholder-obra-01.webp'));
-    expect(exists).toBe(true);
-  });
-
-  test('placeholder-obra-02.webp exists', () => {
-    const exists = fs.existsSync(path.join(__dirname, '..', '..', 'assets', 'images', 'placeholders', 'placeholder-obra-02.webp'));
     expect(exists).toBe(true);
   });
 

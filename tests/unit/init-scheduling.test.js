@@ -1,19 +1,15 @@
 /**
  * @jest-environment jsdom
  *
- * Unit Tests — Init scheduling (hero entrance -> idle queue, cascading slider -> refresh)
+ * Unit Tests — Init scheduling (hero entrance -> idle queue, portfolio slider mount)
  *
- * Regression guards for two mobile-jank fixes:
- *  1. The non-critical init queue (carousels, below-the-fold ScrollTrigger,
- *     etc.) must not start until the hero entrance timeline's onComplete
- *     fires — starting earlier let requestIdleCallback's 200ms timeout force
- *     a non-critical function to run mid-animation on slow mobile CPUs,
- *     causing the hero title to "jump" instead of animating smoothly. A
- *     3.5s fallback timer covers the case where onComplete never fires.
- *  2. initCascadingSlider() resizes .cascading-slider-collection to a fixed
- *     420px on its first mount, AFTER the load/fonts.ready ScrollTrigger
- *     refreshes already ran — it must trigger its own refresh so sections
- *     below (e.g. "Sobre Nos") don't keep stale ScrollTrigger markers.
+ * Regression guard:
+ *  The non-critical init queue (carousels, below-the-fold ScrollTrigger,
+ *  etc.) must not start until the hero entrance timeline's onComplete
+ *  fires — starting earlier let requestIdleCallback's 200ms timeout force
+ *  a non-critical function to run mid-animation on slow mobile CPUs,
+ *  causing the hero title to "jump" instead of animating smoothly. A
+ *  3.5s fallback timer covers the case where onComplete never fires.
  *
  * Run: npm run test:unit
  */
@@ -122,19 +118,13 @@ describe('Hero entrance -> idle queue scheduling', () => {
   });
 });
 
-describe('Portfolio grid population -> ScrollTrigger.refresh on mount', () => {
-  // .cascading-slide elements do not exist in the static HTML — they are only
-  // created when a user opens a project in the viewer (openProject()). So
-  // initCascadingSlider() always no-ops on page load (its own guard clause
-  // returns early: "list.querySelectorAll('.cascading-slide').length === 0").
-  // The real page-load culprit is #portfolioGrid: it starts EMPTY in the
-  // static HTML and is only populated by initPortfolioGallery() (idle queue
-  // item 14) — after initServicesReveal/initDifferentialsAnimation/
-  // initTestimonialsReveal (earlier items in the same queue)
-  // already created their ScrollTrigger instances measuring the page WITHOUT
-  // the portfolio grid's height. Since portfolio sits above services/segments/
-  // process/testimonials in DOM order (index.html), this shifts their real
-  // position, staling their already-created markers.
+describe('Portfolio cascading slider -> mounted from the idle queue', () => {
+  // The cascading-slider__list is already sized via CSS (clamp() height,
+  // always present in the static HTML) — initPortfolioSlider() only fills
+  // its innerHTML with the 6 project slides, it never changes the portfolio
+  // section's height. No ScrollTrigger.refresh() is needed for it
+  // specifically (unlike the old dynamic gallery grid, which did resize the
+  // section and needed an explicit refresh — removed along with the viewer).
   beforeEach(() => {
     jest.resetModules();
     freshDom();
@@ -145,6 +135,7 @@ describe('Portfolio grid population -> ScrollTrigger.refresh on mount', () => {
       set: jest.fn(),
       from: jest.fn(),
       fromTo: jest.fn(),
+      delayedCall: jest.fn(),
       timeline: jest.fn((cfg) => {
         // Resolve immediately so the idle queue starts without waiting on the fallback.
         if (cfg && typeof cfg.onComplete === 'function') cfg.onComplete();
@@ -154,14 +145,21 @@ describe('Portfolio grid population -> ScrollTrigger.refresh on mount', () => {
     };
   });
 
-  test('ScrollTrigger.refresh() is called after #portfolioGrid is populated', () => {
+  test('initPortfolioSlider mounts 6 project slides and wires up navigation', () => {
     jest.useFakeTimers();
     require('../../script.js');
     flush();
     jest.useRealTimers();
 
-    const grid = document.getElementById('portfolioGrid');
-    expect(grid.children.length).toBeGreaterThan(0);
-    expect(global.ScrollTrigger.refresh).toHaveBeenCalled();
+    const viewport = document.getElementById('portfolioSliderTrilha');
+    expect(viewport.children.length).toBeGreaterThanOrEqual(6);
+
+    const activeBefore = viewport.querySelector('[data-status="active"]');
+    expect(activeBefore).not.toBeNull();
+
+    document.querySelector('[data-cascading-slider-next]').dispatchEvent(new window.Event('click'));
+
+    const activeAfter = viewport.querySelector('[data-status="active"]');
+    expect(activeAfter).not.toBe(activeBefore);
   });
 });
