@@ -2519,6 +2519,7 @@ function initPage() {
             initContactForm,
             initCustomSelect,
             initScrollRevealFallback,
+            initFaqAccordion,
         ]);
     }
     initHeroEntrance(startIdleQueue);
@@ -2589,6 +2590,50 @@ function initSegmentsTabs() {
             tab.classList.add('active');
             tab.setAttribute('aria-selected', 'true');
             panel.classList.add('active');
+        });
+    });
+}
+
+// === FAQ SECTION — ACCORDION VIA JS (substitui ::details-content, sem suporte no Safari iOS) ===
+// Mantém o <details>/<summary> nativo (semântica e fallback sem JS), mas
+// assume a transição de abertura/fechamento via max-height, controlada
+// manualmente. Compatível com todos os navegadores, incluindo Safari iOS.
+function initFaqAccordion() {
+    const items = document.querySelectorAll('.faq-item');
+    if (!items.length) return;
+
+    items.forEach(item => {
+        const summary = item.querySelector('.faq-question');
+        const answer = item.querySelector('.faq-answer');
+        if (!summary || !answer) return;
+
+        answer.style.maxHeight = item.hasAttribute('open') ? `${answer.scrollHeight}px` : '0px';
+
+        summary.addEventListener('click', (event) => {
+            event.preventDefault();
+            if (item.dataset.animating === 'true') return;
+            item.dataset.animating = 'true';
+
+            const closing = item.hasAttribute('open');
+
+            if (closing) {
+                answer.style.maxHeight = `${answer.scrollHeight}px`;
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        answer.style.maxHeight = '0px';
+                    });
+                });
+            } else {
+                item.setAttribute('open', '');
+                answer.style.maxHeight = `${answer.scrollHeight}px`;
+            }
+
+            answer.addEventListener('transitionend', function onTransitionEnd(event) {
+                if (event.propertyName !== 'max-height') return;
+                answer.removeEventListener('transitionend', onTransitionEnd);
+                if (closing) item.removeAttribute('open');
+                item.dataset.animating = 'false';
+            });
         });
     });
 }

@@ -321,6 +321,10 @@ h6 {
     transition: all var(--transition-fast);
 }
 
+.nav-toggle.active .nav-toggle-line {
+    background: var(--color-text-primary);
+}
+
 .nav-toggle.active .nav-toggle-line:nth-child(1) {
     transform: rotate(45deg) translate(6px, 6px);
 }
@@ -1215,12 +1219,6 @@ h6 {
     margin-bottom: 24px;
 }
 
-.section-cta {
-    display: flex;
-    justify-content: center;
-    margin-top: 64px;
-}
-
 .service-mosaic-visual {
     position: absolute;
     bottom: 32px;
@@ -1241,6 +1239,108 @@ h6 {
 .service-mosaic-visual svg {
     width: 100%;
     height: 100%;
+}
+
+/* === CTA PRINCIPAL — entre Portfolio e Como Trabalhamos === */
+.cta-principal-secao {
+    background-color: var(--color-accent-primary);
+    padding: var(--section-padding);
+    text-align: center;
+}
+
+.cta-principal-container {
+    max-width: 680px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+}
+
+.cta-principal-badge {
+    font-family: var(--font-secondary);
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    color: rgba(255, 255, 255, 0.6);
+    text-transform: uppercase;
+}
+
+.cta-principal-titulo {
+    font-family: var(--font-primary);
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 700;
+    color: var(--cor-branco-gelo);
+    line-height: 1.15;
+    margin: 0;
+}
+
+.cta-principal-destaque {
+    font-family: Georgia, serif;
+    font-weight: 400;
+    font-style: italic;
+    color: var(--cor-verde-brilhante);
+}
+
+.cta-principal-subtitulo {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.75);
+    line-height: 1.7;
+    max-width: 520px;
+    margin: 0;
+}
+
+.cta-principal-botoes {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.cta-principal-btn-primario {
+    background: var(--cor-branco-gelo);
+    color: var(--color-accent-primary);
+    padding: 14px 32px;
+    border-radius: 100px;
+    font-family: var(--font-secondary);
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+    transition: opacity var(--transition-fast);
+}
+
+.cta-principal-btn-primario:hover {
+    opacity: 0.9;
+}
+
+.cta-principal-btn-secundario {
+    background: transparent;
+    color: var(--cor-branco-gelo);
+    padding: 14px 32px;
+    border-radius: 100px;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    font-family: var(--font-secondary);
+    font-weight: 500;
+    font-size: 0.95rem;
+    text-decoration: none;
+    transition: border-color var(--transition-fast), background var(--transition-fast);
+}
+
+.cta-principal-btn-secundario:hover {
+    border-color: rgba(255, 255, 255, 0.7);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.cta-principal-selos {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.cta-principal-selo {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.55);
+    font-family: var(--font-secondary);
 }
 
 /* === PROCESS SECTION === */
@@ -2697,6 +2797,51 @@ h6 {
     font-style: italic;
 }
 
+/* === ALTERNÂNCIA DE CORES ENTRE SEÇÕES (xadrez claro/cinza) ===
+   Por ID, nao por nth-child — a ordem das secoes no HTML pode mudar sem
+   quebrar o padrao. --color-bg-primary (mais branco) e --color-bg-secondary
+   (mais cinza) ja existiam no projeto; a sequencia abaixo so redistribui
+   quem usa qual. Hero e CTA Principal ficam fora (temas escuros proprios). */
+#clients {
+    background-color: var(--color-bg-primary);
+}
+
+#about {
+    background-color: var(--color-bg-secondary);
+}
+
+#numbers {
+    background-color: var(--color-bg-primary);
+}
+
+#services {
+    background-color: var(--color-bg-secondary);
+}
+
+#portfolio {
+    background-color: var(--color-bg-primary);
+}
+
+#process {
+    background-color: var(--color-bg-secondary);
+}
+
+#differentials {
+    background-color: var(--color-bg-primary);
+}
+
+#faq {
+    background-color: var(--color-bg-secondary);
+}
+
+#contact {
+    background-color: var(--color-bg-primary);
+}
+
+#footer {
+    background-color: var(--color-bg-secondary);
+}
+
 /* === SCROLL ANIMATIONS === */
 .section-tag-reveal {
     opacity: 1;
@@ -2776,8 +2921,24 @@ h6 {
     .process-journey-section,
     .portfolio-gallery-section,
     .differentials-showcase-section,
-    .premium-contact-experience {
+    .premium-contact-experience,
+    .cta-principal-secao {
         padding: var(--section-padding-mobile);
+    }
+
+    .cta-principal-botoes {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .cta-principal-btn-primario,
+    .cta-principal-btn-secundario {
+        text-align: center;
+        width: 100%;
+    }
+
+    .cta-principal-selos {
+        gap: 12px;
     }
 
     .services-mosaic {
@@ -3102,11 +3263,20 @@ h6 {
     opacity: 0;
 }
 
+/* Altura animada via JS (max-height) em vez de ::details-content — este
+   último não é suportado no Safari iOS, quebrando a transição do FAQ lá.
+   box-sizing: border-box garante que max-height: 0 zere também o
+   padding-top, sem precisar animá-lo à parte. */
 .faq-answer {
     font-family: var(--font-secondary);
     font-size: 15px;
     line-height: 1.7;
     color: var(--color-text-secondary);
-    margin-top: 14px;
+    margin: 0;
+    padding-top: 14px;
     padding-right: 36px;
+    box-sizing: border-box;
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.35s ease;
 }
