@@ -92,6 +92,22 @@ html {
     overflow-anchor: none;
 }
 
+/* === LENIS (smooth scroll) — regras minimas necessarias no Perin ===
+   Nao copiado 1:1 do lenis.css da referencia: omitidas `html.lenis body {
+   height: auto }` (Perin nao define altura fixa em html/body) e
+   `[data-lenis-prevent] { overscroll-behavior: contain }` (nenhum elemento
+   com scroll interno proprio usa esse atributo aqui). Mantidas so as duas
+   regras que tem efeito real neste projeto: destrava o wheel/touch do
+   iframe do Google Maps (secao de contato) durante scroll suave, e reforca
+   o lock de scroll quando lenis.stop() e chamado (menu mobile aberto). */
+.lenis.lenis-smooth iframe {
+    pointer-events: none;
+}
+
+.lenis.lenis-stopped {
+    overflow: clip;
+}
+
 body {
     font-family: var(--font-secondary);
     background-color: var(--color-bg-primary);

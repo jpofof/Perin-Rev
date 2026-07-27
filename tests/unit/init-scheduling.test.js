@@ -37,7 +37,14 @@ function flush() {
 }
 
 function polyfills() {
-  global.ScrollTrigger = { refresh: jest.fn(), config: jest.fn(), batch: jest.fn(), create: jest.fn() };
+  global.ScrollTrigger = { refresh: jest.fn(), config: jest.fn(), batch: jest.fn(), create: jest.fn(), update: jest.fn() };
+  global.Lenis = class Lenis {
+    on() {}
+    raf() {}
+    scrollTo() {}
+    stop() {}
+    start() {}
+  };
   Object.defineProperty(window, 'innerWidth', { writable: true, value: 375 });
   Object.defineProperty(window, 'innerHeight', { writable: true, value: 812 });
   Object.defineProperty(navigator, 'maxTouchPoints', { writable: true, value: 5 });
@@ -65,6 +72,7 @@ describe('Hero entrance -> idle queue scheduling', () => {
   test('idle queue (e.g. cascading slider) does not start before hero entrance onComplete fires', () => {
     let capturedOnComplete = null;
     global.gsap = {
+      ticker: { add: jest.fn(), lagSmoothing: jest.fn() },
       killTweensOf: jest.fn(),
       to: jest.fn(),
       set: jest.fn(),
@@ -96,6 +104,7 @@ describe('Hero entrance -> idle queue scheduling', () => {
 
   test('3.5s fallback starts the idle queue even if hero onComplete never fires', () => {
     global.gsap = {
+      ticker: { add: jest.fn(), lagSmoothing: jest.fn() },
       killTweensOf: jest.fn(),
       to: jest.fn(),
       set: jest.fn(),
@@ -130,6 +139,7 @@ describe('Portfolio cascading slider -> mounted from the idle queue', () => {
     freshDom();
     polyfills();
     global.gsap = {
+      ticker: { add: jest.fn(), lagSmoothing: jest.fn() },
       killTweensOf: jest.fn(),
       to: jest.fn(),
       set: jest.fn(),

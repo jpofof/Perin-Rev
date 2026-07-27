@@ -21,6 +21,7 @@ const html = fs.readFileSync(path.join(__dirname, '..', '..', 'index.html'), 'ut
 document.body.innerHTML = html;
 
 global.gsap = {
+  ticker: { add: jest.fn(), lagSmoothing: jest.fn() },
   killTweensOf: jest.fn(),
   to: jest.fn(),
   set: jest.fn(),
@@ -29,7 +30,14 @@ global.gsap = {
   timeline: jest.fn(() => ({ to: jest.fn().mockReturnThis(), eventCallback: jest.fn() })),
   utils: { toArray: jest.fn(() => []) },
 };
-global.ScrollTrigger = { refresh: jest.fn(), config: jest.fn(), batch: jest.fn(), create: jest.fn() };
+global.ScrollTrigger = { refresh: jest.fn(), config: jest.fn(), batch: jest.fn(), create: jest.fn(), update: jest.fn() };
+global.Lenis = class Lenis {
+  on() {}
+  raf() {}
+  scrollTo() {}
+  stop() {}
+  start() {}
+};
 Object.defineProperty(window, 'innerWidth', { writable: true, value: 375 });
 Object.defineProperty(window, 'innerHeight', { writable: true, value: 812 });
 Object.defineProperty(navigator, 'maxTouchPoints', { writable: true, value: 5 });

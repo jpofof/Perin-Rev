@@ -1,0 +1,43 @@
+<!--
+  Extraído de: burkhardprojekte.ch (Webflow export) — index.html
+  Componente: card de contato flutuante no hero ("Agende uma consulta inicial")
+
+  Contexto necessário: este <a> é filho direto de <section class="section_hero">,
+  como IRMÃO (não filho) do wrapper de conteúdo do hero (.container-hero). É esse
+  posicionamento como irmão — fora do fluxo do texto do hero — que permite ao card
+  ser posicionado de forma independente via CSS absoluto/relativo, ancorado ao
+  <section> inteiro em vez de a uma coluna de grid ou flex do conteúdo.
+
+  Removido deste recorte (não faz parte do padrão a extrair):
+  - data-w-id="..." (IDs de animação do Webflow, sem função fora da plataforma)
+  - o `style="transform: translate3d(...)"` inline (resíduo de uma animação de
+    entrada do Webflow, não faz parte do posicionamento final do card)
+  - o restante do conteúdo do hero (slider de imagens de fundo), fora do escopo
+    deste componente
+-->
+
+<section class="section_hero">
+  <!-- ... conteúdo de texto do hero (h1, parágrafo) ... -->
+
+  <!-- Card de contato: irmão do wrapper de conteúdo, direto dentro da section -->
+  <a href="https://www.burkhardprojekte.ch/kontakt" class="big-cta w-inline-block">
+    <div class="heading-style-h3">Agende uma consulta inicial</div>
+    <div class="big-cta-content">
+      <p>Utilize minha experiência para o seu próximo projeto de construção.</p>
+
+      <!-- Botão circular com seta diagonal — reaproveita o mesmo SVG do CTA principal -->
+      <div class="button_arrow_wrapper is-2">
+        <div class="button_arrow_inner">
+          <div class="button_arrow w-embed">
+            <svg width="11" height="11" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M0.318115 0.854981L9.57873 0.85498V10.1156M9.54519 0.888525L0.61926 9.81448" stroke="currentcolor" stroke-width="1.25654" />
+            </svg>
+          </div>
+        </div>
+        <!-- .is-2 / .is-3: camadas extras do círculo (efeito de "anel" duplo no hover) -->
+        <div class="button_arrow_inner is-2"></div>
+        <div class="button_arrow_inner is-3"></div>
+      </div>
+    </div>
+  </a>
+</section>

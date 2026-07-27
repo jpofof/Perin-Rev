@@ -1,0 +1,62 @@
+/*
+  Extraído de: burkhardprojekte.ch (Webflow export) —
+  styles/burkhardprojekte.webflow.shared.f3931eb82.css
+
+  ATENÇÃO — achado importante: na referência, a "continuidade de cor" entre a
+  seção de logos e a seção "Sobre" NÃO é uma regra explícita de background-color
+  igual nas duas. Nenhuma das duas define background-color própria — as duas
+  simplesmente HERDAM a cor de fundo do <body>:
+
+    .body { background-color: var(--background-color--background-primary); }
+
+  Ou seja, a continuidade visual na referência é um efeito colateral de "não
+  fazer nada" (nenhuma das duas seções tem alternância de cor aplicada), não uma
+  técnica de "igualar duas cores diferentes". Isso é adequado à referência,
+  que aparentemente não tem um sistema de alternância de cor em xadrez ativo
+  entre seções nesse ponto do layout.
+
+  O Perin JÁ TEM um sistema de alternância de cor em xadrez entre seções — nesse
+  caso, "não fazer nada" não é suficiente: será necessário definir
+  explicitamente a mesma cor de fundo nas duas seções (logos + a seção que
+  vier logo depois, equivalente ao "Sobre") para que a alternância seja
+  quebrada de forma intencional nesse ponto específico, e não apenas herdada.
+  Ver README para o comentário completo.
+*/
+
+/* ── 1. Posição: sem alteração de layout necessária ────────────────────────
+   Não há nenhuma regra de position/margin/order específica fazendo a seção
+   de logos "vir depois do hero" — isso é simplesmente a ORDEM DOS ELEMENTOS
+   no HTML. Não existe CSS de reposicionamento aqui: a técnica é 100% estrutural
+   (ordem no DOM), não visual. */
+
+.section_logos {
+  /* padding-top precisa ser proporcional à sobreposição do card 01
+     (ver componente 01: margin-bottom negativo do .big-cta).
+     valor da referência: 2rem — CALIBRADO para uma sobreposição de -152px.
+     Fórmula usada aqui: padding-top >= |margin-bottom do card| - folga visual
+     desejada acima dos logos. No Perin, recalcular com a altura real do card. */
+  padding-top: 2rem; /* valor da referência — substituir/recalcular para o Perin */
+  overflow: hidden;  /* necessário para o efeito de marquee do carrossel não vazar */
+}
+
+.logos_wrapper {
+  margin-top: 2rem; /* valor da referência — substituir pelo equivalente do Perin */
+}
+
+/* ── 2. Continuidade de cor — versão EXPLÍCITA recomendada para o Perin ────
+   Na referência isso funciona por ausência de regra (ambas herdam do body).
+   No Perin, com alternância em xadrez ativa, declare explicitamente: */
+
+.section_logos,
+.section-sobre /* nome de classe ilustrativo — usar o seletor real da seção
+                   "Sobre"/equivalente no Perin */ {
+  /* valor da referência: var(--background-color--background-primary) = #fafafa
+     substituir pelo token de fundo claro do Perin */
+  background-color: var(--background-color--background-primary);
+}
+
+/* Breakpoints: NÃO HÁ overrides de padding-top ou background-color para
+   .section_logos ou .section_about em nenhum breakpoint na referência
+   (991px / 767px / 479px). A única coisa que muda por breakpoint no
+   carrossel em si é a largura do wrapper de marquee, que é responsabilidade
+   do componente de carrossel já existente no Perin, não desta extração. */

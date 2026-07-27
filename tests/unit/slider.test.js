@@ -33,6 +33,7 @@ document.body.innerHTML = html;
 
 // Load GSAP mock (avoids CDN dependency)
 global.gsap = {
+  ticker: { add: jest.fn(), lagSmoothing: jest.fn() },
   killTweensOf: jest.fn(),
   to: jest.fn(),
   set: jest.fn(),
@@ -44,7 +45,14 @@ global.gsap = {
 };
 
 // Inject window helpers
-global.ScrollTrigger = { refresh: jest.fn(), config: jest.fn(), batch: jest.fn(), create: jest.fn() };
+global.ScrollTrigger = { refresh: jest.fn(), config: jest.fn(), batch: jest.fn(), create: jest.fn(), update: jest.fn() };
+global.Lenis = class Lenis {
+  on() {}
+  raf() {}
+  scrollTo() {}
+  stop() {}
+  start() {}
+};
 Object.defineProperty(window, 'innerWidth', { writable: true, value: 1440 });
 Object.defineProperty(window, 'innerHeight', { writable: true, value: 900 });
 Object.defineProperty(navigator, 'maxTouchPoints', { writable: true, value: 0 });

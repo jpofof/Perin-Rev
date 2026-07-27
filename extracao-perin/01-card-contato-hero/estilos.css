@@ -1,0 +1,186 @@
+/*
+  Extraído de: burkhardprojekte.ch (Webflow export) —
+  styles/burkhardprojekte.webflow.shared.f3931eb82.css
+
+  Todas as variáveis --base-color-*, --text-color-*, --border-color-* abaixo são
+  tokens da REFERÊNCIA. Cada uma está marcada com o valor calculado ao lado, para
+  facilitar a troca pelo token equivalente do Perin — não copie os valores em px/hex,
+  copie a ESTRUTURA (o que cada propriedade faz) e aponte para o token do Perin.
+*/
+
+/* ── 1. Contexto de posicionamento no hero ──────────────────────────────── */
+/* O card usa position:relative + inset, então precisa que a section pai seja
+   um contexto de posicionamento. Na referência isso já existe porque o hero
+   inteiro é position:relative (ele também usa isso para empilhar o overlay
+   de gradiente sobre a imagem de fundo). */
+.section_hero {
+  position: relative; /* pré-requisito para o card se posicionar em relação ao hero */
+  height: 100svh;      /* valor da referência — substituir pelo equivalente do Perin */
+  min-height: 60rem;   /* valor da referência — substituir pelo equivalente do Perin */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* ── 2. O card em si ─────────────────────────────────────────────────────── */
+.big-cta {
+  /* z-index acima do conteúdo do hero, abaixo de header/nav fixo se houver */
+  z-index: 3;
+
+  /* dimensão e formato */
+  max-width: 32rem;                                    /* valor da referência — substituir pelo equivalente do Perin */
+  padding: 2rem;                                        /* valor da referência — substituir pelo equivalente do Perin */
+  border-radius: var(--text-color--border-radius);      /* valor da referência (.1875rem) — substituir pelo token de raio do Perin */
+
+  /* cor: mesma cor de destaque do botão primário do hero */
+  background-color: var(--base-color-brand--turquoise); /* valor da referência (#1e5c66) — substituir pela cor de destaque do Perin */
+  color: var(--text-color--text-primary-on-dark);        /* valor da referência (#fafafa) — substituir pelo token de texto-sobre-cor-escura do Perin */
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);             /* profundidade visual — ajustar opacidade se o fundo do Perin for mais claro/escuro */
+
+  /* layout interno */
+  display: flex;
+  flex-flow: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  grid-row-gap: 2rem;
+  font-weight: 400;
+  line-height: 1.8;
+  text-decoration: none;
+  transition: all 0.3s;
+
+  /* ── ESTRATÉGIA DE POSICIONAMENTO ──
+     position: relative (não absolute!) + inset define onde o card "gostaria"
+     de estar dentro do fluxo normal, e margin-bottom NEGATIVO puxa o próprio
+     card para fora do hero, criando a sobreposição sobre a seção seguinte.
+     Isso funciona porque o card é o ÚLTIMO elemento dentro de .section_hero,
+     então seu overflow para fora da section soma-se à altura real do documento
+     em vez de ficar cortado — diferente de um position:absolute que sairia do
+     fluxo do documento e exigiria z-index/overflow cuidadosos na section vizinha. */
+  position: relative;
+  inset: auto auto 0% 0%;   /* ancora no canto inferior-esquerdo do hero */
+  margin-left: 10vw;        /* valor da referência — substituir pelo equivalente do Perin (afastamento da borda esquerda) */
+  margin-top: 0;
+  margin-bottom: -152px;    /* valor da referência — a MAGNITUDE da sobreposição sobre a próxima seção. Recalcular para o Perin com base na altura real do card no hero com vídeo */
+}
+
+.big-cta:hover {
+  background-color: #13373d; /* valor da referência (turquesa escurecido ~12%) — substituir por uma variação escurecida do accent do Perin */
+}
+
+.big-cta-content {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  grid-column-gap: 3rem;
+  grid-row-gap: 3rem;
+}
+
+/* Título do card — reaproveita a mesma classe de heading usada em títulos
+   de seção (fonte/peso/tracking consistentes com o resto do site) */
+.heading-style-h3 {
+  font-size: 2rem;        /* valor da referência — substituir pela escala tipográfica do Perin */
+  font-weight: 600;
+  letter-spacing: -2px;
+  line-height: 1.2;
+}
+
+/* ── 3. Botão circular com seta ──────────────────────────────────────────── */
+.button_arrow_wrapper {
+  width: 4rem;
+  height: 4rem;
+  aspect-ratio: 1;
+  border-radius: 5000px; /* pill/círculo perfeito */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  align-self: flex-end;
+}
+
+.button_arrow_wrapper.is-2 {
+  transform: scale(1.2); /* variante ligeiramente maior usada dentro do card */
+}
+
+/* Camada central: círculo branco sólido com o ícone SVG */
+.button_arrow_inner {
+  position: absolute;
+  z-index: 3;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 5000px;
+  background-color: var(--base-color-neutral--white); /* valor da referência — substituir pelo token de superfície clara do Perin */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Camadas .is-2 / .is-3: dois anéis semitransparentes por trás do círculo
+   central, criando um efeito de "alvo"/profundidade — puramente decorativo,
+   opcional ao portar para o Perin */
+.button_arrow_inner.is-2 {
+  z-index: 2;
+  width: 2rem;
+  height: 2rem;
+  background-color: rgba(255, 255, 255, 0.4); /* valor da referência — ajustar para a cor de destaque do Perin em baixa opacidade */
+}
+
+.button_arrow_inner.is-3 {
+  z-index: 1;
+  width: 2rem;
+  height: 2rem;
+  background-color: transparent;
+  border: 0.5px solid rgba(30, 92, 102, 0.2); /* valor da referência (baseado no turquesa) — substituir pela cor de destaque do Perin em baixa opacidade */
+}
+
+.button_arrow {
+  color: var(--base-color-brand--turquoise); /* valor da referência — substituir pela cor de destaque do Perin (cor do traço do SVG via currentColor) */
+}
+
+/* ── 4. Comportamento responsivo ─────────────────────────────────────────── */
+
+/* Breakpoint "tablet" — valor da referência: max-width 991px */
+@media screen and (max-width: 991px) {
+  .section_hero {
+    height: auto;
+    min-height: 0;
+    padding-top: 3rem; /* valor da referência — substituir pelo equivalente do Perin */
+  }
+
+  /* Em telas menores a sobreposição encolhe: de -152px para um valor positivo
+     pequeno (o card passa a ficar dentro do fluxo, sem transbordar tanto,
+     porque o espaço vertical disponível é mais escasso) */
+  .big-cta {
+    margin-bottom: 2rem; /* valor da referência — no Perin, recalcular proporcional à altura do card neste breakpoint */
+  }
+}
+
+/* Breakpoint "mobile" — valor da referência: max-width 767px */
+@media screen and (max-width: 767px) {
+  /* Largura quase total, com margens laterais automáticas em vez de um
+     afastamento fixo da borda esquerda (10vw deixa de ser usado aqui) */
+  .big-cta {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .big-cta-content {
+    flex-flow: column;
+    justify-content: space-between;
+    align-items: flex-end;
+    grid-column-gap: 2rem;
+    grid-row-gap: 2rem;
+  }
+}
+
+/* Breakpoint "mobile pequeno" — valor da referência: max-width 479px */
+@media screen and (max-width: 479px) {
+  .big-cta {
+    padding-left: 1rem;  /* valor da referência — substituir pelo equivalente do Perin */
+    padding-right: 1rem; /* valor da referência — substituir pelo equivalente do Perin */
+  }
+
+  .big-cta-content {
+    grid-column-gap: 0rem;
+    grid-row-gap: 0rem;
+    font-size: 0.875rem; /* valor da referência — substituir pela escala tipográfica do Perin */
+  }
+}

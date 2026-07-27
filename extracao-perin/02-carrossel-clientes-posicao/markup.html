@@ -1,0 +1,46 @@
+<!--
+  Extraído de: burkhardprojekte.ch (Webflow export) — index.html
+
+  Este recorte documenta a POSIÇÃO e a AUSÊNCIA DE CABEÇALHO da seção de logos,
+  não o carrossel em si (o Perin já tem um componente de carrossel funcional —
+  o objetivo é só reposicionar/estilizar o wrapper, não substituir o componente).
+
+  Ordem real no documento fonte:
+    1. </section>              <- fim de .section_hero (com o card 01 dentro)
+    2. <div class="section_logos"> ... </div>   <- SEM heading/eyebrow antes do carrossel
+    3. <div class="section_about"> ...           <- ESTA seção TEM um bloco "eyebrow"
+         <div data-wf--eyebrow--variant="on-light" class="eyebrow">...</div>
+         ...
+
+  Ou seja: a ausência de cabeçalho é uma escolha específica da seção de logos,
+  não um padrão geral do site — a seção seguinte (Sobre) tem cabeçalho normalmente.
+-->
+
+<section class="section_hero">
+  <!-- ... conteúdo do hero + card 01 (.big-cta) ... -->
+</section>
+
+<!-- Direto na sequência, sem nenhum heading/eyebrow/badge entre o fim do hero
+     e o início do carrossel -->
+<div class="section_logos">
+  <div class="padding-global padding-section-small">
+    <div class="logos_wrapper">
+      <div class="logos_marquee_wrapper">
+        <!-- ... itens do carrossel/marquee (fora do escopo desta extração) ... -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Seção seguinte: ESTA tem cabeçalho (eyebrow) — contraste proposital com a
+     seção de logos, que não tem -->
+<div class="section_about">
+  <div class="padding-global padding-section-large">
+    <div class="container-large">
+      <div data-wf--eyebrow--variant="on-light" class="eyebrow">
+        <!-- ... "SOBRE OS PROJETOS BURKHARD" na referência ... -->
+      </div>
+      <!-- ... resto do conteúdo "Sobre" ... -->
+    </div>
+  </div>
+</div>

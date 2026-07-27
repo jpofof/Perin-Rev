@@ -16,6 +16,45 @@ function __perfCheckpoint(label) {
     }
 }
 
+// Instancia unica do Lenis, usada pelo menu mobile (lock/unlock de scroll) e
+// pelo roteamento de cliques em ancoras (#about, #contact...). Permanece null
+// sob prefers-reduced-motion — nesse caso o scroll nativo assume sem overhead.
+let lenisInstance = null;
+
+// === SMOOTH SCROLL (Lenis) ===
+// Integrado com autoRaf:false + sincronizacao manual via gsap.ticker — NAO o
+// autoRaf:true da referencia extraida (extracao-perin/03-smooth-scroll/), que
+// deixa o Lenis atualizar a posicao de scroll no proprio requestAnimationFrame
+// sem avisar o ScrollTrigger, causando dessincronia/jitter entre o scroll
+// suavizado e os triggers. Ver README da extracao para o detalhamento.
+function initSmoothScroll() {
+    const prefersReducedMotion = typeof window.matchMedia === 'function'
+        && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReducedMotion) return;
+
+    lenisInstance = new Lenis({
+        autoRaf: false,
+        syncTouch: false, // touch ja tem inercia nativa propria — nao empilhar duas
+    });
+
+    lenisInstance.on('scroll', ScrollTrigger.update);
+    gsap.ticker.add((time) => lenisInstance.raf(time * 1000));
+    gsap.ticker.lagSmoothing(0);
+
+    // Ancoras internas (#about, #services, #portfolio, #faq, #contact...)
+    // precisam ser roteadas pelo lenis.scrollTo — se o navegador fizer o jump
+    // nativo, o Lenis "corrige" a posicao de volta no frame seguinte,
+    // produzindo um salto visivel (ver README da extracao).
+    document.querySelectorAll('a[href^="#"]:not([href="#"])').forEach(link => {
+        link.addEventListener('click', (e) => {
+            const target = document.querySelector(link.getAttribute('href'));
+            if (!target) return;
+            e.preventDefault();
+            lenisInstance.scrollTo(target);
+        });
+    });
+}
+
 // === DEBUG TEMPORARIO — FASE 1, salto de scroll (remover apos diagnostico) ===
 // So ativa com ?debug=scroll na URL — nunca roda para usuarios normais. Bloco
 // autocontido, nao interfere em nada do resto do arquivo. Seguro remover
@@ -762,6 +801,9 @@ function initNavigation() {
         mobileMenu.classList.toggle('active');
         toggle.setAttribute('aria-expanded', !isActive);
         document.body.style.overflow = isActive ? '' : 'hidden';
+        // lenis.stop()/start() trava o scroll suavizado em si — o overflow:hidden
+        // do body sozinho nao impede o Lenis de continuar animando por baixo do menu.
+        if (isActive) lenisInstance?.start(); else lenisInstance?.stop();
     });
 
     mobileMenu.querySelectorAll('a').forEach(link => {
@@ -770,6 +812,7 @@ function initNavigation() {
             toggle.classList.remove('active');
             toggle.setAttribute('aria-expanded', 'false');
             document.body.style.overflow = '';
+            lenisInstance?.start();
         });
     });
 }
@@ -2103,6 +2146,9 @@ function initPage() {
     __perfCheckpoint('initNavigation-start');
     initNavigation();
     __perfCheckpoint('initNavigation-end');
+    __perfCheckpoint('initSmoothScroll-start');
+    initSmoothScroll();
+    __perfCheckpoint('initSmoothScroll-end');
     __perfCheckpoint('initButtonRipple-start');
     initButtonRipple(); // inclui o botao do hero — precisa estar pronto pra clique imediato
     __perfCheckpoint('initButtonRipple-end');
