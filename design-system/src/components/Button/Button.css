@@ -1,0 +1,68 @@
+.pds-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    min-height: 48px;
+    padding: 18px 40px;
+    border-radius: var(--radius-pill);
+    font-family: var(--font-secondary);
+    font-size: 15px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    border: none;
+}
+
+/* solid — botao verde solido (ex: nav-link-highlight, form-submit-button) */
+.pds-button--solid {
+    background: var(--color-accent-primary);
+    color: #FFFFFF;
+}
+
+.pds-button--solid:hover {
+    background: var(--color-accent-active);
+}
+
+/* glass — fluid glass sobre fundo escuro (ex: hero-button-secondary) */
+.pds-button--glass {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--cor-branco-gelo);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.pds-button--glass:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+/* outline — botao secundario sobre fundo claro (ex: cta-principal-btn-secundario) */
+.pds-button--outline {
+    background: transparent;
+    color: var(--color-text-primary);
+    border: 2px solid var(--color-border-subtle);
+    font-weight: 500;
+}
+
+.pds-button--outline:hover {
+    border-color: var(--color-accent-primary);
+    background: rgba(42, 135, 62, 0.05);
+}
+
+.pds-button:hover {
+    transform: translateY(-2px);
+}
+
+.pds-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.pds-button__icon {
+    display: inline-flex;
+    flex-shrink: 0;
+}

@@ -1,0 +1,56 @@
+/*
+  Tokens do Design System Perin — extraídos de ../../styles.css (:root).
+  Fonte da verdade: o site institucional (Perin_Rev/styles.css). Se os
+  tokens do site mudarem, atualize aqui também — não o inverso.
+*/
+:root {
+    /* Tons Claros / Fundos */
+    --cor-branco-gelo: #F5F5F5;
+    --cor-creme: #ECECEC;
+
+    /* Tons de Verde (Destaques e Elementos) */
+    --cor-verde-neon: #0CEB82;
+    --cor-verde-brilhante: #3FCC5B;
+    --cor-verde-floresta: #2A873E;
+    --cor-verde-escuro: #226F33;
+
+    /* Tons Neutros / Base e Textos */
+    --cor-bege-escuro: #BDB49F;
+    --cor-cinza-acastanhado: #857F76;
+    --cor-preto-puro: #0A0B0B;
+
+    /* Utility Tokens */
+    --color-bg-primary: var(--cor-branco-gelo);
+    --color-bg-secondary: #EDEDE0;
+    --color-bg-surface: #FFFFFF;
+    --color-bg-card: #FFFFFF;
+    --color-border-subtle: #E0DDD0;
+    --color-border-light: #EBE8DB;
+    --color-text-primary: #1A1A1A;
+    --color-text-secondary: #6B6560;
+    --color-text-muted: var(--cor-cinza-acastanhado);
+    --color-accent-primary: var(--cor-verde-floresta);
+    --color-accent-hover: var(--cor-verde-brilhante);
+    --color-accent-active: var(--cor-verde-escuro);
+    --color-accent-glow: var(--cor-verde-neon);
+    --color-shadow: rgba(0, 0, 0, 0.06);
+    --color-shadow-hover: rgba(42, 135, 62, 0.12);
+
+    /* Typography */
+    --font-primary: 'Manrope', sans-serif;
+    --font-secondary: 'Inter', sans-serif;
+
+    /* Transitions */
+    --ease-premium: cubic-bezier(0.16, 1, 0.3, 1);
+    --transition-fast: 0.3s ease;
+    --transition-medium: 0.5s var(--ease-premium);
+    --transition-slow: 0.8s var(--ease-premium);
+
+    /* Radius (novo — não existia como token no site; extraído dos valores
+       literais usados nos botões/cards: 100px = pill, 12px = card padrão,
+       4px = sutil como o card de contato do hero) */
+    --radius-pill: 100px;
+    --radius-card: 12px;
+    --radius-subtle: 4px;
+}
+

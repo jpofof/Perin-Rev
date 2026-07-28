@@ -1,0 +1,19 @@
+/* Extraído de .section-tag (styles.css) — o rótulo "eyebrow" acima de
+   títulos de seção (ex: "SOBRE NÓS", "PORTFÓLIO"). Não é o badge do hero
+   (.hero-badge) — esse foi removido do site e não tem equivalente aqui. */
+.pds-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 20px;
+    border-radius: var(--radius-pill);
+    border: 1px solid rgba(42, 135, 62, 0.15);
+    background: rgba(42, 135, 62, 0.06);
+    font-family: var(--font-secondary);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--color-accent-primary);
+    width: fit-content;
+}

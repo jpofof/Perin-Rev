@@ -1242,6 +1242,13 @@ function initCascadingSlider(viewport, projects) {
             setTimeout(function () { nextButton.classList.remove('hover-active'); }, 200);
         }
     }
+    // .hover-active substitui :hover no CSS (evita sticky hover em touch,
+    // onde nao existe mouseleave apos o tap). mouseenter/mouseleave cobrem o
+    // feedback de mouse parado sobre o botao no desktop.
+    var onPrevMouseEnter = function () { prevButton.classList.add('hover-active'); };
+    var onPrevMouseLeave = function () { prevButton.classList.remove('hover-active'); };
+    var onNextMouseEnter = function () { nextButton.classList.add('hover-active'); };
+    var onNextMouseLeave = function () { nextButton.classList.remove('hover-active'); };
     var keyHandler = function (event) {
         if (event.key === 'ArrowLeft') goTo(activeIndex - 1);
         if (event.key === 'ArrowRight') goTo(activeIndex + 1);
@@ -1265,8 +1272,16 @@ function initCascadingSlider(viewport, projects) {
         }, 100);
     };
 
-    if (prevButton) prevButton.addEventListener('click', onPrevClick);
-    if (nextButton) nextButton.addEventListener('click', onNextClick);
+    if (prevButton) {
+        prevButton.addEventListener('click', onPrevClick);
+        prevButton.addEventListener('mouseenter', onPrevMouseEnter);
+        prevButton.addEventListener('mouseleave', onPrevMouseLeave);
+    }
+    if (nextButton) {
+        nextButton.addEventListener('click', onNextClick);
+        nextButton.addEventListener('mouseenter', onNextMouseEnter);
+        nextButton.addEventListener('mouseleave', onNextMouseLeave);
+    }
     document.addEventListener('keydown', keyHandler);
     window.addEventListener('resize', resizeHandler);
 
@@ -1275,8 +1290,16 @@ function initCascadingSlider(viewport, projects) {
 
     return {
         destroy: function () {
-            if (prevButton) prevButton.removeEventListener('click', onPrevClick);
-            if (nextButton) nextButton.removeEventListener('click', onNextClick);
+            if (prevButton) {
+                prevButton.removeEventListener('click', onPrevClick);
+                prevButton.removeEventListener('mouseenter', onPrevMouseEnter);
+                prevButton.removeEventListener('mouseleave', onPrevMouseLeave);
+            }
+            if (nextButton) {
+                nextButton.removeEventListener('click', onNextClick);
+                nextButton.removeEventListener('mouseenter', onNextMouseEnter);
+                nextButton.removeEventListener('mouseleave', onNextMouseLeave);
+            }
             document.removeEventListener('keydown', keyHandler);
             window.removeEventListener('resize', resizeHandler);
             slides.forEach(function (slide, index) {
