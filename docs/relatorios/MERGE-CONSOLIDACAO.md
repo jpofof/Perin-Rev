@@ -1,6 +1,6 @@
 # Consolidação de Branches — Master Local
 
-> Master local consolidada a partir de `origin/master` (`044eaff`) + 3 branches, na ordem definida pelo usuário. **Nenhum push foi feito.** Detalhes de cada branch individualmente em `audit/inventario-branches.md`. Ganho de performance detalhado em `RELATORIO-PERFORMANCE.md`.
+> Master local consolidada a partir de `origin/master` (`044eaff`) + 3 branches, na ordem definida pelo usuário. **Nenhum push foi feito.** Detalhes de cada branch individualmente em `audit/inventario-branches-historico.md`. Ganho de performance detalhado em `RELATORIO-PERFORMANCE.md`.
 
 ## Branches mergeadas, nesta ordem
 
