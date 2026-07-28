@@ -1,0 +1,55 @@
+.pds-card {
+    border-radius: var(--radius-card);
+    font-family: var(--font-secondary);
+}
+
+/* default — card de conteudo neutro (ex: .about-image-frame) */
+.pds-card--default {
+    background: var(--color-bg-surface);
+    box-shadow: 0 4px 24px var(--color-shadow);
+    padding: 24px;
+}
+
+/* stat — numero + rotulo centralizados (ex: .stat-card) */
+.pds-card--stat {
+    background: var(--color-bg-surface);
+    border: 1px solid var(--color-border-subtle);
+    padding: 32px 16px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.pds-card__stat-number {
+    font-family: var(--font-primary);
+    font-size: 40px;
+    font-weight: 800;
+    color: var(--color-accent-primary);
+    line-height: 1;
+}
+
+.pds-card__stat-label {
+    font-size: 14px;
+    color: var(--color-text-muted);
+}
+
+/* accent — fundo verde solido, texto claro (ex: .hero-contact-card) */
+.pds-card--accent {
+    background: var(--color-accent-primary);
+    color: var(--cor-branco-gelo);
+    padding: 32px;
+    border-radius: var(--radius-subtle);
+    box-shadow: 0 20px 60px var(--color-shadow-hover);
+    transition: all var(--transition-fast);
+}
+
+.pds-card--accent .pds-card__title {
+    color: var(--cor-branco-gelo);
+}
+
+.pds-card--accent:hover {
+    background: var(--color-accent-active);
+    transform: translateY(-2px);
+}

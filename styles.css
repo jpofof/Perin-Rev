@@ -1625,7 +1625,6 @@ h6 {
     -webkit-tap-highlight-color: transparent;
 }
 
-.cascading-slider__button:hover,
 .cascading-slider__button.hover-active {
     border-color: var(--color-accent-primary);
     background: rgba(42, 135, 62, 0.04);
