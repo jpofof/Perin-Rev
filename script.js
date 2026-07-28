@@ -464,6 +464,21 @@ function initSmoothScroll() {
         var gallery = document.querySelector('.portfolio-gallery');
         var viewer = document.querySelector('.portfolio-viewer');
         var header = document.querySelector('.portfolio-header');
+
+        // Adicionado para investigar divergencia hero mobile Safari real vs
+        // emulacao Chrome DevTools (espacamento titulo -> subtitulo+botao ->
+        // ROLE PARA EXPLORAR). window.visualViewport.height reflete a area
+        // REALMENTE visivel no Safari iOS (exclui a barra de enderecos em
+        // transicao) — window.innerHeight pode nao refletir isso, e e o
+        // valor que a media query max-height:700px usa internamente.
+        var hero = document.querySelector('.hero-architectural-scene');
+        var heroTitle = document.querySelector('.hero-title');
+        var heroSubtitle = document.querySelector('.hero-subtitle');
+        var heroButton = document.querySelector('.hero-button-secondary');
+        var heroIndicator = document.querySelector('.hero-scroll-indicator');
+        var heroTitleCs = heroTitle ? getComputedStyle(heroTitle) : null;
+        var heroIndicatorCs = heroIndicator ? getComputedStyle(heroIndicator) : null;
+
         return JSON.stringify({
             stage: stage ? stage.getBoundingClientRect() : null,
             gallery: gallery ? gallery.getBoundingClientRect() : null,
@@ -471,8 +486,23 @@ function initSmoothScroll() {
             header: header ? header.getBoundingClientRect() : null,
             fontsReady: document.fonts.status,
             windowHeight: window.innerHeight,
+            visualViewportHeight: window.visualViewport ? window.visualViewport.height : null,
+            devicePixelRatio: window.devicePixelRatio,
             scrollY: window.scrollY,
-        });
+            hero: {
+                rect: hero ? hero.getBoundingClientRect() : null,
+                titleRect: heroTitle ? heroTitle.getBoundingClientRect() : null,
+                subtitleRect: heroSubtitle ? heroSubtitle.getBoundingClientRect() : null,
+                buttonRect: heroButton ? heroButton.getBoundingClientRect() : null,
+                indicatorRect: heroIndicator ? heroIndicator.getBoundingClientRect() : null,
+                titleMarginBottom: heroTitleCs ? heroTitleCs.marginBottom : null,
+                indicatorBottom: heroIndicatorCs ? heroIndicatorCs.bottom : null,
+                indicatorMargin: heroIndicatorCs ? heroIndicatorCs.margin : null,
+                gapButtonToIndicator: (heroButton && heroIndicator)
+                    ? Math.round(heroIndicator.getBoundingClientRect().top - heroButton.getBoundingClientRect().bottom)
+                    : null,
+            },
+        }, null, 2);
     }
 
     function showCopyButton() {
@@ -667,6 +697,52 @@ function initHeroParallax() {
     });
 }
 
+// === HERO CONTACT CARD — PARALLAX NO SCROLL ===
+// Pedido explicito: GSAP ScrollTrigger com scrub:true (diferente do padrao
+// "sem ScrollTrigger scrub" usado em initHeroAnimations logo abaixo) — o
+// card sobe ~70% da propria altura enquanto o hero percorre 100% da
+// viewport, espelhando o valor medido na referencia Burkhard Projekte
+// (translate3d(0, -69.9874%, 0) em scroll intermediario). yPercent (em vez
+// de px) reproduz exatamente esse "% da propria altura", incluindo se o
+// conteudo do card mudar de tamanho depois. scrub:true liga o progresso
+// diretamente ao scroll — a sincronizacao Lenis -> ScrollTrigger.update ja
+// existe em initSmoothScroll(), entao o scrub acompanha o scroll suavizado
+// sem inercia propria adicional.
+//
+// Anima .hero-contact-card-parallax (wrapper), NAO o <a class="hero-contact-
+// card"> — ver comentario no CSS: o transform inline que o GSAP escreve
+// venceria o transform: translateY(-2px) do :hover se fosse o mesmo
+// elemento. O wrapper so tem position/z-index/margin (layout), o <a> tem o
+// hover — transform (compositor) e margin (layout) nao conflitam entre si.
+function initHeroContactCardParallax() {
+    const wrapper = document.querySelector('.hero-contact-card-parallax');
+    const hero = document.querySelector('.hero-architectural-scene');
+    if (!wrapper || !hero) return;
+
+    const prefersReducedMotion = typeof window.matchMedia === 'function'
+        && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReducedMotion) return;
+
+    // Mobile: espaco vertical mais escasso e o card ja tem sobreposicao
+    // menor (ver CSS) — amplitude reduzida em vez de desativada, senao o
+    // efeito some por completo em tablet/mobile. Calculada uma vez no
+    // carregamento; nao reavaliada em resize (mesma limitacao que outros
+    // valores dependentes de innerWidth no projeto — cruzar o breakpoint
+    // redimensionando a janela ao vivo nao reajusta a amplitude).
+    const amplitude = window.innerWidth < 768 ? -30 : -70;
+
+    gsap.to(wrapper, {
+        yPercent: amplitude,
+        ease: 'none',
+        scrollTrigger: {
+            trigger: hero,
+            start: 'top top',
+            end: 'bottom top',
+            scrub: true,
+        },
+    });
+}
+
 // === HERO SCROLL EFFECTS — determinístico, derivado de heroProgress ===
 // SEM ScrollTrigger scrub, SEM estados acumulados
 // Cada frame calcula do zero: heroProgress → estilos visuais
@@ -735,7 +811,7 @@ function initHeroEntrance(onDone) {
 
     // Force final state on all entrance elements FIRST (before any ScrollTrigger)
     // This prevents elements from remaining at opacity:0 if entrance never fires
-    gsap.set('.hero-badge, .hero-title-line, .hero-subtitle, .hero-actions', {
+    gsap.set('.hero-title-line, .hero-subtitle, .hero-actions', {
         opacity: 1,
         y: 0,
         rotateX: 0,
@@ -747,7 +823,6 @@ function initHeroEntrance(onDone) {
 
     if (isHeroVisible) {
         // Reset to initial state for a fresh animation
-        gsap.set('.hero-badge', { opacity: 0, y: 30 });
         gsap.set('.hero-title-line-1', { opacity: 0, y: 60, rotateX: 10 });
         gsap.set('.hero-title-line-2', { opacity: 0, y: 60, rotateX: 10 });
         gsap.set('.hero-title-line-3', { opacity: 0, y: 60, rotateX: 10 });
@@ -768,8 +843,10 @@ function initHeroEntrance(onDone) {
         // Durations/overlaps reduzidos pela metade (~2.85s -> ~1.5s de ponta a
         // ponta) — cascata continua perceptivel, so mais rapida. Ver RELATORIO-
         // PERFORMANCE.md, secao "Carregamento inicial", Passo 1.
-        tl.to('.hero-badge', { opacity: 1, y: 0, duration: 0.35 })
-            .to('.hero-title-line-1', { opacity: 1, y: 0, rotateX: 0, duration: 0.45 }, '-=0.15')
+        // .hero-badge removido do hero — passo do badge tirado da timeline,
+        // hero-title-line-1 agora abre a cascata (mesmas duration/ease dos
+        // demais passos, sem alterar a logica).
+        tl.to('.hero-title-line-1', { opacity: 1, y: 0, rotateX: 0, duration: 0.45 })
             .to('.hero-title-line-2', { opacity: 1, y: 0, rotateX: 0, duration: 0.45 }, '-=0.25')
             .to('.hero-title-line-3', { opacity: 1, y: 0, rotateX: 0, duration: 0.45 }, '-=0.25')
             .to('.hero-subtitle', { opacity: 1, y: 0, duration: 0.35 }, '-=0.25')
@@ -1717,9 +1794,9 @@ function initCustomSelect() {
 
 // === BUTTON RIPPLE EFFECT ===
 function initButtonRipple() {
-    document.querySelectorAll('.hero-button-primary, .form-submit-button').forEach(btn => {
+    document.querySelectorAll('.form-submit-button').forEach(btn => {
         btn.addEventListener('click', function (e) {
-            const ripple = this.querySelector('.hero-button-glow, .form-submit-ripple') || this;
+            const ripple = this.querySelector('.form-submit-ripple') || this;
             gsap.fromTo(ripple,
                 { scale: 0, opacity: 0.5 },
                 {
@@ -2143,6 +2220,9 @@ function initPage() {
     __perfCheckpoint('initHeroAnimations-start');
     initHeroAnimations();
     __perfCheckpoint('initHeroAnimations-end');
+    __perfCheckpoint('initHeroContactCardParallax-start');
+    initHeroContactCardParallax();
+    __perfCheckpoint('initHeroContactCardParallax-end');
     __perfCheckpoint('initNavigation-start');
     initNavigation();
     __perfCheckpoint('initNavigation-end');

@@ -30,6 +30,13 @@
     --cor-verde-neon: #0CEB82;
     --cor-verde-brilhante: #3FCC5B;
     --cor-verde-floresta: #2A873E;
+    /* ~18% mais escura que --cor-verde-floresta (#2A873E), calculada
+       multiplicando cada canal RGB por 0.82: R42->34(0x22), G135->111(0x6F),
+       B62->51(0x33). Usada como hover de botoes com fundo verde solido —
+       --cor-verde-brilhante (mais clara) continua reservada para hover de
+       TEXTO sobre fundo escuro (nav-link, mobile-link-highlight etc.), que
+       nao muda nesta tarefa. */
+    --cor-verde-escuro: #226F33;
 
     /* Tons Neutros / Base e Textos */
     --cor-bege-escuro: #BDB49F;
@@ -48,6 +55,9 @@
     --color-text-muted: var(--cor-cinza-acastanhado);
     --color-accent-primary: var(--cor-verde-floresta);
     --color-accent-hover: var(--cor-verde-brilhante);
+    /* Hover de botao com fundo verde solido (escurece, nao clareia) —
+       distinto de --color-accent-hover (usado em hover de TEXTO). */
+    --color-accent-active: var(--cor-verde-escuro);
     --color-accent-glow: var(--cor-verde-neon);
     --color-shadow: rgba(0, 0, 0, 0.06);
     --color-shadow-hover: rgba(42, 135, 62, 0.12);
@@ -312,7 +322,7 @@ h6 {
 }
 
 .nav-link-highlight:hover {
-    background: var(--color-accent-hover);
+    background: var(--color-accent-active);
     color: #FFFFFF;
     transform: scale(1.05);
     box-shadow: 0 0 30px rgba(42, 135, 62, 0.25);
@@ -426,7 +436,17 @@ h6 {
 .hero-architectural-scene {
     position: relative;
     width: 100%;
+    /* 100vh no Safari iOS calcula contra o viewport EXPANDIDO (barra de
+       enderecos recolhida), nao a area realmente visivel — confirmado com
+       dados reais via ?debug=layout: hero renderizou com 739px enquanto
+       window.innerHeight/visualViewport.height eram 699px, uma divergencia
+       de 40px que desalinhava todo o espacamento calculado pra
+       @media(max-height:700px) (.hero-title/.hero-scroll-indicator, ver
+       essas regras). 100dvh acompanha a area visivel real em tempo real;
+       mantido 100vh como fallback (ignorado por browsers que entendem
+       dvh, usado pelos que nao entendem). */
     height: 100vh;
+    height: 100dvh;
     min-height: 700px;
     overflow: hidden;
     background: var(--color-bg-primary);
@@ -653,50 +673,67 @@ h6 {
     height: 100%;
     z-index: 5;
     display: flex;
-    align-items: center;
+    /* stretch (nao mais flex-start): o wrapper precisa ocupar a altura
+       INTEIRA do hero para o subtitulo conseguir se ancorar no fundo real
+       da hero (proximo ao gradiente) via align-self:end — com flex-start o
+       wrapper só tinha a altura do proprio conteudo (titulo+botao), bem
+       menor que a hero, entao "end" ancorava no fim do CONTEUDO, nao no
+       fim da HERO. */
+    align-items: stretch;
     justify-content: center;
 }
 
+/* Layout assimetrico (ref. Burkhard): grid de 2 colunas — titulo+botao na
+   esquerda (~62%), subtitulo na direita (~38%) ancorado embaixo via
+   grid-template-areas, sem precisar de wrapper HTML extra por coluna (o
+   DOM continua title -> subtitle -> actions, igual antes). Em mobile
+   (media query abaixo) as areas viram uma coluna unica na mesma ordem.
+
+   3 linhas (nao 2): a terceira ("." / vazia na esquerda) usa 1fr para
+   consumir toda a altura restante do wrapper (agora esticado pra altura
+   total da hero, ver .hero-content-overlay). O subtitulo ocupa as 3 linhas
+   (grid-area subtitle spans title+actions+a linha vazia) — com
+   align-self:end isso ancora o subtitulo no fundo real da hero, nao so no
+   fundo do bloco titulo+botao. */
 .hero-content-wrapper {
-    max-width: 900px;
-    padding: 0 40px;
-    text-align: center;
-}
-
-.hero-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 16px;
-    margin-bottom: 24px;
-    opacity: 0;
-    transform: translateY(30px);
-}
-
-.hero-badge-line {
-    width: 40px;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--color-accent-primary));
-}
-
-.hero-badge-text {
-    font-family: var(--font-secondary);
-    font-size: 13px;
-    font-weight: 500;
-    letter-spacing: 4px;
-    text-transform: uppercase;
-    color: var(--color-text-secondary);
+    display: grid;
+    grid-template-columns: 1.6fr 1fr;
+    grid-template-rows: auto auto 1fr;
+    grid-template-areas:
+        "title    subtitle"
+        "actions  subtitle"
+        ".        subtitle";
+    align-items: start;
+    column-gap: 40px;
+    width: 100%;
+    max-width: var(--container-max);
+    /* padding-top generoso — substitui a centralizacao vertical anterior.
+       180px (era 140px) — titulo mais abaixo no hero. padding-bottom:160px
+       mantem o subtitulo (ancorado embaixo, quase rente ao fundo) LOGO
+       ACIMA do inicio real do .hero-overlay-gradient (150px de altura) —
+       nao dentro dele. Risco verificado: o gradiente termina numa cor
+       CLARA (mesma da secao de clientes), e o subtitulo usa texto claro
+       (legivel sobre o video escuro) — se o texto entrar na parte visivel
+       do gradiente, o contraste inverte e o texto quase some. 160px (vs
+       150px do gradiente) da uma folga minima de seguranca. */
+    padding: 180px 40px 160px;
 }
 
 .hero-title {
+    grid-area: title;
     margin-bottom: 28px;
     perspective: 1000px;
 }
 
 .hero-title-line {
     display: block;
+    text-align: left;
     font-family: var(--font-primary);
     font-weight: 800;
-    font-size: clamp(40px, 8vw, 72px);
+    /* Maximo aumentado de 72px para 96px — a coluna esquerda (~62% de
+       1400px = ~840px) tem espaco de sobra para o titulo "dominar" a
+       metade esquerda, como na referencia. */
+    font-size: clamp(40px, 6vw, 96px);
     line-height: 1.05;
     color: var(--color-text-primary);
     opacity: 0;
@@ -712,87 +749,65 @@ h6 {
 }
 
 .hero-subtitle {
+    grid-area: subtitle;
+    /* align-self:end + a 3a linha (1fr) do grid ancoram o subtitulo no
+       fundo REAL da hero (nao so no fundo do bloco titulo+botao) — ver
+       .hero-content-wrapper. A folga em relacao ao gradiente vem do
+       padding-bottom do WRAPPER (160px), nao daqui. */
+    align-self: end;
     font-family: var(--font-secondary);
     font-size: clamp(16px, 2vw, 20px);
     font-weight: 400;
     color: var(--color-text-secondary);
-    max-width: 600px;
-    margin: 0 auto 56px;
+    text-align: right;
+    margin: 0;
     line-height: 1.7;
     opacity: 0;
     transform: translateY(30px);
 }
 
 .hero-actions {
+    grid-area: actions;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     gap: 20px;
     flex-wrap: wrap;
     opacity: 0;
     transform: translateY(30px);
 }
 
-.hero-button-primary {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    gap: 12px;
-    padding: 18px 40px;
-    background: var(--color-accent-primary);
-    color: #FFFFFF;
-    font-family: var(--font-secondary);
-    font-size: 15px;
-    font-weight: 600;
-    border-radius: 100px;
-    border: none;
-    cursor: pointer;
-    overflow: hidden;
-    transition: all 0.4s var(--ease-premium);
-}
-
-.hero-button-primary:hover {
-    background: var(--cor-verde-brilhante);
-    transform: translateY(-2px) scale(1.02);
-    box-shadow: 0 20px 60px rgba(42, 135, 62, 0.3);
-}
-
-.hero-button-glow {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-    transition: all 0.6s ease;
-    pointer-events: none;
-}
-
-.hero-button-primary:hover .hero-button-glow {
-    width: 300px;
-    height: 300px;
-}
-
+/* Unico botao do hero agora (Ver Projetos removido) — estilo "fluid glass":
+   fundo quase transparente + borda sutil + backdrop-filter, deixando o
+   video de fundo aparecer atraves. min-height:48px garante area de toque
+   mesmo que padding+line-height naturais já bateriam esse valor. */
 .hero-button-secondary {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 12px;
+    min-height: 48px;
     padding: 18px 40px;
-    background: transparent;
-    color: var(--color-text-primary);
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--cor-branco-gelo);
     font-family: var(--font-secondary);
     font-size: 15px;
     font-weight: 500;
-    border: 2px solid var(--color-border-subtle);
+    border: 1px solid rgba(255, 255, 255, 0.25);
     border-radius: 100px;
     cursor: pointer;
+    /* blur(8px) ja era usado aqui antes (nao e o filter:blur(100px) pesado
+       que causou o travamento no Safari iOS documentado em .light-spot —
+       backdrop-filter em area pequena e fixa, ja em producao sem relato de
+       problema). Mantido. */
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     transition: all 0.4s var(--ease-premium);
 }
 
 .hero-button-secondary:hover {
-    border-color: var(--color-accent-primary);
-    background: rgba(42, 135, 62, 0.05);
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.4);
     transform: translateY(-2px);
 }
 
@@ -836,25 +851,6 @@ h6 {
 .hero-architectural-scene .hero-subtitle {
     color: rgba(245, 245, 245, 0.82);
 }
-
-.hero-architectural-scene .hero-button-secondary {
-    color: #F5F5F5;
-    border-color: rgba(245, 245, 245, 0.4);
-    background: rgba(10, 16, 12, 0.25);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-}
-
-.hero-architectural-scene .hero-button-secondary:hover {
-    border-color: var(--cor-cinza-acastanhado);
-    background: rgba(245, 245, 245, 0.1);
-}
-
-/* .hero-architectural-scene .hero-badge: sem fundo/caixa visivel — apenas
-   texto + linhas decorativas verdes (ver .hero-badge-text e
-   .hero-badge-line acima). Removidos padding, border-radius, background e
-   backdrop-filter que criavam a "pilula" semitransparente ao redor do
-   texto. */
 
 .hero-architectural-scene .hero-scroll-text {
     color: rgba(245, 245, 245, 0.6);
@@ -1629,6 +1625,7 @@ h6 {
     -webkit-tap-highlight-color: transparent;
 }
 
+.cascading-slider__button:hover,
 .cascading-slider__button.hover-active {
     border-color: var(--color-accent-primary);
     background: rgba(42, 135, 62, 0.04);
@@ -1656,10 +1653,190 @@ h6 {
     }
 }
 
+/* === HERO CONTACT CARD ===
+   Ver AGENTS.md (secao "Cascading Slider"... nao, ver
+   extracao-perin/01-card-contato-hero/README.md) para a estrategia de
+   posicionamento. Desvio deliberado da referencia: la o card e o ultimo
+   filho de .section_hero; aqui ele e IRMAO da section (vem logo depois no
+   HTML), porque .hero-architectural-scene tem overflow:hidden (necessario
+   para conter video/particulas/geometrias) — um filho com margin-bottom
+   negativo seria cortado nesse limite. Como irmao, o card pinta por cima do
+   hero na ordem normal do documento (sem precisar de z-index para vencer o
+   .hero-overlay-gradient), e o margin-bottom negativo ainda funciona porque
+   o card continua no fluxo normal, empurrando #clients pra cima por baixo
+   dele — mesmo efeito da referencia, sem o conflito de overflow.
+
+   z-index:6 — .hero-architectural-scene e position:relative SEM z-index
+   proprio, entao nao isola um stacking context: os z-index internos do
+   hero (.hero-content-overlay usa 5, o mais alto) competem diretamente
+   com elementos fora do hero no mesmo nivel. Card precisa ficar acima
+   desse 5 para nao ser coberto pelo overlay de conteudo do hero na faixa
+   onde os dois se sobrepoem (confirmado via elementFromPoint durante o
+   teste visual — sem isso, o overlay do hero ficava por cima do card).
+
+   margin-top negativo: sobe o card para dentro do hero (canto inferior-
+   esquerdo, visualmente "dentro" da cena escura). margin-bottom negativo:
+   o excedente que ainda transborda sobre #clients por baixo do card. Os
+   dois juntos reproduzem o efeito do .big-cta da referencia sem precisar
+   que o card seja filho do hero. Valores medidos na altura real do card
+   renderizado (~150px desktop).
+
+   margin-top ajustado para -25px (era -100px, depois -55px): so ~25px do
+   card (a beirada do topo) ficam visiveis dentro do hero no estado
+   inicial — o resto aparece abaixo da dobra conforme o usuario rola. O
+   parallax de scroll (initHeroContactCardParallax, script.js) continua o
+   mesmo, so o ponto de partida (quanto aparece antes de rolar) mudou.
+
+   Posicionamento (z-index/margin) fica no wrapper .hero-contact-card-
+   parallax, nao no <a>: o GSAP (initHeroContactCardParallax, script.js)
+   anima o transform do wrapper no scroll — separado do <a> para o inline
+   style do GSAP nao vencer o transform: translateY(-2px) do :hover abaixo
+   (mesmo elemento + inline sempre ganha da regra de classe). transform
+   (GSAP, compositor) e margin (layout) sao independentes, sem conflito. */
+.hero-contact-card-parallax {
+    position: relative;
+    z-index: 6;
+    max-width: 420px;
+    margin: -25px 40px -20px;
+}
+
+.hero-contact-card {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+    width: 100%;
+    padding: 32px;
+    /* 4px — reduzido de 12px. Referencia usa var(--text-color--border-radius)
+       = .1875rem (3px); 4px fica dentro do intervalo pedido e mais proximo
+       do sutil da referencia do que o valor anterior. */
+    border-radius: 4px;
+    background: var(--color-accent-primary);
+    color: var(--cor-branco-gelo);
+    text-decoration: none;
+    box-shadow: 0 20px 60px var(--color-shadow-hover);
+    transition: all var(--transition-fast);
+}
+
+.hero-contact-card:hover {
+    background: var(--color-accent-active);
+    transform: translateY(-2px);
+}
+
+.hero-contact-card-title {
+    font-family: var(--font-primary);
+    font-size: clamp(20px, 2vw, 24px);
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 12px;
+    color: var(--cor-branco-gelo);
+}
+
+.hero-contact-card-subtitle {
+    font-family: var(--font-secondary);
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--cor-branco-gelo);
+}
+
+/* Botao circular com seta — anel duplo no hover (extracao-perin/01-card-
+   contato-hero/estilos.css, .button_arrow_inner.is-2/.is-3): duas camadas
+   semitransparentes atras do circulo branco, que se expandem no hover
+   criando um efeito de "alvo". Mesmo tamanho do circulo em repouso (ficam
+   escondidas atras do fundo opaco), so aparecem ao escalar no hover. */
+.hero-contact-card-arrow {
+    position: relative;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #FFFFFF;
+    color: var(--color-accent-primary);
+    transition: transform var(--transition-fast);
+}
+
+.hero-contact-card-arrow::before,
+.hero-contact-card-arrow::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    transition: transform var(--transition-fast), opacity var(--transition-fast);
+    pointer-events: none;
+    opacity: 0;
+}
+
+.hero-contact-card-arrow::before {
+    background: rgba(255, 255, 255, 0.4);
+}
+
+.hero-contact-card-arrow::after {
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.hero-contact-card:hover .hero-contact-card-arrow {
+    transform: scale(1.08) rotate(45deg);
+}
+
+.hero-contact-card:hover .hero-contact-card-arrow::before {
+    transform: scale(1.35);
+    opacity: 1;
+}
+
+.hero-contact-card:hover .hero-contact-card-arrow::after {
+    transform: scale(1.7);
+    opacity: 1;
+}
+
+@media (max-width: 768px) {
+    .hero-contact-card-parallax {
+        max-width: none;
+        /* Ajuste 4: -30px (era -50px) — so a "ponta" do card deve aparecer
+           dentro da hero (proporcional ao -25px do desktop), deixando
+           espaco para o .hero-scroll-indicator (Ajuste 3) nao ficar
+           espremido/sobreposto. margin lateral (20px) e a inferior
+           (-10px, transbordo sobre #clients) nao mudam. */
+        margin: -30px 20px -10px;
+    }
+
+    .hero-contact-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 20px;
+        /* 24px — ja dentro do intervalo pedido (20-28px): nem apertado nem
+           com espaco vazio sobrando, confirmado visualmente. */
+        padding: 24px;
+    }
+
+    .hero-contact-card-title {
+        /* 19px (era clamp ate 24px no desktop) — cabe melhor na largura
+           menor do card em mobile (largura da tela - 2*20px de margem
+           lateral - 2*24px de padding interno) sem quebra de linha feia. */
+        font-size: 19px;
+    }
+
+    .hero-contact-card-subtitle {
+        /* 13px (era 14px) — reducao leve, proporcional ao titulo acima. */
+        font-size: 13px;
+    }
+
+    .hero-contact-card-arrow {
+        /* 44x44 mantido (regra base) — minimo de area de toque ja
+           atendido, sem necessidade de override em mobile. */
+        align-self: flex-end;
+    }
+}
+
 /* === CLIENTS CAROUSEL SECTION === */
 /* === CLIENTS CAROUSEL — Modus-style === */
 .clients-showcase-section {
     padding: var(--section-padding);
+    /* padding-top temporario: abre espaco para o card de contato do hero
+       (item 01) nao cobrir os logos. Recalcular apos o card ser implementado. */
+    padding-top: 120px;
     background: var(--color-bg-primary);
     position: relative;
 }
@@ -1668,10 +1845,6 @@ h6 {
     max-width: var(--container-max);
     margin: 0 auto;
     padding: 0 40px;
-}
-
-.clients-header {
-    margin-bottom: 40px;
 }
 
 /* Wrapper externo: clip sem cortar o peek */
@@ -1757,6 +1930,10 @@ h6 {
 }
 
 @media (max-width: 768px) {
+    .clients-showcase-section {
+        padding-top: 100px;
+    }
+
     .clients-container {
         padding: 0 20px;
     }
@@ -2297,7 +2474,7 @@ h6 {
 }
 
 .form-submit-button:hover {
-    background: var(--color-accent-hover);
+    background: var(--color-accent-active);
     transform: translateY(-2px);
     box-shadow: 0 20px 60px rgba(42, 135, 62, 0.3);
 }
@@ -2517,13 +2694,21 @@ h6 {
    Por ID, nao por nth-child — a ordem das secoes no HTML pode mudar sem
    quebrar o padrao. --color-bg-primary (mais branco) e --color-bg-secondary
    (mais cinza) ja existiam no projeto; a sequencia abaixo so redistribui
-   quem usa qual. Hero e CTA Principal ficam fora (temas escuros proprios). */
+   quem usa qual. Hero e CTA Principal ficam fora (temas escuros proprios).
+
+   Excecao intencional #clients/#about: quebra deliberada da alternancia —
+   ver extracao-perin/02-carrossel-clientes-posicao/README.md. As duas
+   compartilham --color-bg-primary (a mais clara) para formar um bloco
+   visual continuo logo abaixo do hero, já que #clients perdeu o cabecalho
+   proprio e funciona como "ponte" ate o conteudo institucional de #about.
+   Definido explicitamente por ID em ambas (em vez de herdar do <body>)
+   porque o Perin ja tem alternancia ativa por secao — ver README. */
 #clients {
     background-color: var(--color-bg-primary);
 }
 
 #about {
-    background-color: var(--color-bg-secondary);
+    background-color: var(--color-bg-primary);
 }
 
 #numbers {
@@ -2625,11 +2810,90 @@ h6 {
     }
 
     .hero-content-wrapper {
-        padding: 0 24px;
+        /* Volta a coluna unica, mesma ordem do DOM (title -> subtitle ->
+           actions) — grid-template-areas evita precisar de "order" ou
+           reordenar o HTML. grid-template-rows precisa ser resetado pra
+           "auto" (nao herdar o "auto auto 1fr" do desktop) — aqui cada
+           area e uma linha normal, sem linha vazia/1fr de preenchimento.
+           padding-bottom volta a 0 (sem "0" explicito = herda do shorthand
+           abaixo) — o ancoramento no fundo da hero e so no desktop.
+
+           align-content:start — CAUSA RAIZ real do espacamento
+           desproporcional reportado (Ajuste 2): .hero-content-overlay usa
+           align-items:stretch (necessario pro ancoramento do subtitulo no
+           desktop, ver .hero-content-wrapper base), entao o wrapper sempre
+           ocupa a altura TOTAL da hero, em qualquer largura. Com 3 linhas
+           "auto" (sem nenhuma "1fr" explicita, diferente do desktop) e
+           align-content no valor inicial ("normal", que os browsers tratam
+           como stretch pra grid), o grid distribui o espaco sobrando
+           PROPORCIONALMENTE entre as 3 linhas "auto" — inflando os gaps
+           entre titulo/subtitulo/botao bem alem do margin/padding
+           definidos. align-content:start empacota as 3 linhas no topo,
+           deixando a sobra como espaco vazio DEPOIS do botao (onde nao
+           atrapalha), e os gaps passam a refletir exatamente os valores de
+           margin-bottom/padding-bottom definidos abaixo. */
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto auto;
+        grid-template-areas:
+            "title"
+            "subtitle"
+            "actions";
+        align-content: start;
+        padding: 100px 24px 0;
     }
 
     .hero-title-line {
         font-size: clamp(32px, 10vw, 48px);
+    }
+
+    .hero-title {
+        /* 160px (era 80px) — empurra o bloco subtitulo+botao mais para
+           baixo, perto do fim do hero, sem colidir com "ROLE PARA
+           EXPLORAR" (medido: 31px de folga entre o botao e o indicador em
+           844px de altura, e 42px entre o indicador e o card). Comprimido
+           para 30px em @media(max-height:700px) abaixo — em telas baixas
+           (iPhone SE) nao ha espaco vertical para 160px. */
+        margin-bottom: 160px;
+    }
+
+    .hero-subtitle {
+        /* Alinhado a DIREITA em mobile (era esquerda) — adapta a ideia da
+           referencia (texto secundario a direita, mais abaixo, diagonal
+           visual) ao layout de coluna unica do Perin. text-align:right
+           dentro do padding lateral de 24px do wrapper (herdado, nao
+           mexido aqui) mantem o texto longe da borda da tela.
+
+           padding-bottom reduzido de 16px para 12px — o botao "Solicitar
+           Orcamento" deve ficar MAIS proximo do subtitulo do que o
+           subtitulo do titulo (relacao de "acao decorrente do texto"),
+           oposto do gap generoso acima. Comprimido para 8px em telas
+           baixas. */
+        align-self: auto;
+        text-align: right;
+        max-width: none;
+        padding-bottom: 12px;
+    }
+
+    .hero-scroll-indicator {
+        /* Ajuste 3: bottom aumentado de 40px (padrao) para 72px — o card de
+           contato (.hero-contact-card-parallax, margem reduzida para -30px
+           em mobile logo abaixo) so mostra ~30px dentro da hero; 72px de
+           folga garante que o indicador "ROLE PARA EXPLORAR" (que tem
+           altura propria de ~64px: texto + gap + linha) nao encoste no
+           topo do card. Reduzido para 56px em @media(max-height:700px). */
+        bottom: 72px;
+    }
+
+    .hero-actions {
+        /* flex-end (era width:100% no .hero-actions/botao) — testado
+           visualmente as duas opcoes pedidas: com o subtitulo agora a
+           direita e mais abaixo, o botao alinhado a direita (encostado
+           embaixo do subtitulo) formou um bloco coeso "texto + acao"; full
+           width fazia o botao voltar pra esquerda da tela, quebrando a
+           continuidade visual com o subtitulo logo acima. Botao deixou de
+           ocupar 100% da largura em mobile (largura passa a ser a do
+           conteudo/padding, igual ao desktop). */
+        justify-content: flex-end;
     }
 
     .about-narrative-section,
@@ -2728,17 +2992,6 @@ h6 {
 }
 
 @media (max-width: 480px) {
-    .hero-actions {
-        flex-direction: column;
-        width: 100%;
-    }
-
-    .hero-button-primary,
-    .hero-button-secondary {
-        width: 100%;
-        justify-content: center;
-    }
-
     .numbers-grid {
         grid-template-columns: 1fr;
     }
@@ -2758,20 +3011,39 @@ h6 {
    scroll-indicator da borda inferior apenas nessas alturas, sem alterar
    telas altas/desktop. */
 @media (max-height: 700px) {
-    .hero-badge {
-        margin-bottom: 12px;
-    }
-
     .hero-title {
-        margin-bottom: 14px;
+        /* 190px (era 30px) — recalculado com dados REAIS de ?debug=layout
+           num iPhone real (390x699, dvh ja corrigido — ver
+           .hero-architectural-scene), nao estimativa. Com o bug de
+           height:100vh corrigido, a hero nessa faixa de altura renderiza
+           em ~700px (min-height), e o conteudo real medido (titulo=120px,
+           subtitulo=89px, botao=62px, indicador=63px) sobra MUITO mais
+           espaco do que os 30px anteriores assumiam — o valor de 30px foi
+           calculado antes do fix, com a hero errada em 739px e presunções
+           de altura de texto que nao batiam com o real. Formula: 600px
+           uteis (700 - 100 padding-top) - 334px de conteudo fixo (120+89+
+           62+63) = 266px livres, distribuidos como titulo->subtitulo
+           (190) + botao->indicador (~28, dentro do 24-32 pedido) +
+           indicador->base da hero (48, ver .hero-scroll-indicator abaixo —
+           mantido, da folga de 18px sobre os 30px do card que transborda
+           na base do hero em mobile). */
+        margin-bottom: 190px;
     }
 
     .hero-subtitle {
-        margin-bottom: 26px;
+        /* 8px (era 12px) — mesma logica do Ajuste 2 anterior: ainda mais
+           compacto que o valor "normal" de mobile (12px) porque aqui o
+           espaco vertical e mais escasso, mas o botao continua proximo. */
+        padding-bottom: 8px;
     }
 
     .hero-scroll-indicator {
-        bottom: 30px;
+        /* 48px (era 56px) — reduzido "levemente" o espaco entre o
+           indicador e a BASE do hero (nao entre ele e o botao, ver
+           .hero-title acima) para abrir espaco vertical total e permitir
+           descer o bloco subtitulo+botao. Folga indicador->card cai de
+           26px para 18px (medido) — ainda sem risco de sobreposicao. */
+        bottom: 48px;
         gap: 6px;
     }
 }

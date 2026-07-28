@@ -130,11 +130,6 @@
             <div class="hero-particles" id="heroParticles"></div>
             <div class="hero-content-overlay">
                 <div class="hero-content-wrapper">
-                    <div class="hero-badge">
-                        <span class="hero-badge-line"></span>
-                        <span class="hero-badge-text">Engenharia & Arquitetura</span>
-                        <span class="hero-badge-line"></span>
-                    </div>
                     <h1 class="hero-title" id="heroTitle">
                         <span class="hero-title-line hero-title-line-1">Construímos o</span>
                         <span class="hero-title-line hero-title-line-2">Futuro com</span>
@@ -143,8 +138,6 @@
                     <p class="hero-subtitle" id="heroSubtitle">Da fundação ao acabamento, cada detalhe é pensado para
                         transformar seu projeto em uma obra-prima da engenharia.</p>
                     <div class="hero-actions">
-                        <a href="#portfolio" class="hero-button-primary">Ver Projetos<span
-                                class="hero-button-glow"></span></a>
                         <a href="#contact" class="hero-button-secondary">Solicitar Orçamento
                             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                                 <path d="M1 8H15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
@@ -165,12 +158,36 @@
         <div class="hero-overlay-gradient"></div>
     </section>
 
+    <!-- HERO CONTACT CARD — sibling do hero (nao filho), para nao ser cortado
+         pelo overflow:hidden de .hero-architectural-scene. O transbordo sobre
+         #clients vem do margin-bottom negativo, com o card ainda no fluxo
+         normal do documento (mesma logica do README da extracao, adaptada:
+         ver AGENTS.md / extracao-perin/01-card-contato-hero).
+
+         .hero-contact-card-parallax: wrapper dedicado ao transform de scroll
+         (GSAP/ScrollTrigger, ver initHeroContactCardParallax em script.js) —
+         separado do <a> para o transform inline que o GSAP aplica no scroll
+         nao conflitar com o transform: translateY(-2px) do :hover do card
+         (inline sempre venceria a regra do CSS se fosse o mesmo elemento). -->
+    <div class="hero-contact-card-parallax">
+        <a href="#contact" class="hero-contact-card" aria-label="Solicitar orçamento com a Perin Construções">
+            <div class="hero-contact-card-text">
+                <h3 class="hero-contact-card-title">Solicite seu orçamento</h3>
+                <p class="hero-contact-card-subtitle">Equipe própria e acompanhamento em cada etapa, do projeto à
+                    entrega.</p>
+            </div>
+            <span class="hero-contact-card-arrow" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <path d="M6 14L14 6M14 6H8M14 6V12" stroke="currentColor" stroke-width="1.5"
+                        stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+            </span>
+        </a>
+    </div>
+
     <!-- CLIENTS CAROUSEL SECTION -->
     <section class="clients-showcase-section" id="clients" aria-label="Clientes atendidos">
         <div class="clients-container">
-            <div class="clients-header">
-                <div class="section-tag-reveal"><span class="section-tag">Clientes</span></div>
-            </div>
             <div class="clients-carousel" role="region" aria-label="Logos de clientes">
                 <div class="clients-carousel-stage" id="clientsStage">
                     <ul class="clients-carousel-track" id="clientsTrack" role="list">
