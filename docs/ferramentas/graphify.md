@@ -30,6 +30,17 @@ Após: novos arquivos importantes, mudança de arquitetura, grandes alterações
 - [ ] `graphify-out/graph.html` abre no navegador e os módulos principais (carrossel, GSAP, tests) aparecem como comunidades reconhecíveis.
 - [ ] `graphify-out/` **não** aparece para commit (`git status` limpo) — é cache local, já está no `.gitignore`.
 
+## Último resultado conhecido
+
+Atualizado em 2026-07-28, após o fix `mouseenter`/`mouseleave` no cascading slider (branch `fix/hover-sticky-slider-button`):
+
+- 31 arquivos de código analisados (nós com `source_file` no grafo)
+- 649 nós
+- 1137 conexões
+- 44 comunidades
+
+Baseline anterior: 36 arquivos, 649 nós, 1145 conexões, 44 comunidades. A queda em arquivos/conexões reflete a reorganização de pastas (`docs/`, `prototipos/`, `legado/`, `assets-fonte/`) — caminhos antigos foram podados do grafo (`[graphify] Pruned 176 node(s) from 16 deleted or excluded source file(s)`), enquanto `design-system/` (novo, ainda não commitado) passou a ser incluído por já existir em disco.
+
 ## Consultas (uso pela IA)
 
 - `graphify query "<pergunta>"` — subgrafo focado, mais barato que ler `GRAPH_REPORT.md` inteiro.
