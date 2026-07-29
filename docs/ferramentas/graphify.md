@@ -48,6 +48,18 @@ Atualizado em 2026-07-28, após o fix `mouseenter`/`mouseleave` no cascading sli
 
 Baseline anterior: 36 arquivos, 649 nós, 1145 conexões, 44 comunidades. A queda em arquivos/conexões reflete a reorganização de pastas (`docs/`, `prototipos/`, `legado/`, `assets-fonte/`) — caminhos antigos foram podados do grafo (`[graphify] Pruned 176 node(s) from 16 deleted or excluded source file(s)`), enquanto `design-system/` (novo, ainda não commitado) passou a ser incluído por já existir em disco.
 
+## Como confirmar que está em uso
+
+Modo estrito ativado via `graphify install --project --strict`. Bloqueia a primeira leitura bruta de arquivo de código por sessão de Claude Code, redirecionando para o grafo (`graphify query` / `explain` / `path`) antes de liberar a leitura — depois volta a ser apenas sugestão (nudge) pelo resto da sessão.
+
+Pode ser alternado em runtime, sem reinstalar:
+```powershell
+$env:GRAPHIFY_HOOK_STRICT = "1"   # força modo estrito
+$env:GRAPHIFY_HOOK_STRICT = "0"   # desativa o bloqueio, mantém só o nudge
+```
+
+**Sinal visível:** no início de uma nova sessão, ao pedir algo que exigiria ler código, a primeira tentativa de leitura direta deve ser bloqueada — a ferramenta retorna um erro pedindo para rodar `graphify query`/`explain`/`path` primeiro — e só a releitura seguinte, já orientada pelo grafo, é liberada. Isso fica registrado no log de tool calls da sessão.
+
 ## Consultas (uso pela IA)
 
 - `graphify query "<pergunta>"` — subgrafo focado, mais barato que ler `GRAPH_REPORT.md` inteiro.
