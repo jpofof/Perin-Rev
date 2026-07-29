@@ -1,4 +1,4 @@
 node_modules
 .claude/
-graphify-out/
+graphify-out/cost.json
 .tokensave/

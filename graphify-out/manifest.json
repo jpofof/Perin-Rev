@@ -1,0 +1,612 @@
+{
+  "audit/debug-scroll-jump-snippet.js": {
+    "mtime": 1784652195.3943799,
+    "ast_hash": "38d1a39ce09146732fc734c54f9a330a",
+    "semantic_hash": "38d1a39ce09146732fc734c54f9a330a"
+  },
+  "design-system/build.mjs": {
+    "mtime": 1785263610.5741422,
+    "ast_hash": "1ef2bed98944fec1b2594b9d8b75dc49",
+    "semantic_hash": "1ef2bed98944fec1b2594b9d8b75dc49"
+  },
+  "design-system/package.json": {
+    "mtime": 1785263610.577137,
+    "ast_hash": "e74e204b12788cc879a0db546f1fefe9",
+    "semantic_hash": "e74e204b12788cc879a0db546f1fefe9"
+  },
+  "design-system/src/components/Badge/Badge.tsx": {
+    "mtime": 1785263610.5801482,
+    "ast_hash": "f0ad2beacc48f56aa83212dbbfa01471",
+    "semantic_hash": "f0ad2beacc48f56aa83212dbbfa01471"
+  },
+  "design-system/src/components/Badge/index.ts": {
+    "mtime": 1785263610.581137,
+    "ast_hash": "b3c905e086dbe139e9ce138819d9c427",
+    "semantic_hash": "b3c905e086dbe139e9ce138819d9c427"
+  },
+  "design-system/src/components/Button/Button.tsx": {
+    "mtime": 1785263610.5841298,
+    "ast_hash": "44dfd4a70f9c4bac1f93921f079e4cdc",
+    "semantic_hash": "44dfd4a70f9c4bac1f93921f079e4cdc"
+  },
+  "design-system/src/components/Button/index.ts": {
+    "mtime": 1785263610.585108,
+    "ast_hash": "5e9280681711f6e6540d0de12f47c98e",
+    "semantic_hash": "5e9280681711f6e6540d0de12f47c98e"
+  },
+  "design-system/src/components/Card/Card.tsx": {
+    "mtime": 1785263610.585108,
+    "ast_hash": "185b2db0cf1d911792a1972fc15e79c6",
+    "semantic_hash": "185b2db0cf1d911792a1972fc15e79c6"
+  },
+  "design-system/src/components/Card/index.ts": {
+    "mtime": 1785263610.585108,
+    "ast_hash": "f7c87ef4cd8e8b91bc866da1e84443e0",
+    "semantic_hash": "f7c87ef4cd8e8b91bc866da1e84443e0"
+  },
+  "design-system/src/examples/usage.tsx": {
+    "mtime": 1785263610.585108,
+    "ast_hash": "ebdc5ce7e00b52a8f4093466abd04562",
+    "semantic_hash": "ebdc5ce7e00b52a8f4093466abd04562"
+  },
+  "design-system/src/index.ts": {
+    "mtime": 1785263610.585108,
+    "ast_hash": "f44583e7733f822e91821f7eb39e17d0",
+    "semantic_hash": "f44583e7733f822e91821f7eb39e17d0"
+  },
+  "design-system/tsconfig.json": {
+    "mtime": 1785263610.585108,
+    "ast_hash": "b1c8a63a012285369128b9b0beac5eed",
+    "semantic_hash": "b1c8a63a012285369128b9b0beac5eed"
+  },
+  "jest.config.js": {
+    "mtime": 1784652195.4549327,
+    "ast_hash": "35fd79aac93c9e660228fb8531f486a8",
+    "semantic_hash": "35fd79aac93c9e660228fb8531f486a8"
+  },
+  "package.json": {
+    "mtime": 1784652195.474816,
+    "ast_hash": "aff0e26c97cd4e65fc9df32dd839ba1e",
+    "semantic_hash": "aff0e26c97cd4e65fc9df32dd839ba1e"
+  },
+  "script.js": {
+    "mtime": 1785263610.585108,
+    "ast_hash": "5a6765eda146ddc059d41ae5efb44087",
+    "semantic_hash": "5a6765eda146ddc059d41ae5efb44087"
+  },
+  "script.min.js": {
+    "mtime": 1785263610.585108,
+    "ast_hash": "bf97a32407848ac5af92de60509a9e85",
+    "semantic_hash": "bf97a32407848ac5af92de60509a9e85"
+  },
+  "scripts/check-min-freshness.js": {
+    "mtime": 1784652195.4791274,
+    "ast_hash": "5d9af48e9928571d15afb102a0f09435",
+    "semantic_hash": "5d9af48e9928571d15afb102a0f09435"
+  },
+  "scripts/git-hooks/pre-commit": {
+    "mtime": 1784652195.4791274,
+    "ast_hash": "3ea12552a877d00f3c498f051e941c80",
+    "semantic_hash": "3ea12552a877d00f3c498f051e941c80"
+  },
+  "scripts/install-git-hooks.js": {
+    "mtime": 1784652195.4791274,
+    "ast_hash": "3c52ee38e39084119dd6a983d6b15666",
+    "semantic_hash": "3c52ee38e39084119dd6a983d6b15666"
+  },
+  "tests/regression/slider.regression.test.js": {
+    "mtime": 1785096081.986635,
+    "ast_hash": "81400c7cdf3d9dfafa268bc5a5c77f5e",
+    "semantic_hash": "81400c7cdf3d9dfafa268bc5a5c77f5e"
+  },
+  "tests/unit/clients-carousel.test.js": {
+    "mtime": 1785169260.1025069,
+    "ast_hash": "be2d0d2c5f387c555816aaa8154a36b6",
+    "semantic_hash": "be2d0d2c5f387c555816aaa8154a36b6"
+  },
+  "tests/unit/init-scheduling.test.js": {
+    "mtime": 1785169212.6212695,
+    "ast_hash": "5e87e5a8115f39aa54831b4d2cf6971f",
+    "semantic_hash": "5e87e5a8115f39aa54831b4d2cf6971f"
+  },
+  "tests/unit/slider.test.js": {
+    "mtime": 1785169267.059841,
+    "ast_hash": "2e0c703db7eac9969774a085f734f958",
+    "semantic_hash": "2e0c703db7eac9969774a085f734f958"
+  },
+  "vendor/gsap/ScrollTrigger.min.js": {
+    "mtime": 1784652195.49437,
+    "ast_hash": "7c53b58b2f1362a5618e6af1a114402d",
+    "semantic_hash": "7c53b58b2f1362a5618e6af1a114402d"
+  },
+  "vendor/gsap/gsap.min.js": {
+    "mtime": 1784652195.49437,
+    "ast_hash": "8931cf8f6c506174e5e1f037946ac153",
+    "semantic_hash": "8931cf8f6c506174e5e1f037946ac153"
+  },
+  "vendor/lenis/lenis.min.js": {
+    "mtime": 1785168987.959224,
+    "ast_hash": "06586536ed84b0bc4ad96c63bc979a37",
+    "semantic_hash": "06586536ed84b0bc4ad96c63bc979a37"
+  },
+  "assets/videos/construction-timelapse-reverse.mp4": {
+    "mtime": 1784652195.350026,
+    "ast_hash": "d10f1d9ae7d998731d280e4bee03234a",
+    "semantic_hash": "d10f1d9ae7d998731d280e4bee03234a"
+  },
+  "assets/videos/construction-timelapse-reverse.webm": {
+    "mtime": 1784652195.3684745,
+    "ast_hash": "c5eb35b30e53d10788054da25fe11feb",
+    "semantic_hash": "c5eb35b30e53d10788054da25fe11feb"
+  },
+  "assets/videos/construction-timelapse.mp4": {
+    "mtime": 1784652195.3786016,
+    "ast_hash": "2b2cb2f3b31a4e0ebad00d0270dff8d0",
+    "semantic_hash": "2b2cb2f3b31a4e0ebad00d0270dff8d0"
+  },
+  "assets/videos/construction-timelapse.webm": {
+    "mtime": 1784652195.3900614,
+    "ast_hash": "8e42bfd91c21ee8625ed80f1861acba0",
+    "semantic_hash": "8e42bfd91c21ee8625ed80f1861acba0"
+  },
+  "audit/lighthouse/lighthouse-desktop-pos-fix.report.json": {
+    "mtime": 1785263079.8367133,
+    "ast_hash": "1701b3a8e3cb5ca921556503262bb069",
+    "semantic_hash": "1701b3a8e3cb5ca921556503262bb069"
+  },
+  "audit/lighthouse/lighthouse-mobile-pos-fix.report.json": {
+    "mtime": 1785263079.8427205,
+    "ast_hash": "fe1e2f8ede5575ada5311920aed6b7a0",
+    "semantic_hash": "fe1e2f8ede5575ada5311920aed6b7a0"
+  },
+  "audit/lighthouse/lighthouse-producao-real.report.json": {
+    "mtime": 1785263079.862519,
+    "ast_hash": "b998690efb6bead2c911e0fc3e5f7115",
+    "semantic_hash": "b998690efb6bead2c911e0fc3e5f7115"
+  },
+  "legado/src-original/script.js": {
+    "mtime": 1785263079.886477,
+    "ast_hash": "afea8849a9dfbf12b112100d1b0a0fa1",
+    "semantic_hash": "afea8849a9dfbf12b112100d1b0a0fa1"
+  },
+  "prototipos/cascading-slider/js/cascading-slider.js": {
+    "mtime": 1785263079.9013178,
+    "ast_hash": "d26630703831a9df408bd19a7428f56b",
+    "semantic_hash": "d26630703831a9df408bd19a7428f56b"
+  },
+  "prototipos/cascading-slider/js/gsap.min.js": {
+    "mtime": 1785263079.905317,
+    "ast_hash": "ca5f3b302741c4edcb42f3b6b1b95f4e",
+    "semantic_hash": "ca5f3b302741c4edcb42f3b6b1b95f4e"
+  },
+  "prototipos/extracao-perin/03-smooth-scroll/implementacao.js": {
+    "mtime": 1785263079.9205444,
+    "ast_hash": "ccbf3631390b4b41593584c42ec009ad",
+    "semantic_hash": "ccbf3631390b4b41593584c42ec009ad"
+  },
+  "prototipos/extracao-perin/03-smooth-scroll/lenis.min.js": {
+    "mtime": 1785263079.9225535,
+    "ast_hash": "06586536ed84b0bc4ad96c63bc979a37",
+    "semantic_hash": "06586536ed84b0bc4ad96c63bc979a37"
+  },
+  "assets-fonte/webp/hero-section-fundo.mp4": {
+    "mtime": 1785263079.8167837,
+    "ast_hash": "b6fe81a689d299b7f37709bf005ae0db",
+    "semantic_hash": "b6fe81a689d299b7f37709bf005ae0db"
+  },
+  "AGENTS.md": {
+    "mtime": 1784999505.0864015,
+    "ast_hash": "f779ccb6897078dbac5bcfaf17b96a8f",
+    "semantic_hash": ""
+  },
+  "CLAUDE.md": {
+    "mtime": 1785260563.3579612,
+    "ast_hash": "4a7d57808be27568bfb11d4b1a1cf4eb",
+    "semantic_hash": ""
+  },
+  "GRAPHIFY_AUTOMACAO.md": {
+    "mtime": 1785261078.9550552,
+    "ast_hash": "ccea63b832f6d25646d04f08bb206894",
+    "semantic_hash": ""
+  },
+  "README.md": {
+    "mtime": 1785096279.609717,
+    "ast_hash": "ccc25b7e1c42aae3737efcc7e1b7324b",
+    "semantic_hash": ""
+  },
+  "audit/bootstrap-uso-real.md": {
+    "mtime": 1784652195.392071,
+    "ast_hash": "a7a1f203a4fc2158ff7dbf704e05d989",
+    "semantic_hash": ""
+  },
+  "audit/carrossel-clientes-mobile.md": {
+    "mtime": 1784652195.392071,
+    "ast_hash": "08ed9d26a0354096d0b1b5896dbbd9c9",
+    "semantic_hash": ""
+  },
+  "audit/checklist-pendencias-mobile.md": {
+    "mtime": 1784652195.392071,
+    "ast_hash": "e4b253defaf3fc98a7135ee636c2fd83",
+    "semantic_hash": ""
+  },
+  "audit/diagnostico-mobile-hero-secao-carrossel.md": {
+    "mtime": 1784652195.3943799,
+    "ast_hash": "98d59ebbf469695c308e0f739109eb2b",
+    "semantic_hash": ""
+  },
+  "audit/diagnostico-producao-real.md": {
+    "mtime": 1784652195.3943799,
+    "ast_hash": "1565afec1505dcf2b80941931ff16435",
+    "semantic_hash": ""
+  },
+  "audit/diagnostico.md": {
+    "mtime": 1784652195.3943799,
+    "ast_hash": "2b7cb6eb2f4b82b7bf5b77bf9a50edab",
+    "semantic_hash": ""
+  },
+  "audit/estrutura-landing-page.md": {
+    "mtime": 1784999505.0883946,
+    "ast_hash": "b2172624c675ed9b37a67503de03fa75",
+    "semantic_hash": ""
+  },
+  "audit/fase-perf-real.md": {
+    "mtime": 1784652195.3943799,
+    "ast_hash": "4d95192f53011e5843bf8c86d7bf61d4",
+    "semantic_hash": ""
+  },
+  "audit/fase1-salto-scroll.md": {
+    "mtime": 1784652195.3977253,
+    "ast_hash": "f51688cb73bfc6ab9afe9da84a986cd1",
+    "semantic_hash": ""
+  },
+  "audit/inventario-branches-historico.md": {
+    "mtime": 1784652195.3977253,
+    "ast_hash": "dd10dd9768167a7a65dc1b65043e27e7",
+    "semantic_hash": ""
+  },
+  "audit/isolamento-query-params.md": {
+    "mtime": 1784652195.3977253,
+    "ast_hash": "9a50dff9981c885891546071f2f1ef0b",
+    "semantic_hash": ""
+  },
+  "audit/lighthouse/lighthouse-pre-merge-desktop.html": {
+    "mtime": 1785263079.8503702,
+    "ast_hash": "2d536a9e65b5c0b643cff6133fea6d80",
+    "semantic_hash": ""
+  },
+  "audit/lighthouse/lighthouse-pre-merge-mobile.html": {
+    "mtime": 1785263079.8557816,
+    "ast_hash": "f15070d982b97e16d8d5b765e1e1e257",
+    "semantic_hash": ""
+  },
+  "audit/lighthouse/lighthouse-producao-real.report.html": {
+    "mtime": 1785263079.8595135,
+    "ast_hash": "fd8cda404c185608b6b3a7c68f2ac44d",
+    "semantic_hash": ""
+  },
+  "audit/limpeza-executada.md": {
+    "mtime": 1784652195.416255,
+    "ast_hash": "ca2a40eb7855c7baddac939b57a20aa0",
+    "semantic_hash": ""
+  },
+  "audit/proximas-oportunidades.md": {
+    "mtime": 1784652195.4173121,
+    "ast_hash": "15be6d275e9d5df4816d09d94f8db1f1",
+    "semantic_hash": ""
+  },
+  "audit/relatorio-arquivos-desnecessarios.md": {
+    "mtime": 1784652195.418625,
+    "ast_hash": "966b6eadba99ee0e68149f8184f63227",
+    "semantic_hash": ""
+  },
+  "audit/verificacao-producao-ab2b2ae.md": {
+    "mtime": 1784652195.418625,
+    "ast_hash": "2e4800f86acbd3e4454615a6cbcd97b0",
+    "semantic_hash": ""
+  },
+  "design-system/README.md": {
+    "mtime": 1785263610.573131,
+    "ast_hash": "fee463e6493bdb4b2b1be53099280b4c",
+    "semantic_hash": ""
+  },
+  "docs/ferramentas/graphify.md": {
+    "mtime": 1785288806.8418615,
+    "ast_hash": "4f7adf176cac5681807e71b0bde1cc40",
+    "semantic_hash": ""
+  },
+  "docs/ferramentas/headroom.md": {
+    "mtime": 1785263079.8667102,
+    "ast_hash": "11b7c56b6459ed3c9ee6b69cf6557f24",
+    "semantic_hash": ""
+  },
+  "docs/planejamento/PLANO-MELHORIAS.md": {
+    "mtime": 1785263079.8679755,
+    "ast_hash": "a177e4e0c58d4d4921b40d7f460be7eb",
+    "semantic_hash": ""
+  },
+  "docs/planejamento/implementation-notes.md": {
+    "mtime": 1785263079.8690028,
+    "ast_hash": "d13151f1c585cbb8862bbf89cb9035d5",
+    "semantic_hash": ""
+  },
+  "docs/planejamento/plano-skills.md": {
+    "mtime": 1785263079.870996,
+    "ast_hash": "2ca79d8b948228cf228e01202b303385",
+    "semantic_hash": ""
+  },
+  "docs/planejamento/technical-plan.md": {
+    "mtime": 1785263079.8722823,
+    "ast_hash": "25fe6581ed2921980be1756dff411b40",
+    "semantic_hash": ""
+  },
+  "docs/produto/PRD.md": {
+    "mtime": 1785263079.8732831,
+    "ast_hash": "1a2861564270cc177031c5a4f50f8f39",
+    "semantic_hash": ""
+  },
+  "docs/produto/SPECS.md": {
+    "mtime": 1785263079.8752837,
+    "ast_hash": "aa7c414a375368f8f80e0e4d322dab0f",
+    "semantic_hash": ""
+  },
+  "docs/relatorios/AUDITORIA.md": {
+    "mtime": 1785263079.8772812,
+    "ast_hash": "e241a630ec549fecd7d2a361aaf3c2a1",
+    "semantic_hash": ""
+  },
+  "docs/relatorios/MERGE-CONSOLIDACAO.md": {
+    "mtime": 1785263079.8782775,
+    "ast_hash": "99db5912d09bc24ab6b4dfca5cf78aba",
+    "semantic_hash": ""
+  },
+  "docs/relatorios/RELATORIO-PERFORMANCE.md": {
+    "mtime": 1785263079.8812857,
+    "ast_hash": "cad81a82040e5cd41664d0ef1ea71861",
+    "semantic_hash": ""
+  },
+  "docs/relatorios/relatorio-organizacao-imagens.md": {
+    "mtime": 1785263079.88247,
+    "ast_hash": "de1c516e9a07e9c8a9cf5db5eb68222f",
+    "semantic_hash": ""
+  },
+  "index.html": {
+    "mtime": 1785193363.8923762,
+    "ast_hash": "03e911db9b369aff2c0082bb8affdad0",
+    "semantic_hash": ""
+  },
+  "legado/src-original/index.html": {
+    "mtime": 1785263079.884476,
+    "ast_hash": "4c16533d2974f47b04531f2e69ebf076",
+    "semantic_hash": ""
+  },
+  "prototipos/cascading-slider/README-cscading.md": {
+    "mtime": 1785263079.8907716,
+    "ast_hash": "d70099c9c8cbf19de29509ab55d36036",
+    "semantic_hash": ""
+  },
+  "prototipos/cascading-slider/auditoria-cascading-slider.md": {
+    "mtime": 1785263079.8932056,
+    "ast_hash": "c52b5e5fa509a36613cf9e1453ade9c0",
+    "semantic_hash": ""
+  },
+  "prototipos/cascading-slider/index-cascading.html": {
+    "mtime": 1785263079.8988442,
+    "ast_hash": "52638d2f324be868332371559c01eb98",
+    "semantic_hash": ""
+  },
+  "prototipos/extracao-perin/01-card-contato-hero/README.md": {
+    "mtime": 1785263079.908319,
+    "ast_hash": "80460739e4989bc7d85954a81eb177ab",
+    "semantic_hash": ""
+  },
+  "prototipos/extracao-perin/01-card-contato-hero/markup.html": {
+    "mtime": 1785263079.9113233,
+    "ast_hash": "6ad0a55d8ba8624fe13a5b6b18590041",
+    "semantic_hash": ""
+  },
+  "prototipos/extracao-perin/02-carrossel-clientes-posicao/README.md": {
+    "mtime": 1785263079.914418,
+    "ast_hash": "3ff6ec56a73935b79c66c9e1db9774e6",
+    "semantic_hash": ""
+  },
+  "prototipos/extracao-perin/02-carrossel-clientes-posicao/markup.html": {
+    "mtime": 1785263079.9165463,
+    "ast_hash": "b70c28ab620f574d0d8dd8b14d3ca16e",
+    "semantic_hash": ""
+  },
+  "prototipos/extracao-perin/03-smooth-scroll/README.md": {
+    "mtime": 1785263079.9195423,
+    "ast_hash": "a111091fe038868ffc3cc869dc661d2f",
+    "semantic_hash": ""
+  },
+  "prototipos/extracao-perin/README.md": {
+    "mtime": 1785263079.9235487,
+    "ast_hash": "f9db614cf0757d1ff532a245ef32ee94",
+    "semantic_hash": ""
+  },
+  "assets-fonte/pre-webp/LOGO PERIN PNG ATUAL01.png": {
+    "mtime": 1785263079.7502098,
+    "ast_hash": "48342d4f78e34ef954a8042ace722067",
+    "semantic_hash": ""
+  },
+  "assets-fonte/pre-webp/LOGO PERIN PNG ATUAL02.jpg": {
+    "mtime": 1785263079.7522652,
+    "ast_hash": "78be2077b7a32297867c547a088f9762",
+    "semantic_hash": ""
+  },
+  "assets-fonte/pre-webp/eldorado.png": {
+    "mtime": 1785263079.754308,
+    "ast_hash": "34bb883d8459e982cb9c9d4d0329387a",
+    "semantic_hash": ""
+  },
+  "assets-fonte/pre-webp/elektro.png": {
+    "mtime": 1785263079.7574742,
+    "ast_hash": "21deea6b4351ecef9e0fc54ac941d833",
+    "semantic_hash": ""
+  },
+  "assets-fonte/pre-webp/isa-energia.png": {
+    "mtime": 1785263079.7587402,
+    "ast_hash": "4c79043baaa8314913647a39e4be5cd1",
+    "semantic_hash": ""
+  },
+  "assets-fonte/pre-webp/portfolio-screenshot.png": {
+    "mtime": 1785263079.7610476,
+    "ast_hash": "a0ed98d4f8a8c3de893cfc74e9db2723",
+    "semantic_hash": ""
+  },
+  "assets-fonte/pre-webp/state-grid.png": {
+    "mtime": 1785263079.7620623,
+    "ast_hash": "faf79f916af201cd354327722eaeeaf4",
+    "semantic_hash": ""
+  },
+  "assets-fonte/pre-webp/trabalhando01.jpeg": {
+    "mtime": 1785263079.7662175,
+    "ast_hash": "942041485412660f830eb92d6971b124",
+    "semantic_hash": ""
+  },
+  "assets-fonte/pre-webp/trabalhando02.jpeg": {
+    "mtime": 1785263079.769778,
+    "ast_hash": "f009f14dd99bfee84e5297d85abc5c9c",
+    "semantic_hash": ""
+  },
+  "assets-fonte/pre-webp/trabalhando03.jpeg": {
+    "mtime": 1785263079.7734113,
+    "ast_hash": "09665a8b47a20fa5abcabc42f52f8bb4",
+    "semantic_hash": ""
+  },
+  "assets-fonte/pre-webp/trabalhando04.jpeg": {
+    "mtime": 1785263079.7764509,
+    "ast_hash": "0bb58b964b67bdc191a3f6e1588ccc37",
+    "semantic_hash": ""
+  },
+  "assets-fonte/pre-webp/trabalhando05.jpeg": {
+    "mtime": 1785263079.780546,
+    "ast_hash": "d6e1834bcbf446a10e882bf4c89d7a53",
+    "semantic_hash": ""
+  },
+  "assets-fonte/webp/brand/logo-perin-navbar.webp": {
+    "mtime": 1785263079.7838323,
+    "ast_hash": "de5305da8cc0a6e5de8821b8c00daddc",
+    "semantic_hash": ""
+  },
+  "assets-fonte/webp/clients/elektro.webp": {
+    "mtime": 1785263079.7868943,
+    "ast_hash": "77acdcce5a91a8b9859564ca8eebd4cd",
+    "semantic_hash": ""
+  },
+  "assets-fonte/webp/clients/state-grid.webp": {
+    "mtime": 1785263079.7886527,
+    "ast_hash": "abc404644e4d85ea4b9abbdaeea339d3",
+    "semantic_hash": ""
+  },
+  "assets-fonte/webp/placeholders/placeholder-obra-01.webp": {
+    "mtime": 1785263079.820354,
+    "ast_hash": "9e30bd32c97cf45a0fddc5e28bfaaa8f",
+    "semantic_hash": ""
+  },
+  "assets-fonte/webp/placeholders/placeholder-obra-02.webp": {
+    "mtime": 1785263079.8223875,
+    "ast_hash": "a250a0ca8619a8347108093b421a5060",
+    "semantic_hash": ""
+  },
+  "assets-fonte/webp/placeholders/placeholder-obra-03.webp": {
+    "mtime": 1785263079.8270767,
+    "ast_hash": "d8f202eeb0845d958f68024964dc72ee",
+    "semantic_hash": ""
+  },
+  "assets-fonte/webp/placeholders/placeholder-obra-04.webp": {
+    "mtime": 1785263079.8286216,
+    "ast_hash": "d56b85b403b68929c00e936f9eee7e96",
+    "semantic_hash": ""
+  },
+  "assets-fonte/webp/placeholders/placeholder-obra-05.webp": {
+    "mtime": 1785263079.8326664,
+    "ast_hash": "bbb8efc892a888a7ce184e0e1a3ef7f7",
+    "semantic_hash": ""
+  },
+  "assets/images/brand/apple-touch-icon.png": {
+    "mtime": 1784652195.3319075,
+    "ast_hash": "0add068f25c02b512dc3d89dc39e27f2",
+    "semantic_hash": ""
+  },
+  "assets/images/brand/favicon-16.png": {
+    "mtime": 1784652195.3319075,
+    "ast_hash": "8502fb5889343ac046bfa8b2ab4b3e0a",
+    "semantic_hash": ""
+  },
+  "assets/images/brand/favicon-32.png": {
+    "mtime": 1784652195.3337743,
+    "ast_hash": "7bfc35ed413a70d5eda973b463f518aa",
+    "semantic_hash": ""
+  },
+  "assets/images/brand/favicon-48.png": {
+    "mtime": 1784652195.3337743,
+    "ast_hash": "f73ea302233b3e6af7b9d1686e88a11d",
+    "semantic_hash": ""
+  },
+  "assets/images/brand/logo-perin-navbar.webp": {
+    "mtime": 1784652195.3337743,
+    "ast_hash": "d23bba15790c530440a5477aa3745387",
+    "semantic_hash": ""
+  },
+  "assets/images/brand/logo-perin-principal.webp": {
+    "mtime": 1784652195.3337743,
+    "ast_hash": "2d21a727e68098755d1b176412be3684",
+    "semantic_hash": ""
+  },
+  "assets/images/clients/eldorado.webp": {
+    "mtime": 1784652195.336736,
+    "ast_hash": "401151bf19ae982365158dfd640751b3",
+    "semantic_hash": ""
+  },
+  "assets/images/clients/elektro.webp": {
+    "mtime": 1784652195.336736,
+    "ast_hash": "5c65fdeb16172ceb441f6547e7708dd7",
+    "semantic_hash": ""
+  },
+  "assets/images/clients/isa-energia.webp": {
+    "mtime": 1784652195.336736,
+    "ast_hash": "5ffc539e131b66f7df02d04054a792d9",
+    "semantic_hash": ""
+  },
+  "assets/images/clients/state-grid.webp": {
+    "mtime": 1784652195.336736,
+    "ast_hash": "ec5a65d43563856b87b42e16164a51e4",
+    "semantic_hash": ""
+  },
+  "assets/images/hero-fundo/hero-timelapse-poster.webp": {
+    "mtime": 1784652195.336736,
+    "ast_hash": "08ae0d42254c278029394c450e5ef4ea",
+    "semantic_hash": ""
+  },
+  "assets/images/placeholders/placeholder-obra-01.webp": {
+    "mtime": 1784652195.3396351,
+    "ast_hash": "9e30bd32c97cf45a0fddc5e28bfaaa8f",
+    "semantic_hash": ""
+  },
+  "assets/images/placeholders/placeholder-obra-02.webp": {
+    "mtime": 1784652195.3412933,
+    "ast_hash": "a250a0ca8619a8347108093b421a5060",
+    "semantic_hash": ""
+  },
+  "assets/images/placeholders/placeholder-obra-03.webp": {
+    "mtime": 1784652195.3432808,
+    "ast_hash": "d8f202eeb0845d958f68024964dc72ee",
+    "semantic_hash": ""
+  },
+  "assets/images/placeholders/placeholder-obra-04.webp": {
+    "mtime": 1784652195.344749,
+    "ast_hash": "d56b85b403b68929c00e936f9eee7e96",
+    "semantic_hash": ""
+  },
+  "assets/images/placeholders/placeholder-obra-05.webp": {
+    "mtime": 1784652195.3468802,
+    "ast_hash": "bbb8efc892a888a7ce184e0e1a3ef7f7",
+    "semantic_hash": ""
+  },
+  "assets/images/social/social-preview.jpg": {
+    "mtime": 1784652195.3487067,
+    "ast_hash": "f628869bcd26805ddc46a3c50960e256",
+    "semantic_hash": ""
+  }
+}
