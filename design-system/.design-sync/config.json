@@ -1,0 +1,12 @@
+{
+  "projectId": "ae750b34-5f6c-498b-86ad-ec1517638305",
+  "shape": "package",
+  "pkg": "@perin/design-system",
+  "globalName": "PerinDS",
+  "cssEntry": "dist/index.css",
+  "extraFonts": "../styles.css",
+  "overrides": {
+    "Card": { "cardMode": "column" }
+  },
+  "readmeHeader": ".design-sync/conventions.md"
+}
