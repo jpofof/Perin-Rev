@@ -4,31 +4,38 @@
 
 ## O que é
 
-Ferramenta de análise estática que constrói um grafo de conhecimento do código-fonte (HTML/CSS/JS) — arquivos, dependências, componentes centrais ("god nodes") e comunidades. Output em `graphify-out/` (não versionado — ver `.gitignore`).
+Ferramenta de análise estática que constrói um grafo de conhecimento do código-fonte (HTML/CSS/JS) — arquivos, dependências, componentes centrais ("god nodes") e comunidades. Output em `graphify-out/` — **versionado** (padrão oficial da ferramenta, ver https://github.com/Graphify-Labs/graphify), para que qualquer `git pull` já traga o grafo pronto sem precisar rodar nada. Apenas `graphify-out/cost.json` (custo de API) fica fora do versionamento — ver `.gitignore`.
 
-## Comandos
+## Atualização automática (hook)
+
+O grafo é reconstruído sozinho a cada commit via hooks instalados com `graphify hook install` (post-commit e post-checkout, registrados em `.git/hooks/`). A reconstrução usa apenas AST local — sem custo de API. Não é necessário rodar `graphify . --code-only` / `graphify cluster-only .` manualmente depois de mudanças normais.
+
+Verificar o status dos hooks:
+```powershell
+graphify hook status
+```
+
+## Comandos (fallback manual)
+
+Use apenas se quiser forçar uma atualização fora de um commit (ex: para inspecionar o grafo antes de commitar):
 
 ```powershell
 graphify . --code-only
 ```
-Reanalisa o código-fonte (AST) e reconstrói o grafo de nós e arestas. Atualização estrutural principal, sem custo de API.
+Reanalisa o código-fonte (AST) e reconstrói o grafo de nós e arestas. Sem custo de API.
 
 ```powershell
 graphify cluster-only .
 ```
 Recalcula comunidades e god nodes a partir do grafo já atualizado. Rodar depois de `--code-only`.
 
-## Quando atualizar
-
-Após: novos arquivos importantes, mudança de arquitetura, grandes alterações em JS, mudanças no carrossel/GSAP, refatorações, mudanças que afetem comunicação entre arquivos. Não é necessário a cada alteração trivial (CSS cosmético, typo).
-
 ## Checklist de verificação
 
 - [ ] `.claude/skills/`, `.claude/settings.json` e `.claude/CLAUDE.md` existem e não estão vazios.
-- [ ] `graphify . --code-only` termina sem erro.
-- [ ] `graphify cluster-only .` gera/atualiza `graphify-out/graph.html`, `graph.json`, `GRAPH_REPORT.md`, `.graphify_analysis.json`.
+- [ ] `graphify hook status` mostra post-commit e post-checkout instalados.
+- [ ] `graphify-out/graph.html`, `graph.json`, `GRAPH_REPORT.md`, `.graphify_analysis.json` existem e estão versionados (`git ls-files graphify-out/`).
 - [ ] `graphify-out/graph.html` abre no navegador e os módulos principais (carrossel, GSAP, tests) aparecem como comunidades reconhecíveis.
-- [ ] `graphify-out/` **não** aparece para commit (`git status` limpo) — é cache local, já está no `.gitignore`.
+- [ ] `graphify-out/cost.json` **não** aparece para commit (`git status` limpo) — é o único arquivo do diretório que fica fora do versionamento.
 
 ## Último resultado conhecido
 
