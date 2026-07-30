@@ -3415,3 +3415,53 @@ h6 {
     max-height: 0;
     transition: max-height 0.35s ease;
 }
+
+/* Botão flutuante do WhatsApp — z-index abaixo de 1001 (.mobile-menu-overlay)
+   para nunca cobrir o menu mobile aberto. */
+.whatsapp-float-btn {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #25D366;
+    color: #FFFFFF;
+    border-radius: 50%;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+    z-index: 990;
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+    animation: whatsapp-pulse 2.8s ease-in-out infinite;
+}
+
+.whatsapp-float-btn:hover {
+    transform: scale(1.08);
+    box-shadow: 0 6px 22px rgba(0, 0, 0, 0.32);
+    animation-play-state: paused;
+}
+
+@keyframes whatsapp-pulse {
+    0%, 100% {
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25), 0 0 0 0 rgba(37, 211, 102, 0.45);
+    }
+    50% {
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25), 0 0 0 10px rgba(37, 211, 102, 0);
+    }
+}
+
+@media (max-width: 480px) {
+    .whatsapp-float-btn {
+        bottom: 16px;
+        right: 16px;
+        width: 52px;
+        height: 52px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .whatsapp-float-btn {
+        animation: none;
+    }
+}

@@ -9,3 +9,16 @@ design-system/ds-bundle/
 design-system/.design-sync/.cache/
 design-system/.design-sync/learnings/
 design-system/.design-sync/node_modules/
+
+.env
+.env.*
+!.env.example
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+*.log
+*.bak
+*.tmp
+~$*
