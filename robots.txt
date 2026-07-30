@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://perinconstrucoes.com.br/sitemap.xml
