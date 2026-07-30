@@ -35,14 +35,6 @@
     <link rel="preload" href="fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="assets/images/hero-fundo/hero-timelapse-poster.webp" as="image" fetchpriority="high">
     <link rel="stylesheet" href="styles.min.css">
-    <!--
-        TODO: preencher os campos abaixo antes de publicar em produção
-        - telephone: confirmar se é o mesmo número usado no wa.me (+55 18 99737-5322)
-        - address: rua, número, bairro, Andradina, SP, CEP
-        - areaServed: lista de cidades atendidas
-        - openingHours: horário de funcionamento
-        - sameAs: links de Instagram/Facebook/LinkedIn, se houver
-    -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -50,18 +42,33 @@
       "name": "Perin Construções",
       "url": "https://perinconstrucoes.com.br",
       "logo": "https://perinconstrucoes.com.br/assets/images/brand/logo-perin-principal.webp",
-      "telephone": "TODO: confirmar se é +55 18 99737-5322 (mesmo número do wa.me já usado no site)",
+      "telephone": "+5518997375322",
       "address": {
         "@type": "PostalAddress",
-        "streetAddress": "TODO: preencher rua e número",
+        "streetAddress": "Rua Dr. Orensy Rodrigues da Silva, 917",
         "addressLocality": "Andradina",
         "addressRegion": "SP",
-        "postalCode": "TODO: preencher CEP",
+        "postalCode": "16901-003",
         "addressCountry": "BR"
       },
-      "areaServed": "TODO: preencher lista de cidades atendidas",
-      "openingHours": "TODO: preencher horário de funcionamento",
-      "sameAs": ["TODO: preencher links de Instagram/Facebook/LinkedIn, se houver"]
+      "areaServed": [
+        { "@type": "City", "name": "Andradina" },
+        { "@type": "City", "name": "Castilho" },
+        { "@type": "City", "name": "Nova Independência" },
+        { "@type": "City", "name": "Guaraçaí" },
+        { "@type": "City", "name": "Pereira Barreto" },
+        { "@type": "City", "name": "Ilha Solteira" },
+        { "@type": "City", "name": "Mirandópolis" },
+        { "@type": "City", "name": "Murutinga do Sul" },
+        { "@type": "City", "name": "Itapura" },
+        { "@type": "City", "name": "Três Lagoas" }
+      ],
+      "openingHoursSpecification": {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+        "opens": "08:00",
+        "closes": "18:00"
+      }
     }
     </script>
 </head>
