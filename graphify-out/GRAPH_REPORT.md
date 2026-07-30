@@ -1,16 +1,16 @@
-# Graph Report - Perin_Rev  (2026-07-28)
+# Graph Report - Perin_Rev  (2026-07-30)
 
 ## Corpus Check
-- 72 files · ~382,085 words
+- 79 files · ~384,721 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 657 nodes · 1144 edges · 45 communities (41 shown, 4 thin omitted)
-- Extraction: 95% EXTRACTED · 5% INFERRED · 0% AMBIGUOUS · INFERRED: 52 edges (avg confidence: 0.56)
+- 1300 nodes · 1755 edges · 103 communities (95 shown, 8 thin omitted)
+- Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 60 edges (avg confidence: 0.59)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `8820c0b9`
+- Built from commit: `b209c8ab`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -57,43 +57,98 @@
 - pre-commit
 - Cd
 - Graphify
+- Instruções Gerais de Trabalho
+- Isolamento por eliminação — `?isolate=...` (Fase 2)
+- Perin Construções — Site Institucional Premium
+- auditoria-cascading-slider.md
+- Atualização — investigação do padrão periódico de ~3s (20/07/2026)
+- FASE 1 — Salto de scroll para trás
+- 3. Conteúdo detalhado por seção
+- Diagnóstico — carrossel de clientes não gira sozinho em mobile
+- Consolidação de Branches — Master Local
+- Diagnóstico — Mobile Real: Hero, Seção "Sobre Nós" e Carrossel de Clientes
+- Relatório de Arquivos Desnecessários / Órfãos / Resquícios de Debug
+- Achados (mais grave primeiro)
+- Auditoria Técnica — Projeto Perin Construções (Landing Page)
+- Diagnóstico de Performance — Fase 1 (Auditoria Estática)
+- Inventário de Branches — Consolidação para Master
+- PRD — Site Institucional Perin Construções
+- Especificações do Projeto — Perin Construções (portfólio)
+- Diagnóstico contra produção real — perinconstrucoes.netlify.app
+- Oportunidades identificadas para próxima rodada
+- Plano de Skills para o Projeto Perin_Rev
+- Graphify — Automação e Manutenção do Grafo de Conhecimento
+- Uso real do Bootstrap — Investigação (sem implementação)
+- Limpeza executada — 21/07/2026
+- Plano Técnico — Vídeo Time-lapse de Fundo no Hero
+- Relatório de Performance — Perin Construções
+- Carregamento inicial: poster, hero entrance, primeira seção, travamento intermitente
+- GSAP self-hosted (elimina dependência de CDN externo)
+- Hero: vídeo + correções
+- Travamento recorrente no Safari iOS — causa raiz e correção
+- 03 — Smooth scroll (Lenis)
+- @perin/design-system
+- Notas de Implementação — Vídeo de Fundo no Hero
+- Verificação de Produção — Commit `ab2b2ae`
+- Relatório de Organização — Portfólio de Obras
+- O que foi alterado, por categoria
+- Mobile: travamento por sobrecarga de main thread
+- Cascading Slider — pacote isolado
+- 01 — Card de contato flutuante no hero
+- Validação pendente: iPhone real
+- ScrollTrigger.batch() — redução de instâncias
+- Contenção de main thread durante a animação do hero (Passo 0) + redução da timeline (Passo 1)
+- Parte 2 — Validação de cache (pendente, só após deploy)
+- Correções: scheduling do hero, ordem cascading slider, touchcancel carrossel clientes
+- Mobile: vídeo condicional + correção de download prematuro
+- Correção: fila de inicializações em lote (não mais sequencial via idle individual)
+- Rodada 2 — Remoção do Bootstrap
+- 02 — Carrossel de clientes: posicionamento e continuidade visual
+- Headroom
+- Extração de padrões — burkhardprojekte.ch → Perin Construções
+- CLAUDE.md
+- Mobile: conteúdo não revelava ao rolar
+- checklist-pendencias-mobile.md
+- design-sync notes
+- conventions.md
+- process-diagram.regression.test.js
 
 ## God Nodes (most connected - your core abstractions)
-1. `initPage()` - 21 edges
-2. `Bc()` - 14 edges
-3. `r()` - 13 edges
-4. `s()` - 13 edges
-5. `Tween()` - 13 edges
+1. `Relatório de Performance — Perin Construções` - 24 edges
+2. `initPage()` - 21 edges
+3. `Instruções Gerais de Trabalho` - 20 edges
+4. `Bc()` - 14 edges
+5. `Perin Construções — Site Institucional Premium` - 14 edges
 6. `compilerOptions` - 13 edges
 7. `Tween()` - 13 edges
-8. `initContactForm()` - 12 edges
-9. `initContactForm()` - 12 edges
-10. `initContactForm()` - 12 edges
+8. `r()` - 13 edges
+9. `s()` - 13 edges
+10. `Tween()` - 13 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `eb()` --indirect_call--> `f()`  [INFERRED]
-  vendor/gsap/gsap.min.js → script.min.js
-- `initClientsCarousel()` --indirect_call--> `v()`  [INFERRED]
-  script.min.js → prototipos/cascading-slider/js/gsap.min.js
 - `hb()` --indirect_call--> `f()`  [INFERRED]
   prototipos/cascading-slider/js/gsap.min.js → script.min.js
-- `O()` --indirect_call--> `t()`  [INFERRED]
-  vendor/gsap/ScrollTrigger.min.js → vendor/gsap/gsap.min.js
-- `P()` --indirect_call--> `ke()`  [INFERRED]
-  vendor/gsap/ScrollTrigger.min.js → vendor/gsap/gsap.min.js
+- `zb()` --indirect_call--> `ve()`  [INFERRED]
+  prototipos/cascading-slider/js/gsap.min.js → vendor/gsap/gsap.min.js
+- `zb()` --indirect_call--> `we()`  [INFERRED]
+  prototipos/cascading-slider/js/gsap.min.js → vendor/gsap/gsap.min.js
+- `wb()` --indirect_call--> `ce()`  [INFERRED]
+  vendor/gsap/gsap.min.js → prototipos/cascading-slider/js/gsap.min.js
+- `wb()` --indirect_call--> `he()`  [INFERRED]
+  vendor/gsap/gsap.min.js → prototipos/cascading-slider/js/gsap.min.js
 
 ## Import Cycles
 - None detected.
 
-## Communities (45 total, 4 thin omitted)
+## Communities (103 total, 8 thin omitted)
 
 ### Community 0 - "script.js"
 Cohesion: 0.07
-Nodes (39): applyPhoneMask(), batchReveal(), buildResponsiveImgAttrs(), capitalizeName(), captureStack(), checkEmail(), checkName(), checkNameOnBlur() (+31 more)
+Nodes (40): applyPhoneMask(), batchReveal(), buildResponsiveImgAttrs(), capitalizeName(), captureStack(), checkEmail(), checkName(), checkNameOnBlur() (+32 more)
 
 ### Community 1 - "script.min.js"
 Cohesion: 0.08
-Nodes (42): applyPhoneMask(), batchReveal(), buildResponsiveImgAttrs(), capitalizeName(), checkEmail(), checkName(), checkNameOnBlur(), checkPhone() (+34 more)
+Nodes (43): applyPhoneMask(), batchReveal(), buildResponsiveImgAttrs(), capitalizeName(), checkEmail(), checkName(), checkNameOnBlur(), checkPhone() (+35 more)
 
 ### Community 2 - "gsap/gsap.min.js"
 Cohesion: 0.06
@@ -236,28 +291,232 @@ Cohesion: 0.50
 Nodes (4): Ud(), vd(), we(), xe()
 
 ### Community 44 - "Graphify"
+Cohesion: 0.22
+Nodes (8): Atualização automática (hook), Checklist de verificação, Comandos (fallback manual), Como confirmar que está em uso, Consultas (uso pela IA), Graphify, O que é, Último resultado conhecido
+
+### Community 45 - "Instruções Gerais de Trabalho"
+Cohesion: 0.05
+Nodes (39): 10. Privacidade (LGPD / GDPR), 11. Resiliência e Performance, 12. Nuvem e FinOps (Agnóstico a Provedor), 13. Testes (Obrigatório em Toda Alteração), 14. Observabilidade (Obrigatória em Toda Aplicação), 15. Documentação Automática, 16. Commits (Sugestão Obrigatória), 17. O Que Nunca Fazer (+31 more)
+
+### Community 46 - "Isolamento por eliminação — `?isolate=...` (Fase 2)"
+Cohesion: 0.05
+Nodes (37): Achado separado: `filter: blur(100px)` estático nos light-spots, Arquivos alterados, Arquivos alterados nesta atualização, Arquivos alterados nesta atualização, Atualização final — causa raiz confirmada, correção aplicada, infraestrutura removida (21/07/2026), Atualização — `no-blur-only` e `no-animation-only` (21/07/2026), Atualização — `no-geometries` (21/07/2026), Como funciona (+29 more)
+
+### Community 47 - "Perin Construções — Site Institucional Premium"
+Cohesion: 0.06
+Nodes (34): 🎬 Animações e Interações, Carrossel de Portfólio (Cascading Slider), Carrossel (Portfólio), 📐 Checklist de Qualidade, Como instalar e executar, ▶️ Como usar, Comportamento, Conteúdo (+26 more)
+
+### Community 48 - "auditoria-cascading-slider.md"
+Cohesion: 0.07
+Nodes (26): 1.1 Classes (`class=""`), 1.2 IDs (`id=""`), 1.3 Atributos `data-*`, 1.4 Estrutura HTML completa do slider, 1. HTML, 2.1 Seletores no arquivo externo `styles/modus-projects-6db04b.webflow.69c3b24f436721e02207e17d.23cdafd36.opt.min.css`, 2.2 Estilos embutidos no `index.html` (dentro de `<div class="w-embed"><style>...`), 2.3 Pseudo-classes / pseudo-elementos (+18 more)
+
+### Community 49 - "Atualização — investigação do padrão periódico de ~3s (20/07/2026)"
+Cohesion: 0.08
+Nodes (25): Arquivos alterados, Arquivos alterados nesta atualização, Arquivos alterados nesta atualização, Atualização — checkpoints granulares em `initPage()` (20/07/2026), Atualização — investigação do padrão periódico de ~3s (20/07/2026), Botão de exportação, Dado real que motivou este passo, Dado real que motivou este passo (+17 more)
+
+### Community 50 - "FASE 1 — Salto de scroll para trás"
+Cohesion: 0.08
+Nodes (23): Causa raiz confirmada — não era gesto nativo do iOS, Conclusão honesta, Correção aplicada (`script.js`, ~linha 2221), Dados reais capturados no iPhone — análise, FASE 1 — Salto de scroll para trás, Hipótese mais provável, Instrumentação para captura real no dispositivo (v1 — superada, exigia Mac), Instrumentação v2 — sem Mac, direto no iPhone (`?debug=scroll`) (+15 more)
+
+### Community 51 - "3. Conteúdo detalhado por seção"
+Cohesion: 0.09
+Nodes (22): 1. Ordem das seções (fluxo narrativo atual), 2. Tabela seção por seção, 3. Conteúdo detalhado por seção, 4. Altura total da página, 5. CTAs (oportunidades de conversão), 6. Repetições de conteúdo, 7. Seções dependentes de conteúdo real do cliente (ainda não fornecido), 8. Resumo de complexidade técnica por seção (ordenado do mais simples ao mais complexo) (+14 more)
+
+### Community 52 - "Diagnóstico — carrossel de clientes não gira sozinho em mobile"
+Cohesion: 0.12
+Nodes (15): Conclusão, Correção 1 — Observar o container estável, Correção 2 — Debounce antes de parar (redesenhado durante a implementação), Correção aplicada (21/07/2026), Diagnóstico — carrossel de clientes não gira sozinho em mobile, Hipótese de causa da entrada espúria, Passo 1.2 — Grupo A dispara corretamente em mobile?, Passo 1.3 — O IntersectionObserver considera o carrossel visível em mobile? (**Aqui está o bug**) (+7 more)
+
+### Community 53 - "Consolidação de Branches — Master Local"
+Cohesion: 0.12
+Nodes (15): Branches mergeadas, nesta ordem, Como o conflito foi resolvido, Consolidação de Branches — Master Local, Estado atual, `feat/hero-timelapse-video`, `index.html`, Métricas de Lighthouse — evolução da consolidação, O que foi preservado de cada branch (+7 more)
+
+### Community 54 - "Diagnóstico — Mobile Real: Hero, Seção "Sobre Nós" e Carrossel de Clientes"
+Cohesion: 0.13
+Nodes (14): Causa, Causa nova identificada, Causa técnica, Confirmação necessária, Diagnóstico — Mobile Real: Hero, Seção "Sobre Nós" e Carrossel de Clientes, Diferença touch vs. mouse na inicialização, Este é o bug antigo (código desatualizado) ou uma causa nova?, Medição de interferência no carregamento (+6 more)
+
+### Community 55 - "Relatório de Arquivos Desnecessários / Órfãos / Resquícios de Debug"
+Cohesion: 0.14
+Nodes (13): 10. Observação — pastas duplicadas do projeto, 1. Assets órfãos reais (fora de pasta de backup), 2. Órfãos "intencionais" dentro de pastas de backup, 3. Pasta `audit/` — classificação, 4. Infraestrutura de debug ainda presente no código, 5. `console.log` / `console.trace` / `console.debug` — fonte, 6. Blocos de código morto comentado, 7.1 Assets (+5 more)
+
+### Community 56 - "Achados (mais grave primeiro)"
+Cohesion: 0.14
+Nodes (13): 1. ~~`AGENTS.md` documenta uma regra do carrossel que diverge do código e dos testes~~ — ✅ CORRIGIDO em 07/07/2026, 2. `initPage()` não isola falhas por seção — um erro em qualquer `init*()` pode interromper a inicialização das seções seguintes, 3. Nenhuma verificação de elemento nulo antes de manipular DOM em várias `init*()`, 4. Formulário de contato — único ponto de conversão do site — sem nenhum teste automatizado, 5. `script.js` é um arquivo único de ~1750 linhas / ~30 funções globais sem módulos (code smell, `AGENTS.md` §6), 6. Interpolação de string em `innerHTML` para dados hoje estáticos, mas sem barreira caso isso mude, 7. `prefers-reduced-motion` não é verificado em nenhuma animação, 8. Imagens pesadas sem otimização confirmada (+5 more)
+
+### Community 57 - "Auditoria Técnica — Projeto Perin Construções (Landing Page)"
+Cohesion: 0.14
+Nodes (13): 1. Mapeamento geral, 2.1 Achado crítico — pastas "Projeto N" não estão integradas ao site, 2.2 Links quebrados (referenciados mas inexistentes no disco), 2.3 Dependência morta, 2.4 Nomenclatura cruzada de fotos (não são backups, mas indicam organização incompleta), 2.5 Backups/versões antigas/arquivos de teste esquecidos, 2. Arquivos problemáticos, 3. Erros e inconsistências técnicas (+5 more)
+
+### Community 58 - "Diagnóstico de Performance — Fase 1 (Auditoria Estática)"
+Cohesion: 0.15
+Nodes (12): 10. Métricas reais (Lighthouse) — pendente, 1. Imagens, 2. CSS e JS, 3. Scripts sem `defer`/`async`, 4. Fontes, 5. Preconnect / Preload / Prefetch, 6. CSS/JS não utilizado, 7. `_headers` (cache Netlify) (+4 more)
+
+### Community 59 - "Inventário de Branches — Consolidação para Master"
+Cohesion: 0.17
+Nodes (11): Aguardando decisão, Branch que parece obsoleta / já implicitamente resolvida, Branches encontradas, Detalhe do conflito `perf` × `teste`, Inventário de Branches — Consolidação para Master, Opção 1 — `feat/hero-timelapse-video` → `perf/otimizacao-performance` → `teste/skills-design-emil-taste`, Opção 2 — `feat/hero-timelapse-video` → `teste/skills-design-emil-taste` → `perf/otimizacao-performance`, Ordem de merge sugerida (+3 more)
+
+### Community 60 - "PRD — Site Institucional Perin Construções"
+Cohesion: 0.17
+Nodes (11): 10. Perguntas em aberto para o dono do produto, 1. Visão do produto, 2. Problema a resolver, 3. Objetivo de negócio e métrica de sucesso, 4. Personas, 5. Escopo funcional (estado atual — "as built"), 6. Requisitos não-funcionais (herdados de `AGENTS.md`, aplicados como critério de aceite de produto), 7. Fora de escopo (nesta versão) (+3 more)
+
+### Community 61 - "Especificações do Projeto — Perin Construções (portfólio)"
+Cohesion: 0.17
+Nodes (11): 1. Visão geral, 2. Inventário funcional (por seção, `index.html`), 3. Especificação do formulário de contato (o fluxo de maior risco do site), 4. Especificação técnica — arquitetura (`script.js`), 5.1 Cobertura obrigatória a criar (por prioridade), 5.2 Edge cases transversais a cobrir em qualquer novo teste, 5.3 Acessibilidade (não coberto, recomendado), 5. Especificação de QA — cobertura necessária (AGENTS.md §13) (+3 more)
+
+### Community 62 - "Diagnóstico contra produção real — perinconstrucoes.netlify.app"
+Cohesion: 0.18
+Nodes (10): ⚠️ Achado novo — a correção de ordem no `_headers` da rodada anterior não teve o efeito esperado, Diagnóstico contra produção real — perinconstrucoes.netlify.app, Foco em main-thread / JS execution (pedido explícito do usuário), Passo 1 — Produção reflete o código local?, Passo 2 — Headers de cache reais, Passo 3 — Lighthouse real contra produção, Passo 4 — Recorrência ou causa nova?, Passo 5 — Recomendação priorizada (nada implementado) (+2 more)
+
+### Community 63 - "Oportunidades identificadas para próxima rodada"
+Cohesion: 0.18
+Nodes (10): Atualização — Rodada 2 (remoção do Bootstrap), Itens marcados como pendentes na Rodada 1 — status atualizado, Métricas de página (Rodada 1 "depois" → pós-remoção do Bootstrap), Novas (surgiram após as mudanças, investigadas), Novo item pendente identificado, Oportunidades identificadas para próxima rodada, Pendentes (já existiam antes, não foram tratadas), Regressões (Rodada 1 → Rodada 2) (+2 more)
+
+### Community 64 - "Plano de Skills para o Projeto Perin_Rev"
+Cohesion: 0.18
+Nodes (10): 1. `carousel-check` (prioridade alta), 2. `changelog-update` (prioridade média), 3. `run-static-site` (prioridade média), 4. `jest-focus` (prioridade baixa), Como implantar, Contexto do projeto, Fora de escopo (já cobertas por skills globais), Ordem de implementação sugerida (+2 more)
+
+### Community 65 - "Graphify — Automação e Manutenção do Grafo de Conhecimento"
+Cohesion: 0.18
+Nodes (10): 1. O que é o Graphify neste projeto, 2. Estado atual da instalação, 3. Quando atualizar o Graphify, 4. Comandos de atualização, 5. Fluxo recomendado, 6. Automação futura, 7. Orientações para assistentes de IA, Arquivos gerados em `graphify-out/` (+2 more)
+
+### Community 66 - "Uso real do Bootstrap — Investigação (sem implementação)"
+Cohesion: 0.20
+Nodes (9): Classes CSS do Bootstrap, Componentes JS do Bootstrap, Passo 1 — Mapeamento do uso real, Passo 2 — Comparação de estratégias, Passo 3 — Recomendação, Passo 4 — Aguardando decisão, Peso atual (medido via Lighthouse, network real), Ressalva importante antes de decidir (+1 more)
+
+### Community 67 - "Limpeza executada — 21/07/2026"
+Cohesion: 0.20
+Nodes (9): 1. Assets órfãos (~31,6 MB), 2. Relatórios Lighthouse intermediários (~5,65 MB), 3. Dependência não usada, Espaço total liberado, Limpeza executada — 21/07/2026, Não commitado, O que foi mantido (por decisão explícita), O que foi removido (+1 more)
+
+### Community 68 - "Plano Técnico — Vídeo Time-lapse de Fundo no Hero"
+Cohesion: 0.20
+Nodes (9): 1. Estratégia de loop — DECISÃO: dois arquivos encadeados via `ended`, 2. Formato e encoding, 3. Estratégia de carregamento, 4. Estratégia de fallback (poster-only, sem vídeo), 5. Acessibilidade, 6. Localização de arquivos, 7. Orçamento de performance, Plano Técnico — Vídeo Time-lapse de Fundo no Hero (+1 more)
+
+### Community 69 - "Relatório de Performance — Perin Construções"
+Cohesion: 0.20
+Nodes (9): Antes vs. Depois, Carrossel de clientes parado em mobile — causa raiz e correção, Carrossel de clientes — velocidade de rotação aumentada em 1.5x, Como revisar esta branch localmente, Decisão registrada, Pendências de decisão do usuário, Relatório de Performance — Perin Construções, Resumo consolidado — jornada completa de otimização (+1 more)
+
+### Community 70 - "Carregamento inicial: poster, hero entrance, primeira seção, travamento intermitente"
+Cohesion: 0.20
+Nodes (10): Carregamento inicial: poster, hero entrance, primeira seção, travamento intermitente, Causa raiz confirmada empiricamente (Puppeteer + CDP, Slow-4G simulado + CPU 4x), Fechamento, Passo 1 — Cadeia de dependências do carregamento, Passo 3 — Travamento intermitente (sintoma mais grave): NENHUM deadlock/Promise pendente encontrado, Passo 4 — Recomendação sobre o `delay: 0.4` (aguardando aprovação, nada alterado ainda), Passo 5 — Correções 1-3 implementadas (Passo 4 aguardando aprovação), Resumo das causas (Passo 4) (+2 more)
+
+### Community 71 - "GSAP self-hosted (elimina dependência de CDN externo)"
+Cohesion: 0.22
+Nodes (9): ⚠️ Achado colateral crítico — `.min` desatualizados em produção, Cache (Passo 4) — ressalva resolvida, Confirmação da versão e escopo (Passo 1), GSAP self-hosted (elimina dependência de CDN externo), Peso adicionado ao repositório, Trava permanente — git hook pre-commit (Passo 3), Validação (Passo 3), Vendorização (Passo 2) (+1 more)
+
+### Community 72 - "Hero: vídeo + correções"
+Cohesion: 0.22
+Nodes (9): Bug 1 — `styles.min.css` desatualizado (causa do conflito visual), Bug 2 — vídeo não tocava sozinho (`play()`/`is-visible` nunca disparavam) — BLOQUEANTE, corrigido, Contraste do texto (validação Opção B), Decisão de design, Hero: vídeo + correções, Lighthouse — antes vs. depois das correções, Recompressão de vídeo, Testes (+1 more)
+
+### Community 73 - "Travamento recorrente no Safari iOS — causa raiz e correção"
+Cohesion: 0.22
+Nodes (9): Causa raiz confirmada, Correção aplicada, Passo 1 — Instrumentação de performance real no dispositivo (`?debug=perf`), Passo 2 — Checkpoints granulares no bloco síncrono de `initPage()`, Passo 3 — Investigação e descarte do padrão periódico de ~3s, Passo 4 — Isolamento por eliminação via `?isolate=...`, Passo 5 — Separação entre blur estático e animação (`no-blur-only` / `no-animation-only`), Travamento recorrente no Safari iOS — causa raiz e correção (+1 more)
+
+### Community 74 - "03 — Smooth scroll (Lenis)"
+Cohesion: 0.22
+Nodes (8): 03 — Smooth scroll (Lenis), Acessibilidade — `prefers-reduced-motion`, Alternativa mais conservadora, caso o Lenis conflite, Biblioteca e carregamento, Checklist de validação obrigatória (rodar no repositório do Perin, não aqui), Código de inicialização e parâmetros configurados, Integrar com GSAP ScrollTrigger (a referência NÃO faz isso — o Perin precisa), Riscos específicos para o Perin
+
+### Community 75 - "@perin/design-system"
 Cohesion: 0.25
-Nodes (7): Atualização automática (hook), Checklist de verificação, Comandos (fallback manual), Consultas (uso pela IA), Graphify, O que é, Último resultado conhecido
+Nodes (7): Componentes (v0.1 — núcleo essencial), Escopo desta versão, Histórico de mudanças, Instalação e build, @perin/design-system, Tokens, Uso
+
+### Community 76 - "Notas de Implementação — Vídeo de Fundo no Hero"
+Cohesion: 0.25
+Nodes (7): Bug encontrado e corrigido durante a implementação, Desvios em relação ao plano, Fase 3 — Refinamento visual (taste), Notas de Implementação — Vídeo de Fundo no Hero, Pendências para Fase 3 (taste-skill), Verificação pós-Fase-3, Verificação realizada
+
+### Community 77 - "Verificação de Produção — Commit `ab2b2ae`"
+Cohesion: 0.29
+Nodes (6): Passo 1 — Diff byte-a-byte, produção vs. commit local, Passo 2 — Confirmação da presença específica das três correções em produção, Passo 3 — Diagnóstico honesto, Passo 4 — Não aplicável, Resumo, Verificação de Produção — Commit `ab2b2ae`
+
+### Community 78 - "Relatório de Organização — Portfólio de Obras"
+Cohesion: 0.29
+Nodes (6): Imagens em "Dúvidas" (baixa confiança de agrupamento), Lógica usada para diferenciar cada projeto, Próximos passos sugeridos, Quantidade de fotos por projeto, Relatório de Organização — Portfólio de Obras, Resumo geral
+
+### Community 79 - "O que foi alterado, por categoria"
+Cohesion: 0.29
+Nodes (7): Cache (Netlify), Fontes, Imagens (com confirmação prévia do usuário sobre imagens do carrossel), Lazy loading e prioridade, Minificação (passe manual único, não é processo de build), O que foi alterado, por categoria, Scripts
+
+### Community 80 - "Mobile: travamento por sobrecarga de main thread"
+Cohesion: 0.29
+Nodes (7): Causas identificadas (evidência, não suposição), Como validar no Safari real do iPhone (Web Inspector remoto, aba Timelines), Correções aplicadas (Direções 1 e 2 do plano; Direção 3 — `ScrollTrigger.batch()` — adiada para depois da validação real), Inventário de `initPage()` (script.js:1821-1853, antes desta correção), Limitação do ambiente, Mobile: travamento por sobrecarga de main thread, Validação
+
+### Community 81 - "Cascading Slider — pacote isolado"
+Cohesion: 0.29
+Nodes (6): Cascading Slider — pacote isolado, Coisas importantes a saber, Como testar, Como usar em outro projeto, Estrutura, Referência à auditoria completa
+
+### Community 82 - "01 — Card de contato flutuante no hero"
+Cohesion: 0.29
+Nodes (6): 01 — Card de contato flutuante no hero, Ajustes necessários ao aplicar no Perin, Atenção ao integrar — riscos previsíveis, Como o card transborda e sobrepõe a seção seguinte, Estratégia de posicionamento, Valores de espaçamento e dimensão por breakpoint
+
+### Community 83 - "Validação pendente: iPhone real"
+Cohesion: 0.33
+Nodes (6): 1. Velocidade percebida, 2. Confirmação técnica via Web Inspector, 3. Teste visual, 4. Rotação / redimensionamento (borda do breakpoint), 5. Cache real (pendente desde a Rodada 3, aproveitar o deploy atual), Validação pendente: iPhone real
+
+### Community 84 - "ScrollTrigger.batch() — redução de instâncias"
+Cohesion: 0.33
+Nodes (6): ⚠️ Achado importante — a premissa "batch() reduz o número de instâncias" está incorreta, Correção — `leaveStagger: 0` no `onLeaveBack`, Passo 1 — Mapeamento e correção de uma contagem anterior incorreta, Passo 2 — Implementação, Passo 3 — Validação, ScrollTrigger.batch() — redução de instâncias
+
+### Community 85 - "Contenção de main thread durante a animação do hero (Passo 0) + redução da timeline (Passo 1)"
+Cohesion: 0.33
+Nodes (6): Achado metodológico — minha primeira medição de "stutter" estava contaminada, Confirmação do carrossel, Contenção de main thread durante a animação do hero (Passo 0) + redução da timeline (Passo 1), Passo 0 — reordenar `initPage()` para tirar trabalho síncrono do caminho do hero, Passo 1 — timeline reduzida (~2,85s → ~1,5s), Validação — armadilha do ambiente de teste headless
+
+### Community 86 - "Parte 2 — Validação de cache (pendente, só após deploy)"
+Cohesion: 0.33
+Nodes (6): Checklist de validação pós-deploy pendente, Opção 1 — `curl` direto nos headers de resposta, Opção 2 — Lighthouse contra produção, Parte 1 — Logos superdimensionados, Parte 2 — Validação de cache (pendente, só após deploy), Rodada 3 — Logos superdimensionados + preparação de validação de cache
+
+### Community 87 - "Correções: scheduling do hero, ordem cascading slider, touchcancel carrossel clientes"
+Cohesion: 0.33
+Nodes (6): Correção 1 — Scheduling do hero: fila idle só começa após `onComplete` da timeline, Correção 2 — Ordem entre criação de ScrollTrigger e mutações de altura pós-load, Correção 3 — `touchcancel` no carrossel de clientes, Correções: scheduling do hero, ordem cascading slider, touchcancel carrossel clientes, Resumo do que mudou desde o diagnóstico aprovado, Validação final
+
+### Community 88 - "Mobile: vídeo condicional + correção de download prematuro"
+Cohesion: 0.33
+Nodes (6): Correção do download prematuro do reverse (desktop + mobile), Deploy, Lógica do breakpoint, Mobile: vídeo condicional + correção de download prematuro, Peso do hero — antes vs. depois (mobile), Validação
+
+### Community 89 - "Correção: fila de inicializações em lote (não mais sequencial via idle individual)"
+Cohesion: 0.33
+Nodes (6): Correção: fila de inicializações em lote (não mais sequencial via idle individual), Passo 1 — Confirmação antes de mudar, Passo 2 — Reorganização em dois grupos, Passo 3 — Validação com medição real de timing, Passo 4 — Confirmação de que a proteção original não regrediu, Resumo entregável
+
+### Community 90 - "Rodada 2 — Remoção do Bootstrap"
+Cohesion: 0.33
+Nodes (6): Métricas — antes da remoção vs. depois, Métricas — desde o início (Fase 1, pré-otimização) até agora, O que foi feito, Rodada 2 — Remoção do Bootstrap, Testes automatizados, Validação visual
+
+### Community 91 - "02 — Carrossel de clientes: posicionamento e continuidade visual"
+Cohesion: 0.33
+Nodes (5): 02 — Carrossel de clientes: posicionamento e continuidade visual, Como aplicar no Perin — só reposicionar, não substituir o carrossel, Onde quebrar a alternância de cores em xadrez, Por que não há cabeçalho na seção de logos, e o efeito disso, Relação espacial hero → logos → sobre
+
+### Community 92 - "Headroom"
+Cohesion: 0.40
+Nodes (4): Como fechar essa pendência, Em aberto — preencher quando souber, Headroom, Papel conhecido
+
+### Community 93 - "Extração de padrões — burkhardprojekte.ch → Perin Construções"
+Cohesion: 0.40
+Nodes (4): Extração de padrões — burkhardprojekte.ch → Perin Construções, Ordem recomendada de integração no Perin, Resumo de riscos gerais, Índice dos componentes
+
+### Community 95 - "Mobile: conteúdo não revelava ao rolar"
+Cohesion: 0.50
+Nodes (4): Causa raiz confirmada, Correção implementada, Mobile: conteúdo não revelava ao rolar, Validação
+
+### Community 102 - "process-diagram.regression.test.js"
+Cohesion: 0.22
+Nodes (6): css, flush(), fs, html, loadScript(), path
 
 ## Knowledge Gaps
-- **80 isolated node(s):** `O que é`, `Atualização automática (hook)`, `Comandos (fallback manual)`, `Checklist de verificação`, `Último resultado conhecido` (+75 more)
+- **559 isolated node(s):** `watch`, `options`, `name`, `version`, `description` (+554 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **4 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **8 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `f()` connect `script.min.js` to `r`, `r`?**
-  _High betweenness centrality (0.148) - this node is a cross-community bridge._
-- **Why does `eb()` connect `r` to `script.min.js`, `gsap/gsap.min.js`, `Tween`, `ja`?**
-  _High betweenness centrality (0.136) - this node is a cross-community bridge._
-- **Why does `hb()` connect `r` to `script.min.js`, `js/gsap.min.js`, `ce`, `t`, `Tween`?**
-  _High betweenness centrality (0.102) - this node is a cross-community bridge._
-- **Are the 3 inferred relationships involving `r()` (e.g. with `Co()` and `ea()`) actually correct?**
-  _`r()` has 3 INFERRED edges - model-reasoned connections that need verification._
-- **Are the 3 inferred relationships involving `s()` (e.g. with `jf()` and `pf()`) actually correct?**
-  _`s()` has 3 INFERRED edges - model-reasoned connections that need verification._
-- **What connects `O que é`, `Atualização automática (hook)`, `Comandos (fallback manual)` to the rest of the system?**
-  _80 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _High betweenness centrality (0.013) - this node is a cross-community bridge._
+- **Why does `wb()` connect `Tween` to `r`, `gsap/gsap.min.js`, `ce`?**
+  _High betweenness centrality (0.011) - this node is a cross-community bridge._
+- **Why does `s()` connect `r` to `gsap/gsap.min.js`, `cb`, `df`, `Tween`?**
+  _High betweenness centrality (0.009) - this node is a cross-community bridge._
+- **What connects `watch`, `options`, `name` to the rest of the system?**
+  _559 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `script.js` be split into smaller, more focused modules?**
-  _Cohesion score 0.06848357791754019 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.06734006734006734 - nodes in this community are weakly interconnected._
+- **Should `script.min.js` be split into smaller, more focused modules?**
+  _Cohesion score 0.07910014513788098 - nodes in this community are weakly interconnected._
+- **Should `gsap/gsap.min.js` be split into smaller, more focused modules?**
+  _Cohesion score 0.06342780026990553 - nodes in this community are weakly interconnected._

@@ -1082,62 +1082,6 @@ h6 {
     pointer-events: none;
 }
 
-/* === NUMBERS SECTION === */
-.numbers-section {
-    padding: var(--section-padding);
-    background: var(--color-bg-primary);
-    position: relative;
-}
-
-.numbers-container {
-    max-width: var(--container-max);
-    margin: 0 auto;
-    padding: 0 40px;
-}
-
-.numbers-header {
-    margin-bottom: 40px;
-}
-
-.numbers-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-}
-
-.stat-card {
-    text-align: center;
-    padding: 24px 16px;
-    background: var(--color-bg-surface);
-    border: 1px solid var(--color-border-light);
-    border-radius: 12px;
-    transition: all var(--transition-fast);
-    box-shadow: 0 2px 12px var(--color-shadow);
-}
-
-.stat-card:hover {
-    border-color: rgba(42, 135, 62, 0.2);
-    transform: translateY(-4px);
-    box-shadow: 0 10px 40px var(--color-shadow-hover);
-}
-
-.stat-number {
-    display: block;
-    font-family: var(--font-primary);
-    font-size: 36px;
-    font-weight: 800;
-    color: var(--color-accent-primary);
-    margin-bottom: 8px;
-}
-
-.stat-label {
-    font-size: 12px;
-    font-weight: 500;
-    color: var(--color-text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
 /* === SERVICES SECTION === */
 .services-interactive-module {
     padding: var(--section-padding);
@@ -1416,102 +1360,224 @@ h6 {
     line-height: 1.7;
 }
 
-.process-timeline {
+/* === DIAGRAMA CIRCULAR + ACORDEAO (Como Trabalhamos) === */
+.process-diagram-grid {
+    display: grid;
+    grid-template-columns: minmax(320px, 420px) 1fr;
+    gap: 80px;
+    align-items: center;
+}
+
+.process-diagram-col {
     display: flex;
     flex-direction: column;
     gap: 40px;
-    position: relative;
 }
 
-.process-timeline::before {
-    content: '';
+.process-diagram-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-secondary);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--color-text-secondary);
+    width: fit-content;
+}
+
+.process-diagram-bullet {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--color-accent-primary);
+    flex-shrink: 0;
+}
+
+.process-circle-cluster {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    max-width: 400px;
+}
+
+.process-circle {
     position: absolute;
-    left: 28px;
-    top: 0;
-    bottom: 0;
-    width: 1px;
-    background: var(--color-border-light);
-}
-
-.process-step {
-    display: grid;
-    grid-template-columns: 56px 1fr;
-    gap: 40px;
-    position: relative;
-    opacity: 0;
-    transform: translateX(-30px);
-}
-
-.process-step.revealed {
-    opacity: 1;
-    transform: translateX(0);
-    transition: all 0.6s var(--ease-premium);
-}
-
-.process-step-number {
-    text-align: center;
-    position: relative;
-}
-
-.process-step-number span {
+    width: 42%;
+    aspect-ratio: 1 / 1;
+    border-radius: 50%;
+    border: 1px solid rgba(26, 26, 26, 0.15);
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 56px;
-    height: 56px;
-    background: var(--color-bg-surface);
-    border: 1px solid var(--color-border-light);
-    border-radius: 50%;
-    font-family: var(--font-primary);
-    font-size: 14px;
-    font-weight: 700;
-    color: var(--color-text-primary);
-    position: relative;
+    transition: background-color 0.4s ease, border-color 0.4s ease, transform 0.4s ease, width 0.4s ease;
+}
+
+.process-circle:nth-child(1) {
+    top: 4%;
+    left: 29%;
+}
+
+.process-circle:nth-child(2) {
+    top: 29%;
+    right: 0;
+}
+
+.process-circle:nth-child(3) {
+    bottom: 4%;
+    left: 29%;
+}
+
+.process-circle:nth-child(4) {
+    top: 29%;
+    left: 0;
+}
+
+.process-circle--dashed {
+    border-style: dashed;
+}
+
+.process-circle--dotted {
+    border-style: dotted;
+}
+
+.process-circle.is-active {
+    width: 48%;
+    background: var(--color-bg-card);
+    border-color: var(--cor-verde-floresta);
+    border-width: 2px;
+    box-shadow: 0 0 20px rgba(42, 135, 62, 0.18);
     z-index: 2;
-    transition: all var(--transition-fast);
 }
 
-.process-step:hover .process-step-number span {
-    border-color: rgba(42, 135, 62, 0.3);
-    background: rgba(42, 135, 62, 0.04);
-    box-shadow: 0 0 30px var(--color-shadow-hover);
+.process-circle-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    text-align: center;
+    opacity: 0;
+    transition: opacity 0.35s ease;
+    padding: 0 12px;
 }
 
-.process-step-content {
-    padding-bottom: 40px;
+.process-circle.is-active .process-circle-inner {
+    opacity: 1;
 }
 
-.process-step-title {
+.process-circle-number {
     font-family: var(--font-primary);
-    font-size: 28px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--color-accent-primary);
+}
+
+.process-circle-title {
+    font-family: var(--font-primary);
+    font-size: 15px;
     font-weight: 700;
     color: var(--color-text-primary);
-    margin-bottom: 12px;
+    line-height: 1.2;
 }
 
-.process-step-description {
+.process-circle-radar {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+.process-circle-radar span {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 1px solid var(--color-accent-primary);
+    opacity: 0;
+}
+
+.process-circle.is-active .process-circle-radar span {
+    animation: process-radar-pulse 2s ease-out infinite;
+}
+
+.process-circle.is-active .process-circle-radar span:nth-child(2) {
+    animation-delay: 1s;
+}
+
+@keyframes process-radar-pulse {
+    0% {
+        transform: scale(1);
+        opacity: 0.6;
+    }
+
+    100% {
+        transform: scale(1.25);
+        opacity: 0;
+    }
+}
+
+.process-accordion-col {
+    display: flex;
+    flex-direction: column;
+}
+
+.process-accordion-item {
+    border-bottom: 1px solid rgba(26, 26, 26, 0.1);
+    padding: 4px 20px;
+    border-radius: 12px;
+    transition: background-color 0.35s ease;
+}
+
+.process-accordion-item.is-active {
+    background: var(--color-bg-card);
+}
+
+.process-accordion-head {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    padding: 24px 0;
+    cursor: pointer;
+}
+
+.process-accordion-label {
+    font-family: var(--font-secondary);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--color-accent-primary);
+    flex-shrink: 0;
+}
+
+.process-accordion-title {
+    font-family: var(--font-primary);
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--color-text-primary);
+    margin: 0;
+}
+
+.process-accordion-body {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.35s ease;
+}
+
+.process-accordion-item.is-active .process-accordion-body {
+    grid-template-rows: 1fr;
+}
+
+.process-accordion-body-inner {
+    overflow: hidden;
+}
+
+.process-accordion-body-inner p {
+    margin: 0;
+    padding-bottom: 24px;
     font-size: 16px;
-    color: var(--color-text-secondary);
     line-height: 1.7;
-    margin-bottom: 20px;
-    max-width: 500px;
-}
-
-.process-step-visual {
-    width: 100%;
-    max-width: 300px;
-}
-
-.process-step-visual svg rect,
-.process-step-visual svg circle,
-.process-step-visual svg path,
-.process-step-visual svg line {
-    stroke: var(--color-border-subtle);
-}
-
-.process-step-visual svg rect:last-child,
-.process-step-visual svg circle:last-child {
-    stroke: var(--color-accent-primary);
+    color: var(--color-text-secondary);
+    max-width: 520px;
 }
 
 /* === PORTFOLIO SECTION === */
@@ -2732,7 +2798,13 @@ h6 {
    visual continuo logo abaixo do hero, já que #clients perdeu o cabecalho
    proprio e funciona como "ponte" ate o conteudo institucional de #about.
    Definido explicitamente por ID em ambas (em vez de herdar do <body>)
-   porque o Perin ja tem alternancia ativa por secao — ver README. */
+   porque o Perin ja tem alternancia ativa por secao — ver README.
+
+   Excecao #process: assim como Hero e CTA Principal, tem tema escuro
+   proprio (.process-journey-section, background: var(--cor-preto-puro)) —
+   por isso fica fora desta lista. Incluir #process aqui sobrescrevia o
+   fundo escuro pelo claro (--color-bg-secondary), via especificidade de ID,
+   deixando o texto claro da secao ilegivel sobre fundo claro. */
 #clients {
     background-color: var(--color-bg-primary);
 }
@@ -2741,9 +2813,6 @@ h6 {
     background-color: var(--color-bg-primary);
 }
 
-#numbers {
-    background-color: var(--color-bg-primary);
-}
 
 #services {
     background-color: var(--color-bg-secondary);
@@ -2751,10 +2820,6 @@ h6 {
 
 #portfolio {
     background-color: var(--color-bg-primary);
-}
-
-#process {
-    background-color: var(--color-bg-secondary);
 }
 
 #differentials {
@@ -2823,6 +2888,14 @@ h6 {
     .footer-grid {
         grid-template-columns: 1fr 1fr;
         gap: 40px;
+    }
+
+    .process-diagram-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .process-diagram-col {
+        display: none;
     }
 }
 
@@ -2997,19 +3070,6 @@ h6 {
         grid-template-columns: 1fr;
     }
 
-    .numbers-grid {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 12px;
-    }
-
-    .stat-card {
-        padding: 16px 8px;
-    }
-
-    .stat-number {
-        font-size: 28px;
-    }
-
     .footer-grid {
         grid-template-columns: 1fr;
         gap: 32px;
@@ -3021,19 +3081,12 @@ h6 {
         text-align: center;
     }
 
-    .process-step {
-        grid-template-columns: 40px 1fr;
-        gap: 20px;
+    .process-accordion-title {
+        font-size: 22px;
     }
 
-    .process-step-number span {
-        width: 40px;
-        height: 40px;
+    .process-accordion-label {
         font-size: 12px;
-    }
-
-    .process-timeline::before {
-        left: 20px;
     }
 
     :root {
@@ -3088,10 +3141,6 @@ h6 {
         width: 100%;
         font-size: 14px;
         padding: 13px 24px;
-    }
-
-    .numbers-grid {
-        grid-template-columns: 1fr;
     }
 
     .mobile-link,

@@ -70,14 +70,14 @@
     "semantic_hash": "aff0e26c97cd4e65fc9df32dd839ba1e"
   },
   "script.js": {
-    "mtime": 1785263610.585108,
-    "ast_hash": "5a6765eda146ddc059d41ae5efb44087",
-    "semantic_hash": "5a6765eda146ddc059d41ae5efb44087"
+    "mtime": 1785422340.7226913,
+    "ast_hash": "7c0a52a6ee8d960bec1d68c7836e1e20",
+    "semantic_hash": ""
   },
   "script.min.js": {
-    "mtime": 1785263610.585108,
-    "ast_hash": "bf97a32407848ac5af92de60509a9e85",
-    "semantic_hash": "bf97a32407848ac5af92de60509a9e85"
+    "mtime": 1785422373.1443138,
+    "ast_hash": "9211bb9c0e676546b7623ad01b22302f",
+    "semantic_hash": ""
   },
   "scripts/check-min-freshness.js": {
     "mtime": 1784652195.4791274,
@@ -210,8 +210,8 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1785096279.609717,
-    "ast_hash": "ccc25b7e1c42aae3737efcc7e1b7324b",
+    "mtime": 1785432988.1350234,
+    "ast_hash": "cf586e626ff066e5fc5c2139d927885d",
     "semantic_hash": ""
   },
   "audit/bootstrap-uso-real.md": {
@@ -310,8 +310,8 @@
     "semantic_hash": ""
   },
   "docs/ferramentas/graphify.md": {
-    "mtime": 1785288806.8418615,
-    "ast_hash": "4f7adf176cac5681807e71b0bde1cc40",
+    "mtime": 1785289795.4051607,
+    "ast_hash": "eb89e21a22adb3c10acb6027cfe09709",
     "semantic_hash": ""
   },
   "docs/ferramentas/headroom.md": {
@@ -370,8 +370,8 @@
     "semantic_hash": ""
   },
   "index.html": {
-    "mtime": 1785193363.8923762,
-    "ast_hash": "03e911db9b369aff2c0082bb8affdad0",
+    "mtime": 1785432879.2361188,
+    "ast_hash": "a05f2f9fd3d49fce31469f43a13e4ebc",
     "semantic_hash": ""
   },
   "legado/src-original/index.html": {
@@ -607,6 +607,41 @@
   "assets/images/social/social-preview.jpg": {
     "mtime": 1784652195.3487067,
     "ast_hash": "f628869bcd26805ddc46a3c50960e256",
+    "semantic_hash": ""
+  },
+  "design-system/.design-sync/config.json": {
+    "mtime": 1785373171.2579646,
+    "ast_hash": "22f3eb12efa41b5dbf89e9f50e28b7e4",
+    "semantic_hash": ""
+  },
+  "design-system/.design-sync/previews/Badge.tsx": {
+    "mtime": 1785373171.263296,
+    "ast_hash": "5f5d5188eea7510d0a8d14b6b9e12dd7",
+    "semantic_hash": ""
+  },
+  "design-system/.design-sync/previews/Button.tsx": {
+    "mtime": 1785373171.2654552,
+    "ast_hash": "5f6563cee2ccf169f8b98fb49ad529b3",
+    "semantic_hash": ""
+  },
+  "design-system/.design-sync/previews/Card.tsx": {
+    "mtime": 1785373171.2680204,
+    "ast_hash": "48382436a168ffbdc273740e7b320160",
+    "semantic_hash": ""
+  },
+  "design-system/.design-sync/NOTES.md": {
+    "mtime": 1785373171.2558408,
+    "ast_hash": "8e2ff82522dc452b26c511cf4ef3866e",
+    "semantic_hash": ""
+  },
+  "design-system/.design-sync/conventions.md": {
+    "mtime": 1785373171.2599645,
+    "ast_hash": "be3fc87cde9d2a4272e0966c51ad4a27",
+    "semantic_hash": ""
+  },
+  "tests/regression/process-diagram.regression.test.js": {
+    "mtime": 1785432959.4715421,
+    "ast_hash": "dfd03c0b5cb10cb21de1e03c5b6ff34c",
     "semantic_hash": ""
   }
 }

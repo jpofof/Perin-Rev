@@ -249,32 +249,6 @@
         </div>
     </section>
 
-    <!-- NUMBERS SECTION — nova secao aprovada, aguardando dados reais do cliente -->
-    <section class="numbers-section" id="numbers" aria-label="Números da Perin Construções">
-        <div class="numbers-container">
-            <div class="numbers-header">
-                <div class="section-tag-reveal"><span class="section-tag">Números</span></div>
-            </div>
-            <div class="numbers-grid">
-                <!-- TODO: inserir numero real (ex.: anos de atuação) -->
-                <div class="stat-card">
-                    <span class="stat-number">—</span>
-                    <span class="stat-label">Aguardando dado real</span>
-                </div>
-                <!-- TODO: inserir numero real (ex.: obras entregues) -->
-                <div class="stat-card">
-                    <span class="stat-number">—</span>
-                    <span class="stat-label">Aguardando dado real</span>
-                </div>
-                <!-- TODO: inserir numero real (ex.: clientes atendidos) -->
-                <div class="stat-card">
-                    <span class="stat-number">—</span>
-                    <span class="stat-label">Aguardando dado real</span>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- SERVICES SECTION -->
     <section class="services-interactive-module" id="services" aria-label="Serviços">
         <div class="services-container">
@@ -489,67 +463,88 @@
                 <p class="process-subtitle text-reveal">Um método estruturado que transforma seu projeto em realidade
                     com previsibilidade e qualidade.</p>
             </div>
-            <div class="process-timeline" id="processTimeline">
-                <div class="process-step" data-step="1">
-                    <div class="process-step-number"><span>01</span></div>
-                    <div class="process-step-content">
-                        <h3 class="process-step-title">Contato</h3>
-                        <p class="process-step-description">Você nos conta a necessidade do projeto e fazemos as
-                            primeiras perguntas técnicas para entender o escopo.</p>
-                        <div class="process-step-visual"><svg viewBox="0 0 300 200" fill="none">
-                                <rect x="20" y="30" width="260" height="140" rx="8" stroke="#262626" stroke-width="1" />
-                                <path d="M60 70 L150 110 L240 70" stroke="#2A873E" stroke-width="1.5"
-                                    stroke-linecap="round" stroke-linejoin="round" fill="none" />
-                                <circle cx="150" cy="100" r="4" fill="#2A873E" />
-                            </svg></div>
+            <div class="process-diagram-grid" id="processDiagramGrid">
+                <div class="process-diagram-col">
+                    <div class="process-diagram-eyebrow"><span class="process-diagram-bullet"></span>Processo</div>
+                    <div class="process-circle-cluster" role="presentation">
+                        <div class="process-circle is-active" data-step-index="0">
+                            <div class="process-circle-radar"><span></span><span></span></div>
+                            <div class="process-circle-inner">
+                                <span class="process-circle-number">/01</span>
+                                <span class="process-circle-title">Contato</span>
+                            </div>
+                        </div>
+                        <div class="process-circle process-circle--dashed" data-step-index="1">
+                            <div class="process-circle-radar"><span></span><span></span></div>
+                            <div class="process-circle-inner">
+                                <span class="process-circle-number">/02</span>
+                                <span class="process-circle-title">Planejamento</span>
+                            </div>
+                        </div>
+                        <div class="process-circle process-circle--dotted" data-step-index="2">
+                            <div class="process-circle-radar"><span></span><span></span></div>
+                            <div class="process-circle-inner">
+                                <span class="process-circle-number">/03</span>
+                                <span class="process-circle-title">Execução</span>
+                            </div>
+                        </div>
+                        <div class="process-circle" data-step-index="3">
+                            <div class="process-circle-radar"><span></span><span></span></div>
+                            <div class="process-circle-inner">
+                                <span class="process-circle-number">/04</span>
+                                <span class="process-circle-title">Entrega</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="process-step" data-step="2">
-                    <div class="process-step-number"><span>02</span></div>
-                    <div class="process-step-content">
-                        <h3 class="process-step-title">Planejamento</h3>
-                        <p class="process-step-description">Análise detalhada do projeto, levantamento de requisitos,
-                            viabilidade técnica e orçamento transparente.</p>
-                        <div class="process-step-visual"><svg viewBox="0 0 300 200" fill="none">
-                                <rect x="20" y="20" width="260" height="160" rx="8" stroke="#262626" stroke-width="1" />
-                                <rect x="40" y="40" width="100" height="60" rx="4" stroke="#2A873E"
-                                    stroke-width="0.5" />
-                                <rect x="160" y="40" width="100" height="60" rx="4" stroke="#262626"
-                                    stroke-width="0.5" />
-                                <rect x="40" y="120" width="220" height="40" rx="4" stroke="#262626"
-                                    stroke-width="0.5" />
-                            </svg></div>
+                <div class="process-accordion-col" id="processAccordion">
+                    <div class="process-accordion-item is-active" data-step-index="0">
+                        <div class="process-accordion-head">
+                            <span class="process-accordion-label">Etapa 01:</span>
+                            <h3 class="process-accordion-title">Contato</h3>
+                        </div>
+                        <div class="process-accordion-body">
+                            <div class="process-accordion-body-inner">
+                                <p>Você nos conta a necessidade do projeto e fazemos as primeiras perguntas técnicas
+                                    para entender o escopo.</p>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="process-step" data-step="3">
-                    <div class="process-step-number"><span>03</span></div>
-                    <div class="process-step-content">
-                        <h3 class="process-step-title">Execução</h3>
-                        <p class="process-step-description">Mão de obra qualificada, materiais selecionados e
-                            acompanhamento técnico rigoroso em cada etapa da obra.</p>
-                        <div class="process-step-visual"><svg viewBox="0 0 300 200" fill="none">
-                                <rect x="20" y="30" width="260" height="150" rx="8" stroke="#2A873E" stroke-width="1" />
-                                <rect x="40" y="50" width="50" height="80" rx="2" stroke="#262626" stroke-width="0.5" />
-                                <rect x="100" y="50" width="50" height="110" rx="2" stroke="#262626"
-                                    stroke-width="0.5" />
-                                <rect x="160" y="50" width="50" height="60" rx="2" stroke="#262626"
-                                    stroke-width="0.5" />
-                                <rect x="220" y="50" width="40" height="40" rx="2" stroke="#262626"
-                                    stroke-width="0.5" />
-                            </svg></div>
+                    <div class="process-accordion-item" data-step-index="1">
+                        <div class="process-accordion-head">
+                            <span class="process-accordion-label">Etapa 02:</span>
+                            <h3 class="process-accordion-title">Planejamento</h3>
+                        </div>
+                        <div class="process-accordion-body">
+                            <div class="process-accordion-body-inner">
+                                <p>Análise detalhada do projeto, levantamento de requisitos, viabilidade técnica e
+                                    orçamento transparente.</p>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="process-step" data-step="4">
-                    <div class="process-step-number"><span>04</span></div>
-                    <div class="process-step-content">
-                        <h3 class="process-step-title">Entrega</h3>
-                        <p class="process-step-description">Entrega formal com vistoria final, documentação completa e
-                            garantia de qualidade.</p>
-                        <div class="process-step-visual"><svg viewBox="0 0 300 200" fill="none">
-                                <path d="M50 100 L130 170 L250 40" stroke="#2A873E" stroke-width="3"
-                                    stroke-linecap="round" stroke-linejoin="round" />
-                                <circle cx="150" cy="100" r="80" stroke="#262626" stroke-width="0.5" />
-                            </svg></div>
+                    <div class="process-accordion-item" data-step-index="2">
+                        <div class="process-accordion-head">
+                            <span class="process-accordion-label">Etapa 03:</span>
+                            <h3 class="process-accordion-title">Execução</h3>
+                        </div>
+                        <div class="process-accordion-body">
+                            <div class="process-accordion-body-inner">
+                                <p>Mão de obra qualificada, materiais selecionados e acompanhamento técnico rigoroso
+                                    em cada etapa da obra.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="process-accordion-item" data-step-index="3">
+                        <div class="process-accordion-head">
+                            <span class="process-accordion-label">Etapa 04:</span>
+                            <h3 class="process-accordion-title">Entrega</h3>
+                        </div>
+                        <div class="process-accordion-body">
+                            <div class="process-accordion-body-inner">
+                                <p>Entrega formal com vistoria final, documentação completa e garantia de qualidade.
+                                </p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

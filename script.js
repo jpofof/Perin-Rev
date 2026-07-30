@@ -1859,6 +1859,39 @@ function batchReveal(selector, { y = 40, duration = 0.6, stagger = 0.1, leaveSta
     });
 }
 
+// === PROCESS DIAGRAM — cluster de circulos + accordion sincronizados ===
+// Ativacao por clique em qualquer largura de tela (circulo ou head do
+// accordion), sem distincao de breakpoint/hover.
+function initProcessDiagram() {
+    const grid = document.getElementById('processDiagramGrid');
+    if (!grid) return;
+
+    const circles = Array.from(grid.querySelectorAll('.process-circle'));
+    const accordionItems = Array.from(grid.querySelectorAll('.process-accordion-item'));
+    if (!accordionItems.length) return;
+
+    function setActive(stepIndex) {
+        circles.forEach(circle => {
+            circle.classList.toggle('is-active', circle.dataset.stepIndex === stepIndex);
+        });
+        accordionItems.forEach(item => {
+            item.classList.toggle('is-active', item.dataset.stepIndex === stepIndex);
+        });
+    }
+
+    circles.forEach(circle => {
+        circle.addEventListener('click', () => setActive(circle.dataset.stepIndex));
+    });
+
+    accordionItems.forEach(item => {
+        const head = item.querySelector('.process-accordion-head');
+        if (!head) return;
+        head.addEventListener('click', () => setActive(item.dataset.stepIndex));
+    });
+
+    batchReveal('.process-circle-cluster, .process-accordion-item', { y: 30, duration: 0.6, stagger: 0.08, ease: 'power2.out', start: 'top 85%' });
+}
+
 function initDifferentialsAnimation() {
     batchReveal('.differential-item', { y: 40, duration: 0.6, stagger: 0.1, ease: 'power2.out', start: 'top 85%' });
 }
@@ -2290,6 +2323,7 @@ function initPage() {
             initCounters,
             initServicesReveal,
             initDifferentialsAnimation,
+            initProcessDiagram,
             initServiceGridAdjust,
             initPortfolioSlider,
             initClientsCarousel,
