@@ -1,7 +1,7 @@
 # Graph Report - Perin_Rev  (2026-07-30)
 
 ## Corpus Check
-- 79 files · ~384,721 words
+- 79 files · ~385,094 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -10,7 +10,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `b209c8ab`
+- Built from commit: `7888ce51`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -117,8 +117,8 @@
 1. `Relatório de Performance — Perin Construções` - 24 edges
 2. `initPage()` - 21 edges
 3. `Instruções Gerais de Trabalho` - 20 edges
-4. `Bc()` - 14 edges
-5. `Perin Construções — Site Institucional Premium` - 14 edges
+4. `Perin Construções — Site Institucional Premium` - 14 edges
+5. `Bc()` - 14 edges
 6. `compilerOptions` - 13 edges
 7. `Tween()` - 13 edges
 8. `r()` - 13 edges
@@ -499,7 +499,7 @@ Cohesion: 0.22
 Nodes (6): css, flush(), fs, html, loadScript(), path
 
 ## Knowledge Gaps
-- **559 isolated node(s):** `watch`, `options`, `name`, `version`, `description` (+554 more)
+- **559 isolated node(s):** `🚀 Tecnologias`, `📁 Estrutura do Projeto`, `Paleta de Cores (Design Tokens)`, `Tipografia`, `Sistema Tipográfico` (+554 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **8 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
@@ -507,12 +507,12 @@ Nodes (6): css, flush(), fs, html, loadScript(), path
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `f()` connect `script.min.js` to `r`, `r`?**
-  _High betweenness centrality (0.013) - this node is a cross-community bridge._
-- **Why does `wb()` connect `Tween` to `r`, `gsap/gsap.min.js`, `ce`?**
-  _High betweenness centrality (0.011) - this node is a cross-community bridge._
+  _High betweenness centrality (0.014) - this node is a cross-community bridge._
 - **Why does `s()` connect `r` to `gsap/gsap.min.js`, `cb`, `df`, `Tween`?**
   _High betweenness centrality (0.009) - this node is a cross-community bridge._
-- **What connects `watch`, `options`, `name` to the rest of the system?**
+- **Why does `ff()` connect `df` to `ce`, `js/gsap.min.js`, `ScrollTrigger.min.js`?**
+  _High betweenness centrality (0.009) - this node is a cross-community bridge._
+- **What connects `🚀 Tecnologias`, `📁 Estrutura do Projeto`, `Paleta de Cores (Design Tokens)` to the rest of the system?**
   _559 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `script.js` be split into smaller, more focused modules?**
   _Cohesion score 0.06734006734006734 - nodes in this community are weakly interconnected._
