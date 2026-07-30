@@ -4,3 +4,8 @@ graphify-out/cost.json
 graphify-out/cache/
 graphify-out/20*/
 .tokensave/
+design-system/.ds-sync/
+design-system/ds-bundle/
+design-system/.design-sync/.cache/
+design-system/.design-sync/learnings/
+design-system/.design-sync/node_modules/
