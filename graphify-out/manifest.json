@@ -210,8 +210,8 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1785450208.2553873,
-    "ast_hash": "0b4961140c41646f363bef589e30933d",
+    "mtime": 1785722962.8633,
+    "ast_hash": "de366e0f614795551de8cb78d13b3f7c",
     "semantic_hash": ""
   },
   "audit/bootstrap-uso-real.md": {
@@ -370,8 +370,8 @@
     "semantic_hash": ""
   },
   "index.html": {
-    "mtime": 1785454418.9583216,
-    "ast_hash": "11298d5a09132892c769988312e9a2ba",
+    "mtime": 1785722317.3961327,
+    "ast_hash": "aaaf48c60b185416e3cad6b2b43b8eca",
     "semantic_hash": ""
   },
   "legado/src-original/index.html": {
@@ -647,6 +647,11 @@
   "robots.txt": {
     "mtime": 1785448413.0092385,
     "ast_hash": "d7a03985a5c99fa8baac886bd4dff13c",
+    "semantic_hash": ""
+  },
+  "assets/images/about/sobre-nos.webp": {
+    "mtime": 1785722309.8893378,
+    "ast_hash": "8573758be0f6395a7b7ecbefdf6b96ed",
     "semantic_hash": ""
   }
 }

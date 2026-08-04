@@ -381,7 +381,7 @@
       "label": "\ud83d\udccc Observabilidade (Logs)",
       "file_type": "document",
       "source_file": "README.md",
-      "source_location": "L423",
+      "source_location": "L424",
       "_origin": "ast",
       "id": "readme_observabilidade_logs",
       "community": 47,
@@ -14405,7 +14405,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "README.md",
-      "source_location": "L423",
+      "source_location": "L424",
       "weight": 1.0,
       "_origin": "ast",
       "source": "readme_perin_constru\u00e7\u00f5es_site_institucional_premium",
@@ -34170,5 +34170,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "7888ce516d0eecb80447b52141521bf205b27e4b"
+  "built_at_commit": "9e979a828bf74ebfc6ff0f6d6cefd3e2de299bfd"
 }
