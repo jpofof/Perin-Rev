@@ -8,7 +8,8 @@
     "test:unit": "jest --verbose tests/unit",
     "test:regression": "jest --verbose tests/regression",
     "prepare": "node scripts/install-git-hooks.js",
-    "check:min-freshness": "node scripts/check-min-freshness.js"
+    "check:min-freshness": "node scripts/check-min-freshness.js",
+    "build:netlify": "node scripts/build-netlify.js"
   },
   "devDependencies": {
     "clean-css-cli": "^5.6.3",
