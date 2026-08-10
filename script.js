@@ -23,7 +23,7 @@ let lenisInstance = null;
 
 // === SMOOTH SCROLL (Lenis) ===
 // Integrado com autoRaf:false + sincronizacao manual via gsap.ticker — NAO o
-// autoRaf:true da referencia extraida (extracao-perin/03-smooth-scroll/), que
+// autoRaf:true da referencia extraida (_archive/prototipos-extracao-perin/03-smooth-scroll/), que
 // deixa o Lenis atualizar a posicao de scroll no proprio requestAnimationFrame
 // sem avisar o ScrollTrigger, causando dessincronia/jitter entre o scroll
 // suavizado e os triggers. Ver README da extracao para o detalhamento.

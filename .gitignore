@@ -1,4 +1,5 @@
 node_modules
+dist/
 .claude/
 graphify-out/cost.json
 graphify-out/cache/
@@ -18,6 +19,7 @@ Thumbs.db
 desktop.ini
 .vscode/
 .idea/
+*.code-workspace
 *.log
 *.bak
 *.tmp
