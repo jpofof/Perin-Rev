@@ -1,4 +1,5 @@
 node_modules
+dist/
 .claude/
 graphify-out/cost.json
 graphify-out/cache/
