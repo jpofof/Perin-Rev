@@ -1768,7 +1768,7 @@ h6 {
 
 /* === HERO CONTACT CARD ===
    Ver AGENTS.md (secao "Cascading Slider"... nao, ver
-   extracao-perin/01-card-contato-hero/README.md) para a estrategia de
+   _archive/prototipos-extracao-perin/01-card-contato-hero/README.md) para a estrategia de
    posicionamento. Desvio deliberado da referencia: la o card e o ultimo
    filho de .section_hero; aqui ele e IRMAO da section (vem logo depois no
    HTML), porque .hero-architectural-scene tem overflow:hidden (necessario
@@ -1852,7 +1852,7 @@ h6 {
     color: var(--cor-branco-gelo);
 }
 
-/* Botao circular com seta — anel duplo no hover (extracao-perin/01-card-
+/* Botao circular com seta — anel duplo no hover (_archive/prototipos-extracao-perin/01-card-
    contato-hero/estilos.css, .button_arrow_inner.is-2/.is-3): duas camadas
    semitransparentes atras do circulo branco, que se expandem no hover
    criando um efeito de "alvo". Mesmo tamanho do circulo em repouso (ficam
@@ -2810,7 +2810,7 @@ h6 {
    quem usa qual. Hero e CTA Principal ficam fora (temas escuros proprios).
 
    Excecao intencional #clients/#about: quebra deliberada da alternancia —
-   ver extracao-perin/02-carrossel-clientes-posicao/README.md. As duas
+   ver _archive/prototipos-extracao-perin/02-carrossel-clientes-posicao/README.md. As duas
    compartilham --color-bg-primary (a mais clara) para formar um bloco
    visual continuo logo abaixo do hero, já que #clients perdeu o cabecalho
    proprio e funciona como "ponte" ate o conteudo institucional de #about.
