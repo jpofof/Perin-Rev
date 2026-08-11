@@ -207,9 +207,9 @@ describe('REGRESSION — Image Assets', () => {
   });
 
   test('project cover images exist', () => {
-    expect(fs.existsSync(path.join(__dirname, '..', '..', 'assets', 'images', 'clients', 'eldorado.webp'))).toBe(true);
-    expect(fs.existsSync(path.join(__dirname, '..', '..', 'assets', 'images', 'clients', 'elektro.webp'))).toBe(true);
-    expect(fs.existsSync(path.join(__dirname, '..', '..', 'assets', 'images', 'clients', 'isa-energia.webp'))).toBe(true);
+    expect(fs.existsSync(path.join(__dirname, '..', '..', 'assets', 'images', 'placeholders', 'placeholder-obra-02.webp'))).toBe(true);
+    expect(fs.existsSync(path.join(__dirname, '..', '..', 'assets', 'images', 'placeholders', 'placeholder-obra-03.webp'))).toBe(true);
+    expect(fs.existsSync(path.join(__dirname, '..', '..', 'assets', 'images', 'placeholders', 'placeholder-obra-04.webp'))).toBe(true);
     expect(fs.existsSync(path.join(__dirname, '..', '..', 'assets', 'images', 'clients', 'state-grid.webp'))).toBe(true);
   });
 });

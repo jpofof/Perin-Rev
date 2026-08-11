@@ -350,8 +350,8 @@
     "semantic_hash": ""
   },
   "index.html": {
-    "mtime": 1786394314.557163,
-    "ast_hash": "ac540ecc3ced06e2c11c2b443004fdf9",
+    "mtime": 1786396500.4116962,
+    "ast_hash": "938006fd30810bc41b4153553283659c",
     "semantic_hash": ""
   },
   "prototipos/cascading-slider/README-cscading.md": {
@@ -657,6 +657,11 @@
   "_archive/assets-fonte/webp/hero-section-fundo.mp4": {
     "mtime": 1786389320.4724228,
     "ast_hash": "b6fe81a689d299b7f37709bf005ae0db",
+    "semantic_hash": ""
+  },
+  "assets/images/clients/isa-energia-logo-otimizado.svg": {
+    "mtime": 1786396989.9969375,
+    "ast_hash": "508c94bac3fe595a3ad6f5d612d9d89b",
     "semantic_hash": ""
   }
 }

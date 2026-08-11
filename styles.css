@@ -2029,6 +2029,24 @@ h6 {
     opacity: 1;
 }
 
+/* ISA Energia's logo (see assets/images/clients/isa-energia-logo.png) is pre-rasterized
+   from the source SVG (isa-energia-logo-otimizado.svg, ~775 tiny clipped paths simulating
+   a gradient) at native 1200x685 resolution. Measured via canvas/sharp pixel sampling: at
+   low DPR (desktop, ~1x) the browser's live SVG rasterizer resolves those hundreds of thin
+   slivers with far LESS average alpha coverage than at high DPR (mobile, ~3x) — same hue,
+   but ~35% less opaque, reading as washed out — because there are too few device pixels to
+   anti-alias the thin gaps between slivers without heavy alpha blending. Rasterizing once at
+   full resolution and letting browsers downscale a bitmap (not the raw vector) equalizes
+   coverage across DPRs. Bitmap regenerated via `npx sharp -i <source svg> -o
+   isa-energia-logo.png resize 1200 685` if the source SVG ever changes. No saturate/contrast
+   filter needed anymore (the PNG already has full color/alpha fidelity; the filter was only
+   ever compensating for the SVG's alpha loss and made the color too intense once that was
+   fixed). Opacity fixed at 1 (not the default 0.7 hover-dimming) so this logo doesn't fade
+   toward the white card background without a sustained hover. */
+.clients-carousel-img[alt="Logo ISA Energia"] {
+    opacity: 1;
+}
+
 /* === Responsivo === */
 @media (max-width: 1280px) {
     .clients-container {

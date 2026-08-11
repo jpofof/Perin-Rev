@@ -985,19 +985,19 @@ const portfolioProjects = [
         id: 'eldorado',
         name: 'Eldorado Brasil',
         subtitle: 'Obra Industrial • 2024',
-        cover: 'assets/images/clients/eldorado.webp',
+        cover: 'assets/images/placeholders/placeholder-obra-02.webp',
     },
     {
         id: 'elektro',
         name: 'Elektro Redes',
         subtitle: 'Infraestrutura Elétrica • 2023',
-        cover: 'assets/images/clients/elektro.webp',
+        cover: 'assets/images/placeholders/placeholder-obra-03.webp',
     },
     {
         id: 'isa-energia',
         name: 'ISA Energia',
         subtitle: 'Subestação • 2023',
-        cover: 'assets/images/clients/isa-energia.webp',
+        cover: 'assets/images/placeholders/placeholder-obra-04.webp',
     },
     {
         id: 'state-grid',
@@ -1924,7 +1924,18 @@ function initClientsCarousel() {
     const originalSlides = Array.from(track.querySelectorAll('.clients-carousel-slide'));
     if (originalSlides.length < 2) return;
 
-    let slideWidth = originalSlides[0].offsetWidth;
+    // getGap: le o gap real do flex (muda por breakpoint — 16px/12px/10px).
+    // setWidth precisa incluir o gap, senao o salto do loop infinito
+    // (currentX -= setWidth) fica sistematicamente errado por
+    // totalOriginal*gap px a cada ciclo — visivel como um "trava e volta"
+    // periodico durante o autoplay.
+    function getGap() {
+        const g = parseFloat(window.getComputedStyle(track).columnGap);
+        return Number.isNaN(g) ? 0 : g;
+    }
+
+    let gap = getGap();
+    let slideWidth = originalSlides[0].offsetWidth + gap;
     const totalOriginal = originalSlides.length;
     let setWidth = totalOriginal * slideWidth;
 
@@ -1962,6 +1973,11 @@ function initClientsCarousel() {
     track.style.willChange = 'transform';
 
     function animate() {
+        // Durante o drag, onPointerMove e o unico escritor de currentX —
+        // se este loop tambem somasse `velocity` aqui, as duas fontes
+        // brigariam pelo mesmo valor a cada frame (movimento fantasma
+        // somado ao gesto do usuario), causando o travamento/"correcao"
+        // brusca ao soltar o dedo/mouse.
         if (!isDragging) {
             // Velocity drifts toward current baseSpeed (directional memory)
             velocity += (baseSpeed - velocity) * RETURN_SPRING;
@@ -1971,19 +1987,19 @@ function initClientsCarousel() {
             if (Math.abs(velocity - baseSpeed) < 0.005) {
                 velocity = baseSpeed;
             }
+
+            currentX += velocity;
+
+            // Seamless wrap
+            const wrapThreshold = setWidth * 1.5;
+            if (currentX < -wrapThreshold) {
+                currentX += setWidth;
+            } else if (currentX > -setWidth * 0.5) {
+                currentX -= setWidth;
+            }
+
+            track.style.transform = `translate3d(${currentX}px, 0, 0)`;
         }
-
-        currentX += velocity;
-
-        // Seamless wrap
-        const wrapThreshold = setWidth * 1.5;
-        if (currentX < -wrapThreshold) {
-            currentX += setWidth;
-        } else if (currentX > -setWidth * 0.5) {
-            currentX -= setWidth;
-        }
-
-        track.style.transform = `translate3d(${currentX}px, 0, 0)`;
         rafId = requestAnimationFrame(animate);
     }
 
@@ -2083,10 +2099,12 @@ function initClientsCarousel() {
     // tamanho — os clones do loop infinito saem de alinhamento e sobrepoem uns
     // aos outros visualmente.
     const resizeObserver = new ResizeObserver(() => {
-        const newSlideWidth = originalSlides[0].offsetWidth;
+        const newGap = getGap();
+        const newSlideWidth = originalSlides[0].offsetWidth + newGap;
         if (!newSlideWidth || newSlideWidth === slideWidth) return;
         const ratio = newSlideWidth / slideWidth;
         slideWidth = newSlideWidth;
+        gap = newGap;
         setSlideDimensions();
         setWidth = totalOriginal * slideWidth;
         currentX *= ratio;
@@ -2141,6 +2159,36 @@ function initClientsCarousel() {
     } else {
         start();
     }
+}
+
+// initClientsCarousel() so roda depois que a timeline de entrada do hero
+// termina (ver startIdleQueue()/initHeroEntrance) — ~1.5s-1.8s de proposito,
+// pra nao competir por CPU com a animacao critica do hero. Isso deixa o
+// carrossel visivelmente parado ("congelado") se o usuario rolar ate a
+// secao de clientes antes desse tempo passar (ex: F5 seguido de scroll
+// rapido). scheduleClientsCarouselEarly() cobre esse caso: observa a secao
+// de clientes com margem generosa e, assim que ela se aproxima da viewport,
+// inicializa o carrossel imediatamente (via requestIdleCallback, sem
+// competir com frame em andamento), sem esperar o hero terminar. O guard
+// clientsCarouselInitialized garante que so um dos dois gatilhos (este ou o
+// startIdleQueue) efetivamente rode initClientsCarousel().
+let clientsCarouselInitialized = false;
+function initClientsCarouselOnce() {
+    if (clientsCarouselInitialized) return;
+    clientsCarouselInitialized = true;
+    initClientsCarousel();
+}
+
+function scheduleClientsCarouselEarly() {
+    const clientsStage = document.getElementById('clientsStage');
+    if (!clientsStage || typeof IntersectionObserver !== 'function') return;
+
+    const earlyObserver = new IntersectionObserver((entries) => {
+        if (!entries.some(entry => entry.isIntersecting)) return;
+        earlyObserver.disconnect();
+        runWhenIdle(initClientsCarouselOnce);
+    }, { rootMargin: '800px 0px', threshold: 0 });
+    earlyObserver.observe(clientsStage);
 }
 
 // === SCROLL REVEAL FALLBACK — segurança contra ScrollTrigger nunca disparar ===
@@ -2288,6 +2336,10 @@ function initPage() {
     __perfCheckpoint('initButtonRipple-start');
     initButtonRipple(); // inclui o botao do hero — precisa estar pronto pra clique imediato
     __perfCheckpoint('initButtonRipple-end');
+    // Custo de setup e so um IntersectionObserver.observe() (nao mexe em
+    // DOM/layout) — nao compete com o primeiro frame do hero. Ver comentario
+    // em scheduleClientsCarouselEarly() para o motivo de existir.
+    scheduleClientsCarouselEarly();
     __perfCheckpoint('initPage-sync-end');
 
     // Nao-critico — tudo abaixo da dobra (ScrollTrigger de secoes ainda fora da
@@ -2326,7 +2378,7 @@ function initPage() {
             initProcessDiagram,
             initServiceGridAdjust,
             initPortfolioSlider,
-            initClientsCarousel,
+            initClientsCarouselOnce,
         ]);
 
         // Grupo B — decorativo ou sem urgencia de estar pronto ao rolar

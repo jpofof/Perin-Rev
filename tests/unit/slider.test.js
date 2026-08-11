@@ -278,21 +278,21 @@ describe('Image Assets', () => {
     expect(exists).toBe(true);
   });
 
-  test('eldorado.webp exists', () => {
-    const exists = fs.existsSync(path.join(__dirname, '..', '..', 'assets', 'images', 'clients', 'eldorado.webp'));
+  test('elektro.svg (clients carousel logo) exists', () => {
+    const exists = fs.existsSync(path.join(__dirname, '..', '..', 'assets', 'images', 'clients', 'elektro.svg'));
     expect(exists).toBe(true);
   });
 
-  test('elektro.webp exists', () => {
-    const exists = fs.existsSync(path.join(__dirname, '..', '..', 'assets', 'images', 'clients', 'elektro.webp'));
+  test('isa-energia-logo.png (clients carousel logo) exists', () => {
+    const exists = fs.existsSync(path.join(__dirname, '..', '..', 'assets', 'images', 'clients', 'isa-energia-logo.png'));
     expect(exists).toBe(true);
   });
 
   test('project covers are referenced in portfolio data', () => {
     const js = fs.readFileSync(path.join(__dirname, '..', '..', 'script.js'), 'utf8');
-    expect(js).toContain("cover: 'assets/images/clients/eldorado.webp'");
-    expect(js).toContain("cover: 'assets/images/clients/elektro.webp'");
-    expect(js).toContain("cover: 'assets/images/clients/isa-energia.webp'");
+    expect(js).toContain("cover: 'assets/images/placeholders/placeholder-obra-02.webp'");
+    expect(js).toContain("cover: 'assets/images/placeholders/placeholder-obra-03.webp'");
+    expect(js).toContain("cover: 'assets/images/placeholders/placeholder-obra-04.webp'");
     expect(js).toContain("cover: 'assets/images/clients/state-grid.webp'");
   });
 });
