@@ -2636,6 +2636,22 @@ h6 {
     height: 400px;
 }
 
+.form-privacy-notice {
+    margin-top: 16px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--color-text-muted);
+}
+
+.form-privacy-notice a {
+    color: var(--color-accent-primary);
+    text-decoration: underline;
+}
+
+.form-privacy-notice a:hover {
+    color: var(--color-accent-active);
+}
+
 /* === FORM VALIDATION STATES === */
 .form-group-error .form-static-input,
 .form-group-error .custom-select-trigger,
@@ -2813,6 +2829,12 @@ h6 {
 .footer-copyright {
     font-size: 13px;
     color: var(--color-text-muted);
+}
+
+.footer-privacy-link {
+    display: inline;
+    margin-bottom: 0;
+    font-size: 13px;
 }
 
 .footer-made-by {
