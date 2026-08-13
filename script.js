@@ -972,8 +972,9 @@ function initCounters() {
 // As variantes -mobile/-desktop dos placeholders (ver RELATORIO-PERFORMANCE.md)
 // foram removidas do repositorio numa limpeza de assets; so a versao base
 // .webp existe hoje, entao o srcset foi removido e cada imagem usa apenas src.
+// Todas as fotos de portfólio (placeholders + assets/images/portfolio/) sao 1280x960.
 function buildResponsiveImgAttrs(src) {
-    return 'src="' + src + '"';
+    return 'src="' + src + '" width="1280" height="960"';
 }
 
 // === PORTFOLIO PROJECTS DATA ===
@@ -1046,7 +1047,7 @@ function initCascadingSlider(viewport, projects) {
         return '<div class="cascading-slider__item" data-cascading-slide="" data-status="inactive" role="listitem" aria-roledescription="slide">' +
             '<div class="cascading-slider__item-inner">' +
             '<div class="cascading-slider__item-bg">' +
-            '<img ' + buildResponsiveImgAttrs(project.cover) + ' alt="' + project.name + '" class="cascading-slider__img" draggable="false"' + (i === 0 ? ' loading="eager"' : ' loading="lazy"') + '>' +
+            '<img ' + buildResponsiveImgAttrs(project.cover) + ' alt="Obra concluída para ' + project.name + '" class="cascading-slider__img" draggable="false"' + (i === 0 ? ' loading="eager"' : ' loading="lazy"') + '>' +
             '</div>' +
             '<div class="cascading-slider__item-overlay">' +
             '<span class="cascading-slider__item-nome">' + project.name + '</span>' +
