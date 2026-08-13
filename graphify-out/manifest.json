@@ -350,8 +350,8 @@
     "semantic_hash": ""
   },
   "index.html": {
-    "mtime": 1786634520.3445942,
-    "ast_hash": "8f7ba973f68cc83af4eadeeda31be90d",
+    "mtime": 1786643967.3862467,
+    "ast_hash": "f37615aa5d9d39960aee0b2a66336025",
     "semantic_hash": ""
   },
   "prototipos/cascading-slider/README-cscading.md": {
@@ -697,6 +697,116 @@
   "llms.txt": {
     "mtime": 1786634534.4601138,
     "ast_hash": "90970f208d85290b219dafe779df2f2c",
+    "semantic_hash": ""
+  },
+  "audit/perf-css-critico/after-desktop.report.report.json": {
+    "mtime": 1786642895.1087022,
+    "ast_hash": "5ae0c33c888f16b0552921e13484b47c",
+    "semantic_hash": ""
+  },
+  "audit/perf-css-critico/after-mobile.report.report.json": {
+    "mtime": 1786642941.3930106,
+    "ast_hash": "0306e0d2c5e87ed70e4a068e744ada79",
+    "semantic_hash": ""
+  },
+  "audit/perf-css-critico/after2-desktop.report.report.json": {
+    "mtime": 1786643488.2973933,
+    "ast_hash": "f4a33468f1e7c4cdcdcaa176f0685aed",
+    "semantic_hash": ""
+  },
+  "audit/perf-css-critico/after2-mobile.report.report.json": {
+    "mtime": 1786643524.9940498,
+    "ast_hash": "bad142f880dbc8c8effaa9b8f59842bd",
+    "semantic_hash": ""
+  },
+  "audit/perf-css-critico/baseline-desktop.report.json": {
+    "mtime": 1786635222.9568098,
+    "ast_hash": "6beed94007069a01d7f5f6f1813fb7dd",
+    "semantic_hash": ""
+  },
+  "audit/perf-css-critico/baseline-mobile.report.json": {
+    "mtime": 1786635275.6005602,
+    "ast_hash": "e49adb2b628cd5444e97450505519cae",
+    "semantic_hash": ""
+  },
+  "audit/perf-css-critico/after-desktop.report.report.html": {
+    "mtime": 1786642895.1137993,
+    "ast_hash": "e600f91b3c30b2652cd580e81b65d45f",
+    "semantic_hash": ""
+  },
+  "audit/perf-css-critico/after-mobile.report.report.html": {
+    "mtime": 1786642941.399198,
+    "ast_hash": "1db42a6fcb78c0e6defac46947a11134",
+    "semantic_hash": ""
+  },
+  "audit/perf-css-critico/after2-desktop.report.report.html": {
+    "mtime": 1786643488.301358,
+    "ast_hash": "9efe704fb3798f75d8bb47c44c9461a4",
+    "semantic_hash": ""
+  },
+  "audit/perf-css-critico/after2-mobile.report.report.html": {
+    "mtime": 1786643524.99958,
+    "ast_hash": "5eb6fe1f29870605a9457263f0b6a63d",
+    "semantic_hash": ""
+  },
+  "audit/perf-css-critico/baseline-desktop.report.html": {
+    "mtime": 1786635222.9608707,
+    "ast_hash": "f9f2db82a784b08a6102dc6cea48ebb1",
+    "semantic_hash": ""
+  },
+  "audit/perf-css-critico/baseline-mobile.report.html": {
+    "mtime": 1786635275.602486,
+    "ast_hash": "b62203aa70d208cda46f1f50db50a15b",
+    "semantic_hash": ""
+  },
+  "audit/after-desktop.png": {
+    "mtime": 1786639054.9769547,
+    "ast_hash": "30896bd223278239da47bbcfd3981bf5",
+    "semantic_hash": ""
+  },
+  "audit/after-mobile.png": {
+    "mtime": 1786639049.2500474,
+    "ast_hash": "1489f8162dd4db4f3590849135df3936",
+    "semantic_hash": ""
+  },
+  "audit/after2-desktop.png": {
+    "mtime": 1786643462.4030123,
+    "ast_hash": "a6d67fcf6615e54c3d8e7bb023c72685",
+    "semantic_hash": ""
+  },
+  "audit/after2-mobile.png": {
+    "mtime": 1786643457.5116675,
+    "ast_hash": "a4fab8ea324d0cda052ceebfe0772dc9",
+    "semantic_hash": ""
+  },
+  "audit/baseline-desktop.png": {
+    "mtime": 1786635321.2441335,
+    "ast_hash": "5cc72b7d4237fab44d84f798bc32b9b1",
+    "semantic_hash": ""
+  },
+  "audit/baseline-mobile.png": {
+    "mtime": 1786635315.8098407,
+    "ast_hash": "c60335d5b78f2a554dbae1e92a49b408",
+    "semantic_hash": ""
+  },
+  "audit/perf-css-critico/crop-after.png": {
+    "mtime": 1786642714.468,
+    "ast_hash": "59f7bd10167b8e44dae24258924ff20d",
+    "semantic_hash": ""
+  },
+  "audit/perf-css-critico/crop-baseline.png": {
+    "mtime": 1786642714.396,
+    "ast_hash": "aec5e7bfd75022443b2ec4637bce0c3a",
+    "semantic_hash": ""
+  },
+  "audit/perf-css-critico/diff-desktop.png": {
+    "mtime": 1786639100.6386256,
+    "ast_hash": "ef7f17c4d0a5ecab221a057383688524",
+    "semantic_hash": ""
+  },
+  "audit/perf-css-critico/diff-mobile.png": {
+    "mtime": 1786639097.6927204,
+    "ast_hash": "1f91f9af5c6fcb34d5075167dcd2d687",
     "semantic_hash": ""
   }
 }
