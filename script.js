@@ -983,40 +983,40 @@ function buildResponsiveImgAttrs(src) {
 // galeria do portfolio: cada slide e um projeto.
 const portfolioProjects = [
     {
-        id: 'eldorado',
-        name: 'Eldorado Brasil',
-        subtitle: 'Obra Industrial • 2024',
-        cover: 'assets/images/placeholders/placeholder-obra-02.webp',
-    },
-    {
         id: 'elektro',
         name: 'Elektro Redes',
         subtitle: 'Infraestrutura Elétrica • 2023',
         cover: 'assets/images/placeholders/placeholder-obra-03.webp',
     },
     {
-        id: 'isa-energia',
-        name: 'ISA Energia',
-        subtitle: 'Subestação • 2023',
-        cover: 'assets/images/placeholders/placeholder-obra-04.webp',
+        id: 'elektro-02',
+        name: 'Elektro Redes',
+        subtitle: 'Infraestrutura Elétrica • 2023',
+        cover: 'assets/images/portfolio/elektro-02.webp',
     },
     {
-        id: 'state-grid',
-        name: 'State Grid',
-        subtitle: 'Linha de Transmissão • 2022',
-        cover: 'assets/images/clients/state-grid.webp',
+        id: 'elektro-03',
+        name: 'Elektro Redes',
+        subtitle: 'Infraestrutura Elétrica • 2023',
+        cover: 'assets/images/portfolio/elektro-03.webp',
     },
     {
-        id: 'perin-sede',
-        name: 'Sede Perin',
-        subtitle: 'Construção Comercial • 2021',
-        cover: 'assets/images/brand/logo-perin-principal.webp',
+        id: 'elektro-04',
+        name: 'Elektro Redes',
+        subtitle: 'Infraestrutura Elétrica • 2023',
+        cover: 'assets/images/portfolio/elektro-04.webp',
     },
     {
-        id: 'obra-residencial',
-        name: 'Residencial Villaggio',
-        subtitle: 'Construção Residencial • 2024',
-        cover: 'assets/images/placeholders/placeholder-obra-01.webp',
+        id: 'elektro-05',
+        name: 'Elektro Redes',
+        subtitle: 'Infraestrutura Elétrica • 2023',
+        cover: 'assets/images/portfolio/elektro-05.webp',
+    },
+    {
+        id: 'elektro-06',
+        name: 'Elektro Redes',
+        subtitle: 'Infraestrutura Elétrica • 2023',
+        cover: 'assets/images/portfolio/elektro-06.webp',
     },
 ];
 
