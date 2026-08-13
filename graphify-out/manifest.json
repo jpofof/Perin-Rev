@@ -350,8 +350,8 @@
     "semantic_hash": ""
   },
   "index.html": {
-    "mtime": 1786643967.3862467,
-    "ast_hash": "f37615aa5d9d39960aee0b2a66336025",
+    "mtime": 1786645436.3331676,
+    "ast_hash": "19223572fe97bf6a06d4e6c05a493d6a",
     "semantic_hash": ""
   },
   "prototipos/cascading-slider/README-cscading.md": {
@@ -807,6 +807,36 @@
   "audit/perf-css-critico/diff-mobile.png": {
     "mtime": 1786639097.6927204,
     "ast_hash": "1f91f9af5c6fcb34d5075167dcd2d687",
+    "semantic_hash": ""
+  },
+  "audit/perf-css-critico-v2/v2-desktop.report.json": {
+    "mtime": 1786645649.9456358,
+    "ast_hash": "e894f0978dc8117c5c8cdb3ae5812366",
+    "semantic_hash": ""
+  },
+  "audit/perf-css-critico-v2/v2-mobile.report.json": {
+    "mtime": 1786645612.6138115,
+    "ast_hash": "54877ca9444cdb4d71727d4da161fac7",
+    "semantic_hash": ""
+  },
+  "audit/perf-css-critico-v2/desktop-after-scroll.png": {
+    "mtime": 1786645582.8524928,
+    "ast_hash": "b2eca1ef2795dc43ba86b20ab553d5a1",
+    "semantic_hash": ""
+  },
+  "audit/perf-css-critico-v2/desktop-initial.png": {
+    "mtime": 1786645582.367027,
+    "ast_hash": "68fcffc99691e94be988efe550c7356a",
+    "semantic_hash": ""
+  },
+  "audit/perf-css-critico-v2/mobile-after-scroll.png": {
+    "mtime": 1786645577.840281,
+    "ast_hash": "a543b89ac4194f55aaf64d9a170c8cec",
+    "semantic_hash": ""
+  },
+  "audit/perf-css-critico-v2/mobile-initial.png": {
+    "mtime": 1786645577.4727037,
+    "ast_hash": "0be054834b4426b65502be8f0bc881c5",
     "semantic_hash": ""
   }
 }
