@@ -1,0 +1,16 @@
+# Perin Construções
+
+> Empresa de construção civil em Andradina/SP, atendendo Andradina, Castilho,
+> Nova Independência, Guaraçaí, Pereira Barreto, Ilha Solteira, Mirandópolis,
+> Murutinga do Sul, Itapura e Três Lagoas.
+
+Site institucional com apresentação da empresa, serviços de construção civil
+(sem serviços de arquitetura), portfólio de obras realizadas, processo de
+trabalho, diferenciais, perguntas frequentes e canal de contato.
+
+## Páginas
+
+- [Site principal](/): Home institucional — sobre, serviços, portfólio,
+  processo de trabalho, diferenciais, FAQ e formulário de contato
+- [Política de Privacidade](/politica-de-privacidade.html): Política de
+  privacidade e tratamento de dados pessoais (LGPD)

@@ -14,7 +14,7 @@ const ROOT = path.resolve(__dirname, '..');
 const DIST = path.join(ROOT, 'dist');
 
 // Arquivos na raiz e pastas inteiras que vao para o publish dir.
-const FILES = ['index.html', '404.html', 'politica-de-privacidade.html', 'styles.min.css', 'script.min.js', '_headers', 'robots.txt', 'sitemap.xml'];
+const FILES = ['index.html', '404.html', 'politica-de-privacidade.html', 'styles.min.css', 'script.min.js', '_headers', 'robots.txt', 'sitemap.xml', 'llms.txt'];
 const DIRS = ['fonts', 'vendor', 'assets'];
 
 // Arquivos dentro das DIRS acima que NAO devem ir para o dist/, mesmo a pasta
