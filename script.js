@@ -1250,7 +1250,17 @@ function initCascadingSlider(viewport, projects) {
     var onPrevMouseLeave = function () { prevButton.classList.remove('hover-active'); };
     var onNextMouseEnter = function () { nextButton.classList.add('hover-active'); };
     var onNextMouseLeave = function () { nextButton.classList.remove('hover-active'); };
+    // Ignora a navegacao quando o foco esta em um campo editavel (ex.: textarea
+    // do formulario de contato), onde ArrowLeft/ArrowRight devem mover o cursor
+    // de texto, nao o slider escondido em outra secao da pagina.
+    var isEditableFocus = function () {
+        var el = document.activeElement;
+        if (!el) return false;
+        var tag = el.tagName;
+        return tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || el.isContentEditable;
+    };
     var keyHandler = function (event) {
+        if (isEditableFocus()) return;
         if (event.key === 'ArrowLeft') goTo(activeIndex - 1);
         if (event.key === 'ArrowRight') goTo(activeIndex + 1);
     };
