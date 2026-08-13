@@ -1,16 +1,16 @@
-# Graph Report - Perin_Rev  (2026-08-10)
+# Graph Report - Perin_Rev  (2026-08-13)
 
 ## Corpus Check
-- 80 files · ~398,667 words
+- 80 files · ~477,383 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1312 nodes · 1768 edges · 104 communities (96 shown, 8 thin omitted)
+- 1316 nodes · 1777 edges · 104 communities (96 shown, 8 thin omitted)
 - Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 60 edges (avg confidence: 0.59)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `6c2cf235`
+- Built from commit: `3ba90fb4`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -105,7 +105,7 @@
 - Rodada 2 — Remoção do Bootstrap
 - Extração de padrões — burkhardprojekte.ch → Perin Construções
 - Headroom
-- gb
+- xe
 - CLAUDE.md
 - Mobile: conteúdo não revelava ao rolar
 - checklist-pendencias-mobile.md
@@ -145,11 +145,11 @@
 
 ### Community 0 - "script.js"
 Cohesion: 0.07
-Nodes (40): applyPhoneMask(), batchReveal(), buildResponsiveImgAttrs(), capitalizeName(), captureStack(), checkEmail(), checkName(), checkNameOnBlur() (+32 more)
+Nodes (43): applyPhoneMask(), batchReveal(), buildResponsiveImgAttrs(), capitalizeName(), captureStack(), checkEmail(), checkName(), checkNameOnBlur() (+35 more)
 
 ### Community 1 - "script.min.js"
 Cohesion: 0.08
-Nodes (43): applyPhoneMask(), batchReveal(), buildResponsiveImgAttrs(), capitalizeName(), checkEmail(), checkName(), checkNameOnBlur(), checkPhone() (+35 more)
+Nodes (44): applyPhoneMask(), batchReveal(), buildResponsiveImgAttrs(), capitalizeName(), checkEmail(), checkName(), checkNameOnBlur(), checkPhone() (+36 more)
 
 ### Community 2 - "gsap/gsap.min.js"
 Cohesion: 0.06
@@ -188,8 +188,8 @@ Cohesion: 0.15
 Nodes (20): Ae(), Animation(), ce(), $d(), Da(), ee(), he(), ka() (+12 more)
 
 ### Community 11 - "r"
-Cohesion: 0.16
-Nodes (18): _a(), ac(), Co(), db(), ea(), eb(), fa(), ga() (+10 more)
+Cohesion: 0.14
+Nodes (21): f(), _a(), ac(), Co(), db(), ea(), eb(), ga() (+13 more)
 
 ### Community 12 - "src/index.ts"
 Cohesion: 0.24
@@ -224,16 +224,16 @@ Cohesion: 0.22
 Nodes (11): Bc(), Ha(), Ia(), ob(), rc(), tc(), uc(), Va() (+3 more)
 
 ### Community 20 - "df"
-Cohesion: 0.32
-Nodes (8): df(), ff(), gf(), hf(), jf(), N(), of(), qf()
+Cohesion: 0.27
+Nodes (11): df(), ff(), gf(), hf(), jf(), M(), N(), of() (+3 more)
 
 ### Community 21 - "Tween"
 Cohesion: 0.27
 Nodes (10): _assertThisInitialized(), ic(), ta(), Timeline(), Tween(), w(), x(), xa() (+2 more)
 
 ### Community 22 - "_d"
-Cohesion: 0.19
-Nodes (13): be(), _d(), ia(), ie(), je(), ke(), le(), oe() (+5 more)
+Cohesion: 0.29
+Nodes (10): be(), _d(), fa(), ia(), ie(), je(), ke(), le() (+2 more)
 
 ### Community 23 - "ja"
 Cohesion: 0.28
@@ -288,7 +288,7 @@ Cohesion: 0.50
 Nodes (4): ja(), Lc(), Nc(), ub()
 
 ### Community 36 - "build-netlify.js"
-Cohesion: 0.22
+Cohesion: 0.20
 Nodes (10): copyRecursive(), DIRS, DIST, EXCLUDE, excluded, FILES, fs, path (+2 more)
 
 ### Community 39 - "03 — Smooth scroll (Lenis)"
@@ -491,9 +491,9 @@ Nodes (4): Extração de padrões — burkhardprojekte.ch → Perin Construçõe
 Cohesion: 0.40
 Nodes (4): Como fechar essa pendência, Em aberto — preencher quando souber, Headroom, Papel conhecido
 
-### Community 93 - "gb"
-Cohesion: 0.33
-Nodes (6): gb(), hb(), lb(), oa(), ob(), Wa()
+### Community 93 - "xe"
+Cohesion: 0.50
+Nodes (4): Ud(), vd(), we(), xe()
 
 ### Community 95 - "Mobile: conteúdo não revelava ao rolar"
 Cohesion: 0.50
@@ -504,24 +504,24 @@ Cohesion: 0.22
 Nodes (6): css, flush(), fs, html, loadScript(), path
 
 ## Knowledge Gaps
-- **567 isolated node(s):** `portfolioProjects`, `lenis`, `watch`, `options`, `name` (+562 more)
+- **568 isolated node(s):** `fs`, `path`, `ROOT`, `DIST`, `FILES` (+563 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **8 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `f()` connect `script.min.js` to `r`, `r`?**
-  _High betweenness centrality (0.012) - this node is a cross-community bridge._
-- **Why does `s()` connect `r` to `gsap/gsap.min.js`, `Tween`, `df`, `cb`, `gb`?**
-  _High betweenness centrality (0.009) - this node is a cross-community bridge._
-- **Why does `eb()` connect `r` to `script.min.js`, `gsap/gsap.min.js`, `Tween`, `ja`?**
-  _High betweenness centrality (0.008) - this node is a cross-community bridge._
-- **What connects `portfolioProjects`, `lenis`, `watch` to the rest of the system?**
-  _567 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **Why does `f()` connect `r` to `r`, `script.min.js`?**
+  _High betweenness centrality (0.014) - this node is a cross-community bridge._
+- **Why does `s()` connect `r` to `gsap/gsap.min.js`, `cb`, `df`, `Tween`?**
+  _High betweenness centrality (0.010) - this node is a cross-community bridge._
+- **Why does `eb()` connect `r` to `gsap/gsap.min.js`, `Tween`, `ja`?**
+  _High betweenness centrality (0.010) - this node is a cross-community bridge._
+- **What connects `fs`, `path`, `ROOT` to the rest of the system?**
+  _568 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `script.js` be split into smaller, more focused modules?**
-  _Cohesion score 0.06734006734006734 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.06641604010025062 - nodes in this community are weakly interconnected._
 - **Should `script.min.js` be split into smaller, more focused modules?**
-  _Cohesion score 0.07910014513788098 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.07826694619147449 - nodes in this community are weakly interconnected._
 - **Should `gsap/gsap.min.js` be split into smaller, more focused modules?**
   _Cohesion score 0.06342780026990553 - nodes in this community are weakly interconnected._

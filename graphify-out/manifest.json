@@ -65,18 +65,18 @@
     "semantic_hash": "35fd79aac93c9e660228fb8531f486a8"
   },
   "package.json": {
-    "mtime": 1786389320.5039945,
+    "mtime": 1786557554.1032104,
     "ast_hash": "222d8de9c57881c3cde3c3f1396b802f",
     "semantic_hash": ""
   },
   "script.js": {
-    "mtime": 1786389320.5065136,
-    "ast_hash": "fe6d92d9ece3e840668b9e2c9769c2d9",
+    "mtime": 1786632206.3280952,
+    "ast_hash": "b8cded5fe963c06e67c809a6c39a26e2",
     "semantic_hash": ""
   },
   "script.min.js": {
-    "mtime": 1785433128.9480522,
-    "ast_hash": "9211bb9c0e676546b7623ad01b22302f",
+    "mtime": 1786632930.2690363,
+    "ast_hash": "22cd36aac07ebcd03258bfc325f7a895",
     "semantic_hash": ""
   },
   "scripts/check-min-freshness.js": {
@@ -95,9 +95,9 @@
     "semantic_hash": "3c52ee38e39084119dd6a983d6b15666"
   },
   "tests/regression/slider.regression.test.js": {
-    "mtime": 1785096081.986635,
-    "ast_hash": "81400c7cdf3d9dfafa268bc5a5c77f5e",
-    "semantic_hash": "81400c7cdf3d9dfafa268bc5a5c77f5e"
+    "mtime": 1786468909.91158,
+    "ast_hash": "6f67f3695836fb4fd372aade46ce18e9",
+    "semantic_hash": ""
   },
   "tests/unit/clients-carousel.test.js": {
     "mtime": 1785169260.1025069,
@@ -110,9 +110,9 @@
     "semantic_hash": "5e87e5a8115f39aa54831b4d2cf6971f"
   },
   "tests/unit/slider.test.js": {
-    "mtime": 1785169267.059841,
-    "ast_hash": "2e0c703db7eac9969774a085f734f958",
-    "semantic_hash": "2e0c703db7eac9969774a085f734f958"
+    "mtime": 1786468887.976124,
+    "ast_hash": "587ae62a2c0e9a853f3e712bd57c00bb",
+    "semantic_hash": ""
   },
   "vendor/gsap/ScrollTrigger.min.js": {
     "mtime": 1784652195.49437,
@@ -190,8 +190,8 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1786394329.5870397,
-    "ast_hash": "7bd403b6dc09950af9b1c8ffec62a417",
+    "mtime": 1786556366.398266,
+    "ast_hash": "ff9f86d82a17ebfac9df87ed2fd2ebe5",
     "semantic_hash": ""
   },
   "audit/bootstrap-uso-real.md": {
@@ -350,8 +350,8 @@
     "semantic_hash": ""
   },
   "index.html": {
-    "mtime": 1786396500.4116962,
-    "ast_hash": "938006fd30810bc41b4153553283659c",
+    "mtime": 1786634520.3445942,
+    "ast_hash": "8f7ba973f68cc83af4eadeeda31be90d",
     "semantic_hash": ""
   },
   "prototipos/cascading-slider/README-cscading.md": {
@@ -397,21 +397,6 @@
   "assets/images/brand/logo-perin-principal.webp": {
     "mtime": 1784652195.3337743,
     "ast_hash": "2d21a727e68098755d1b176412be3684",
-    "semantic_hash": ""
-  },
-  "assets/images/clients/eldorado.webp": {
-    "mtime": 1784652195.336736,
-    "ast_hash": "401151bf19ae982365158dfd640751b3",
-    "semantic_hash": ""
-  },
-  "assets/images/clients/elektro.webp": {
-    "mtime": 1784652195.336736,
-    "ast_hash": "5c65fdeb16172ceb441f6547e7708dd7",
-    "semantic_hash": ""
-  },
-  "assets/images/clients/isa-energia.webp": {
-    "mtime": 1784652195.336736,
-    "ast_hash": "5ffc539e131b66f7df02d04054a792d9",
     "semantic_hash": ""
   },
   "assets/images/clients/state-grid.webp": {
@@ -515,8 +500,8 @@
     "semantic_hash": ""
   },
   "scripts/build-netlify.js": {
-    "mtime": 1786389320.5070136,
-    "ast_hash": "2b280bbc79b76958140b0d0ae98b1dde",
+    "mtime": 1786634542.6813593,
+    "ast_hash": "43d2d311bdaa995a76b3323179d12c1c",
     "semantic_hash": ""
   },
   "_archive/legado/src-original/index.html": {
@@ -662,6 +647,56 @@
   "assets/images/clients/isa-energia-logo-otimizado.svg": {
     "mtime": 1786396989.9969375,
     "ast_hash": "508c94bac3fe595a3ad6f5d612d9d89b",
+    "semantic_hash": ""
+  },
+  "assets/images/clients/elektro.svg": {
+    "mtime": 1786395332.659105,
+    "ast_hash": "6a5e7b89d696a6f52f0466555423fca9",
+    "semantic_hash": ""
+  },
+  "assets/images/clients/isa-energia-logo.png": {
+    "mtime": 1786460833.925,
+    "ast_hash": "8532cffef6bf6ed118186354be9e4f01",
+    "semantic_hash": ""
+  },
+  "politica-de-privacidade.html": {
+    "mtime": 1786555973.394804,
+    "ast_hash": "f5c1e242fb5d2c2772c0e8cc4a6e4d73",
+    "semantic_hash": ""
+  },
+  "assets/images/portfolio/elektro-02.webp": {
+    "mtime": 1786468540.788,
+    "ast_hash": "228129de7e78d1cdb83049a376b664b5",
+    "semantic_hash": ""
+  },
+  "assets/images/portfolio/elektro-03.webp": {
+    "mtime": 1786468540.958,
+    "ast_hash": "66643eff4c49260ab6f3c38013512b36",
+    "semantic_hash": ""
+  },
+  "assets/images/portfolio/elektro-04.webp": {
+    "mtime": 1786468541.245,
+    "ast_hash": "645f52a2e45169942b1dcd1f90746cb1",
+    "semantic_hash": ""
+  },
+  "assets/images/portfolio/elektro-05.webp": {
+    "mtime": 1786468541.535,
+    "ast_hash": "e63f4ab644ee29e41ee0a9f6d7d3d26b",
+    "semantic_hash": ""
+  },
+  "assets/images/portfolio/elektro-06.webp": {
+    "mtime": 1786468541.897,
+    "ast_hash": "70715b120545c57174fd3a3249358711",
+    "semantic_hash": ""
+  },
+  "404.html": {
+    "mtime": 1786632223.91842,
+    "ast_hash": "60c53392efde1490c968fb1326bd504f",
+    "semantic_hash": ""
+  },
+  "llms.txt": {
+    "mtime": 1786634534.4601138,
+    "ast_hash": "90970f208d85290b219dafe779df2f2c",
     "semantic_hash": ""
   }
 }
