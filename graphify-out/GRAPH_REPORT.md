@@ -1,16 +1,16 @@
 # Graph Report - Perin_Rev  (2026-08-13)
 
 ## Corpus Check
-- 80 files · ~477,383 words
+- 71 files · ~1,485,165 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1316 nodes · 1777 edges · 104 communities (96 shown, 8 thin omitted)
-- Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 60 edges (avg confidence: 0.59)
+- 1238 nodes · 1685 edges · 95 communities (90 shown, 5 thin omitted)
+- Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 60 edges (avg confidence: 0.59)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `3ba90fb4`
+- Built from commit: `0ecc087c`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -23,12 +23,11 @@
 - ScrollTrigger.min.js
 - 03-smooth-scroll/lenis.min.js
 - lenis/lenis.min.js
-- design-system/package.json
+- form.test.js
 - devDependencies
 - ce
 - r
-- src/index.ts
-- compilerOptions
+- gb
 - Tween
 - clients-carousel.test.js
 - slider.test.js
@@ -52,7 +51,6 @@
 - P
 - Nc
 - build-netlify.js
-- build.mjs
 - 03 — Smooth scroll (Lenis)
 - pre-commit
 - Cd
@@ -87,7 +85,6 @@
 - Hero: vídeo + correções
 - Travamento recorrente no Safari iOS — causa raiz e correção
 - 01 — Card de contato flutuante no hero
-- @perin/design-system
 - Notas de Implementação — Vídeo de Fundo no Hero
 - Verificação de Produção — Commit `ab2b2ae`
 - Relatório de Organização — Portfólio de Obras
@@ -105,12 +102,9 @@
 - Rodada 2 — Remoção do Bootstrap
 - Extração de padrões — burkhardprojekte.ch → Perin Construções
 - Headroom
-- xe
 - CLAUDE.md
 - Mobile: conteúdo não revelava ao rolar
 - checklist-pendencias-mobile.md
-- design-sync notes
-- conventions.md
 - process-diagram.regression.test.js
 - implementacao.js
 
@@ -120,11 +114,11 @@
 3. `Instruções Gerais de Trabalho` - 20 edges
 4. `Bc()` - 14 edges
 5. `Perin Construções — Site Institucional Premium` - 14 edges
-6. `compilerOptions` - 13 edges
-7. `Tween()` - 13 edges
-8. `r()` - 13 edges
-9. `s()` - 13 edges
-10. `Tween()` - 13 edges
+6. `Tween()` - 13 edges
+7. `r()` - 13 edges
+8. `s()` - 13 edges
+9. `Tween()` - 13 edges
+10. `3. Conteúdo detalhado por seção` - 13 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `hb()` --indirect_call--> `f()`  [INFERRED]
@@ -141,7 +135,7 @@
 ## Import Cycles
 - None detected.
 
-## Communities (104 total, 8 thin omitted)
+## Communities (95 total, 5 thin omitted)
 
 ### Community 0 - "script.js"
 Cohesion: 0.07
@@ -175,9 +169,9 @@ Nodes (17): advance(), cleanUpClassName(), constructor(), destroy(), emit(), isL
 Cohesion: 0.11
 Nodes (17): advance(), cleanUpClassName(), constructor(), destroy(), emit(), isLocked(), isScrolling(), isStopped() (+9 more)
 
-### Community 8 - "design-system/package.json"
-Cohesion: 0.07
-Nodes (27): description, devDependencies, esbuild, @types/react, @types/react-dom, typescript, files, main (+19 more)
+### Community 8 - "form.test.js"
+Cohesion: 0.13
+Nodes (3): fs, html, path
 
 ### Community 9 - "devDependencies"
 Cohesion: 0.07
@@ -188,16 +182,12 @@ Cohesion: 0.15
 Nodes (20): Ae(), Animation(), ce(), $d(), Da(), ee(), he(), ka() (+12 more)
 
 ### Community 11 - "r"
-Cohesion: 0.14
-Nodes (21): f(), _a(), ac(), Co(), db(), ea(), eb(), ga() (+13 more)
+Cohesion: 0.15
+Nodes (19): f(), _a(), ac(), Co(), db(), ea(), eb(), fa() (+11 more)
 
-### Community 12 - "src/index.ts"
-Cohesion: 0.24
-Nodes (10): Badge(), BadgeProps, Button(), ButtonProps, ButtonVariant, BaseCardProps, Card(), CardProps (+2 more)
-
-### Community 13 - "compilerOptions"
-Cohesion: 0.11
-Nodes (17): compilerOptions, declaration, emitDeclarationOnly, esModuleInterop, jsx, lib, module, moduleResolution (+9 more)
+### Community 12 - "gb"
+Cohesion: 0.33
+Nodes (6): gb(), hb(), lb(), oa(), ob(), Wa()
 
 ### Community 14 - "Tween"
 Cohesion: 0.15
@@ -224,16 +214,16 @@ Cohesion: 0.22
 Nodes (11): Bc(), Ha(), Ia(), ob(), rc(), tc(), uc(), Va() (+3 more)
 
 ### Community 20 - "df"
-Cohesion: 0.27
-Nodes (11): df(), ff(), gf(), hf(), jf(), M(), N(), of() (+3 more)
+Cohesion: 0.32
+Nodes (8): df(), ff(), gf(), hf(), jf(), N(), of(), qf()
 
 ### Community 21 - "Tween"
 Cohesion: 0.27
 Nodes (10): _assertThisInitialized(), ic(), ta(), Timeline(), Tween(), w(), x(), xa() (+2 more)
 
 ### Community 22 - "_d"
-Cohesion: 0.29
-Nodes (10): be(), _d(), fa(), ia(), ie(), je(), ke(), le() (+2 more)
+Cohesion: 0.19
+Nodes (13): be(), _d(), ia(), ie(), je(), ke(), le(), oe() (+5 more)
 
 ### Community 23 - "ja"
 Cohesion: 0.28
@@ -419,10 +409,6 @@ Nodes (9): Causa raiz confirmada, Correção aplicada, Passo 1 — Instrumentaç
 Cohesion: 0.29
 Nodes (6): 01 — Card de contato flutuante no hero, Ajustes necessários ao aplicar no Perin, Atenção ao integrar — riscos previsíveis, Como o card transborda e sobrepõe a seção seguinte, Estratégia de posicionamento, Valores de espaçamento e dimensão por breakpoint
 
-### Community 75 - "@perin/design-system"
-Cohesion: 0.25
-Nodes (7): Componentes (v0.1 — núcleo essencial), Escopo desta versão, Histórico de mudanças, Instalação e build, @perin/design-system, Tokens, Uso
-
 ### Community 76 - "Notas de Implementação — Vídeo de Fundo no Hero"
 Cohesion: 0.25
 Nodes (7): Bug encontrado e corrigido durante a implementação, Desvios em relação ao plano, Fase 3 — Refinamento visual (taste), Notas de Implementação — Vídeo de Fundo no Hero, Pendências para Fase 3 (taste-skill), Verificação pós-Fase-3, Verificação realizada
@@ -491,10 +477,6 @@ Nodes (4): Extração de padrões — burkhardprojekte.ch → Perin Construçõe
 Cohesion: 0.40
 Nodes (4): Como fechar essa pendência, Em aberto — preencher quando souber, Headroom, Papel conhecido
 
-### Community 93 - "xe"
-Cohesion: 0.50
-Nodes (4): Ud(), vd(), we(), xe()
-
 ### Community 95 - "Mobile: conteúdo não revelava ao rolar"
 Cohesion: 0.50
 Nodes (4): Causa raiz confirmada, Correção implementada, Mobile: conteúdo não revelava ao rolar, Validação
@@ -504,21 +486,21 @@ Cohesion: 0.22
 Nodes (6): css, flush(), fs, html, loadScript(), path
 
 ## Knowledge Gaps
-- **568 isolated node(s):** `fs`, `path`, `ROOT`, `DIST`, `FILES` (+563 more)
+- **530 isolated node(s):** `fs`, `path`, `html`, `portfolioProjects`, `portfolioProjects` (+525 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **8 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **5 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `f()` connect `r` to `r`, `script.min.js`?**
-  _High betweenness centrality (0.014) - this node is a cross-community bridge._
-- **Why does `s()` connect `r` to `gsap/gsap.min.js`, `cb`, `df`, `Tween`?**
-  _High betweenness centrality (0.010) - this node is a cross-community bridge._
+  _High betweenness centrality (0.020) - this node is a cross-community bridge._
+- **Why does `s()` connect `r` to `gsap/gsap.min.js`, `gb`, `Tween`, `df`, `cb`?**
+  _High betweenness centrality (0.016) - this node is a cross-community bridge._
 - **Why does `eb()` connect `r` to `gsap/gsap.min.js`, `Tween`, `ja`?**
-  _High betweenness centrality (0.010) - this node is a cross-community bridge._
-- **What connects `fs`, `path`, `ROOT` to the rest of the system?**
-  _568 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _High betweenness centrality (0.014) - this node is a cross-community bridge._
+- **What connects `fs`, `path`, `html` to the rest of the system?**
+  _530 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `script.js` be split into smaller, more focused modules?**
   _Cohesion score 0.06641604010025062 - nodes in this community are weakly interconnected._
 - **Should `script.min.js` be split into smaller, more focused modules?**

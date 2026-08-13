@@ -4,61 +4,6 @@
     "ast_hash": "38d1a39ce09146732fc734c54f9a330a",
     "semantic_hash": "38d1a39ce09146732fc734c54f9a330a"
   },
-  "design-system/build.mjs": {
-    "mtime": 1785263610.5741422,
-    "ast_hash": "1ef2bed98944fec1b2594b9d8b75dc49",
-    "semantic_hash": "1ef2bed98944fec1b2594b9d8b75dc49"
-  },
-  "design-system/package.json": {
-    "mtime": 1785263610.577137,
-    "ast_hash": "e74e204b12788cc879a0db546f1fefe9",
-    "semantic_hash": "e74e204b12788cc879a0db546f1fefe9"
-  },
-  "design-system/src/components/Badge/Badge.tsx": {
-    "mtime": 1785263610.5801482,
-    "ast_hash": "f0ad2beacc48f56aa83212dbbfa01471",
-    "semantic_hash": "f0ad2beacc48f56aa83212dbbfa01471"
-  },
-  "design-system/src/components/Badge/index.ts": {
-    "mtime": 1785263610.581137,
-    "ast_hash": "b3c905e086dbe139e9ce138819d9c427",
-    "semantic_hash": "b3c905e086dbe139e9ce138819d9c427"
-  },
-  "design-system/src/components/Button/Button.tsx": {
-    "mtime": 1785263610.5841298,
-    "ast_hash": "44dfd4a70f9c4bac1f93921f079e4cdc",
-    "semantic_hash": "44dfd4a70f9c4bac1f93921f079e4cdc"
-  },
-  "design-system/src/components/Button/index.ts": {
-    "mtime": 1785263610.585108,
-    "ast_hash": "5e9280681711f6e6540d0de12f47c98e",
-    "semantic_hash": "5e9280681711f6e6540d0de12f47c98e"
-  },
-  "design-system/src/components/Card/Card.tsx": {
-    "mtime": 1785263610.585108,
-    "ast_hash": "185b2db0cf1d911792a1972fc15e79c6",
-    "semantic_hash": "185b2db0cf1d911792a1972fc15e79c6"
-  },
-  "design-system/src/components/Card/index.ts": {
-    "mtime": 1785263610.585108,
-    "ast_hash": "f7c87ef4cd8e8b91bc866da1e84443e0",
-    "semantic_hash": "f7c87ef4cd8e8b91bc866da1e84443e0"
-  },
-  "design-system/src/examples/usage.tsx": {
-    "mtime": 1785263610.585108,
-    "ast_hash": "ebdc5ce7e00b52a8f4093466abd04562",
-    "semantic_hash": "ebdc5ce7e00b52a8f4093466abd04562"
-  },
-  "design-system/src/index.ts": {
-    "mtime": 1785263610.585108,
-    "ast_hash": "f44583e7733f822e91821f7eb39e17d0",
-    "semantic_hash": "f44583e7733f822e91821f7eb39e17d0"
-  },
-  "design-system/tsconfig.json": {
-    "mtime": 1785263610.585108,
-    "ast_hash": "b1c8a63a012285369128b9b0beac5eed",
-    "semantic_hash": "b1c8a63a012285369128b9b0beac5eed"
-  },
   "jest.config.js": {
     "mtime": 1784652195.4549327,
     "ast_hash": "35fd79aac93c9e660228fb8531f486a8",
@@ -70,13 +15,13 @@
     "semantic_hash": ""
   },
   "script.js": {
-    "mtime": 1786632206.3280952,
-    "ast_hash": "b8cded5fe963c06e67c809a6c39a26e2",
+    "mtime": 1786664974.4379864,
+    "ast_hash": "8f57a8ab04d2e4d6c059f22546244ea7",
     "semantic_hash": ""
   },
   "script.min.js": {
-    "mtime": 1786632930.2690363,
-    "ast_hash": "22cd36aac07ebcd03258bfc325f7a895",
+    "mtime": 1786665383.9653933,
+    "ast_hash": "095156138099c54243db652a4764e354",
     "semantic_hash": ""
   },
   "scripts/check-min-freshness.js": {
@@ -284,11 +229,6 @@
     "ast_hash": "2e4800f86acbd3e4454615a6cbcd97b0",
     "semantic_hash": ""
   },
-  "design-system/README.md": {
-    "mtime": 1785263610.573131,
-    "ast_hash": "fee463e6493bdb4b2b1be53099280b4c",
-    "semantic_hash": ""
-  },
   "docs/ferramentas/graphify.md": {
     "mtime": 1785289795.4051607,
     "ast_hash": "eb89e21a22adb3c10acb6027cfe09709",
@@ -350,8 +290,8 @@
     "semantic_hash": ""
   },
   "index.html": {
-    "mtime": 1786645436.3331676,
-    "ast_hash": "19223572fe97bf6a06d4e6c05a493d6a",
+    "mtime": 1786664955.172153,
+    "ast_hash": "1d526a1a0e3fea3b0e7c93a296a1f598",
     "semantic_hash": ""
   },
   "prototipos/cascading-slider/README-cscading.md": {
@@ -437,36 +377,6 @@
   "assets/images/social/social-preview.jpg": {
     "mtime": 1784652195.3487067,
     "ast_hash": "f628869bcd26805ddc46a3c50960e256",
-    "semantic_hash": ""
-  },
-  "design-system/.design-sync/config.json": {
-    "mtime": 1785373171.2579646,
-    "ast_hash": "22f3eb12efa41b5dbf89e9f50e28b7e4",
-    "semantic_hash": ""
-  },
-  "design-system/.design-sync/previews/Badge.tsx": {
-    "mtime": 1785373171.263296,
-    "ast_hash": "5f5d5188eea7510d0a8d14b6b9e12dd7",
-    "semantic_hash": ""
-  },
-  "design-system/.design-sync/previews/Button.tsx": {
-    "mtime": 1785373171.2654552,
-    "ast_hash": "5f6563cee2ccf169f8b98fb49ad529b3",
-    "semantic_hash": ""
-  },
-  "design-system/.design-sync/previews/Card.tsx": {
-    "mtime": 1785373171.2680204,
-    "ast_hash": "48382436a168ffbdc273740e7b320160",
-    "semantic_hash": ""
-  },
-  "design-system/.design-sync/NOTES.md": {
-    "mtime": 1785373171.2558408,
-    "ast_hash": "8e2ff82522dc452b26c511cf4ef3866e",
-    "semantic_hash": ""
-  },
-  "design-system/.design-sync/conventions.md": {
-    "mtime": 1785373171.2599645,
-    "ast_hash": "be3fc87cde9d2a4272e0966c51ad4a27",
     "semantic_hash": ""
   },
   "tests/regression/process-diagram.regression.test.js": {
@@ -837,6 +747,11 @@
   "audit/perf-css-critico-v2/mobile-initial.png": {
     "mtime": 1786645577.4727037,
     "ast_hash": "0be054834b4426b65502be8f0bc881c5",
+    "semantic_hash": ""
+  },
+  "tests/unit/form.test.js": {
+    "mtime": 1786665077.0223153,
+    "ast_hash": "c34452fbd8817a922ae99a8f661744d8",
     "semantic_hash": ""
   }
 }
