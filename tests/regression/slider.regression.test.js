@@ -233,8 +233,8 @@ describe('REGRESSION — Script Integrity', () => {
   });
 
   test('portfolioProjects data array exists with 6 projects, one photo each', () => {
-    expect(js).toContain("id: 'eldorado'");
-    expect(js).toContain("id: 'obra-residencial'");
+    expect(js).toContain("id: 'elektro'");
+    expect(js).toContain("id: 'elektro-06'");
     const block = js.match(/const portfolioProjects = \[([\s\S]*?)\n\];/);
     expect(block).not.toBeNull();
     expect(block[1]).not.toMatch(/photos:\s*\[/);

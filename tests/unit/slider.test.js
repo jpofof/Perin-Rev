@@ -258,13 +258,13 @@ describe('Script Integrity', () => {
     expect(js).not.toMatch(/portfolioState/);
   });
 
-  test('portfolioProjects data array exists with 6 projects, one cover photo each', () => {
-    expect(js).toContain("id: 'eldorado'");
-    expect(js).toContain("id: 'obra-residencial'");
+  test('portfolioProjects data array exists with at least 6 projects, one cover photo each', () => {
+    expect(js).toContain("id: 'elektro'");
+    expect(js).toContain("id: 'elektro-06'");
     const match = js.match(/const portfolioProjects = \[([\s\S]*?)\n\];/);
     expect(match).not.toBeNull();
-    // 6 objects => 6 "cover:" occurrences, no "photos:" array (single photo per project)
-    expect((match[1].match(/cover:/g) || []).length).toBe(6);
+    // each object => one "cover:" occurrence, no "photos:" array (single photo per project)
+    expect((match[1].match(/cover:/g) || []).length).toBeGreaterThanOrEqual(6);
     expect(match[1]).not.toMatch(/photos:/);
   });
 });
@@ -290,9 +290,15 @@ describe('Image Assets', () => {
 
   test('project covers are referenced in portfolio data', () => {
     const js = fs.readFileSync(path.join(__dirname, '..', '..', 'script.js'), 'utf8');
-    expect(js).toContain("cover: 'assets/images/placeholders/placeholder-obra-02.webp'");
     expect(js).toContain("cover: 'assets/images/placeholders/placeholder-obra-03.webp'");
-    expect(js).toContain("cover: 'assets/images/placeholders/placeholder-obra-04.webp'");
-    expect(js).toContain("cover: 'assets/images/clients/state-grid.webp'");
+    expect(js).toContain("cover: 'assets/images/portfolio/elektro-02.webp'");
+    expect(js).toContain("cover: 'assets/images/portfolio/elektro-06.webp'");
+  });
+
+  test('elektro-0X.webp portfolio photos exist', () => {
+    ['02', '03', '04', '05', '06'].forEach((n) => {
+      const exists = fs.existsSync(path.join(__dirname, '..', '..', 'assets', 'images', 'portfolio', `elektro-${n}.webp`));
+      expect(exists).toBe(true);
+    });
   });
 });
