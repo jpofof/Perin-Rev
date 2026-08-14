@@ -290,8 +290,8 @@
     "semantic_hash": ""
   },
   "index.html": {
-    "mtime": 1786664955.172153,
-    "ast_hash": "1d526a1a0e3fea3b0e7c93a296a1f598",
+    "mtime": 1786672514.5527844,
+    "ast_hash": "998e0a73b83c9d6ebb5f7c397baf319d",
     "semantic_hash": ""
   },
   "prototipos/cascading-slider/README-cscading.md": {
@@ -410,8 +410,8 @@
     "semantic_hash": ""
   },
   "scripts/build-netlify.js": {
-    "mtime": 1786634542.6813593,
-    "ast_hash": "43d2d311bdaa995a76b3323179d12c1c",
+    "mtime": 1786672519.3759158,
+    "ast_hash": "5e6744ec2bfa78ccc4d4c6d107438d72",
     "semantic_hash": ""
   },
   "_archive/legado/src-original/index.html": {
@@ -752,6 +752,11 @@
   "tests/unit/form.test.js": {
     "mtime": 1786665077.0223153,
     "ast_hash": "c34452fbd8817a922ae99a8f661744d8",
+    "semantic_hash": ""
+  },
+  "defer-css.js": {
+    "mtime": 1786672509.6259985,
+    "ast_hash": "e48e93cea1f19782917ea81b8de99405",
     "semantic_hash": ""
   }
 }

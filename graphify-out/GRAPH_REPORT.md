@@ -1,16 +1,16 @@
 # Graph Report - Perin_Rev  (2026-08-13)
 
 ## Corpus Check
-- 71 files · ~1,485,165 words
+- 72 files · ~1,485,166 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1238 nodes · 1685 edges · 95 communities (90 shown, 5 thin omitted)
+- 1240 nodes · 1686 edges · 96 communities (91 shown, 5 thin omitted)
 - Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 60 edges (avg confidence: 0.59)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `0ecc087c`
+- Built from commit: `a4e59fe2`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -27,7 +27,7 @@
 - devDependencies
 - ce
 - r
-- gb
+- xe
 - Tween
 - clients-carousel.test.js
 - slider.test.js
@@ -135,7 +135,7 @@
 ## Import Cycles
 - None detected.
 
-## Communities (95 total, 5 thin omitted)
+## Communities (96 total, 5 thin omitted)
 
 ### Community 0 - "script.js"
 Cohesion: 0.07
@@ -182,12 +182,12 @@ Cohesion: 0.15
 Nodes (20): Ae(), Animation(), ce(), $d(), Da(), ee(), he(), ka() (+12 more)
 
 ### Community 11 - "r"
-Cohesion: 0.15
-Nodes (19): f(), _a(), ac(), Co(), db(), ea(), eb(), fa() (+11 more)
+Cohesion: 0.14
+Nodes (21): f(), _a(), ac(), Co(), db(), ea(), eb(), ga() (+13 more)
 
-### Community 12 - "gb"
-Cohesion: 0.33
-Nodes (6): gb(), hb(), lb(), oa(), ob(), Wa()
+### Community 12 - "xe"
+Cohesion: 0.50
+Nodes (4): Ud(), vd(), we(), xe()
 
 ### Community 14 - "Tween"
 Cohesion: 0.15
@@ -214,16 +214,16 @@ Cohesion: 0.22
 Nodes (11): Bc(), Ha(), Ia(), ob(), rc(), tc(), uc(), Va() (+3 more)
 
 ### Community 20 - "df"
-Cohesion: 0.32
-Nodes (8): df(), ff(), gf(), hf(), jf(), N(), of(), qf()
+Cohesion: 0.27
+Nodes (11): df(), ff(), gf(), hf(), jf(), M(), N(), of() (+3 more)
 
 ### Community 21 - "Tween"
 Cohesion: 0.27
 Nodes (10): _assertThisInitialized(), ic(), ta(), Timeline(), Tween(), w(), x(), xa() (+2 more)
 
 ### Community 22 - "_d"
-Cohesion: 0.19
-Nodes (13): be(), _d(), ia(), ie(), je(), ke(), le(), oe() (+5 more)
+Cohesion: 0.29
+Nodes (10): be(), _d(), fa(), ia(), ie(), je(), ke(), le() (+2 more)
 
 ### Community 23 - "ja"
 Cohesion: 0.28
@@ -486,7 +486,7 @@ Cohesion: 0.22
 Nodes (6): css, flush(), fs, html, loadScript(), path
 
 ## Knowledge Gaps
-- **530 isolated node(s):** `fs`, `path`, `html`, `portfolioProjects`, `portfolioProjects` (+525 more)
+- **530 isolated node(s):** `fs`, `path`, `ROOT`, `DIST`, `FILES` (+525 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **5 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
@@ -494,12 +494,12 @@ Nodes (6): css, flush(), fs, html, loadScript(), path
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `f()` connect `r` to `r`, `script.min.js`?**
-  _High betweenness centrality (0.020) - this node is a cross-community bridge._
-- **Why does `s()` connect `r` to `gsap/gsap.min.js`, `gb`, `Tween`, `df`, `cb`?**
-  _High betweenness centrality (0.016) - this node is a cross-community bridge._
+  _High betweenness centrality (0.023) - this node is a cross-community bridge._
+- **Why does `s()` connect `r` to `gsap/gsap.min.js`, `cb`, `df`, `Tween`?**
+  _High betweenness centrality (0.018) - this node is a cross-community bridge._
 - **Why does `eb()` connect `r` to `gsap/gsap.min.js`, `Tween`, `ja`?**
-  _High betweenness centrality (0.014) - this node is a cross-community bridge._
-- **What connects `fs`, `path`, `html` to the rest of the system?**
+  _High betweenness centrality (0.016) - this node is a cross-community bridge._
+- **What connects `fs`, `path`, `ROOT` to the rest of the system?**
   _530 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `script.js` be split into smaller, more focused modules?**
   _Cohesion score 0.06641604010025062 - nodes in this community are weakly interconnected._

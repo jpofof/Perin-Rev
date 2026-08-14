@@ -4,15 +4,158 @@
   "graph": {},
   "nodes": [
     {
+      "label": "defer-css.js",
+      "file_type": "code",
+      "source_file": "defer-css.js",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "defer_css",
+      "community": 13,
+      "community_name": "defer-css.js",
+      "norm_label": "defer-css.js"
+    },
+    {
+      "label": "loadCSS()",
+      "file_type": "code",
+      "source_file": "defer-css.js",
+      "source_location": "L2",
+      "_origin": "ast",
+      "id": "defer_css_loadcss",
+      "community": 13,
+      "community_name": "defer-css.js",
+      "norm_label": "loadcss()"
+    },
+    {
+      "label": "build-netlify.js",
+      "file_type": "code",
+      "source_file": "scripts/build-netlify.js",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "scripts_build_netlify",
+      "community": 36,
+      "community_name": "build-netlify.js",
+      "norm_label": "build-netlify.js"
+    },
+    {
+      "label": "fs",
+      "file_type": "code",
+      "source_file": "scripts/build-netlify.js",
+      "source_location": "L10",
+      "_origin": "ast",
+      "id": "scripts_build_netlify_fs",
+      "community": 36,
+      "community_name": "build-netlify.js",
+      "norm_label": "fs"
+    },
+    {
+      "label": "path",
+      "file_type": "code",
+      "source_file": "scripts/build-netlify.js",
+      "source_location": "L11",
+      "_origin": "ast",
+      "id": "scripts_build_netlify_path",
+      "community": 36,
+      "community_name": "build-netlify.js",
+      "norm_label": "path"
+    },
+    {
+      "label": "ROOT",
+      "file_type": "code",
+      "source_file": "scripts/build-netlify.js",
+      "source_location": "L13",
+      "_origin": "ast",
+      "id": "scripts_build_netlify_root",
+      "community": 36,
+      "community_name": "build-netlify.js",
+      "norm_label": "root"
+    },
+    {
+      "label": "DIST",
+      "file_type": "code",
+      "source_file": "scripts/build-netlify.js",
+      "source_location": "L14",
+      "_origin": "ast",
+      "id": "scripts_build_netlify_dist",
+      "community": 36,
+      "community_name": "build-netlify.js",
+      "norm_label": "dist"
+    },
+    {
+      "label": "FILES",
+      "file_type": "code",
+      "source_file": "scripts/build-netlify.js",
+      "source_location": "L17",
+      "_origin": "ast",
+      "id": "scripts_build_netlify_files",
+      "community": 36,
+      "community_name": "build-netlify.js",
+      "norm_label": "files"
+    },
+    {
+      "label": "DIRS",
+      "file_type": "code",
+      "source_file": "scripts/build-netlify.js",
+      "source_location": "L18",
+      "_origin": "ast",
+      "id": "scripts_build_netlify_dirs",
+      "community": 36,
+      "community_name": "build-netlify.js",
+      "norm_label": "dirs"
+    },
+    {
+      "label": "EXCLUDE",
+      "file_type": "code",
+      "source_file": "scripts/build-netlify.js",
+      "source_location": "L24",
+      "_origin": "ast",
+      "id": "scripts_build_netlify_exclude",
+      "community": 36,
+      "community_name": "build-netlify.js",
+      "norm_label": "exclude"
+    },
+    {
+      "label": "toPosix()",
+      "file_type": "code",
+      "source_file": "scripts/build-netlify.js",
+      "source_location": "L29",
+      "_origin": "ast",
+      "id": "scripts_build_netlify_toposix",
+      "community": 36,
+      "community_name": "build-netlify.js",
+      "norm_label": "toposix()"
+    },
+    {
+      "label": "copyRecursive()",
+      "file_type": "code",
+      "source_file": "scripts/build-netlify.js",
+      "source_location": "L33",
+      "_origin": "ast",
+      "id": "scripts_build_netlify_copyrecursive",
+      "community": 36,
+      "community_name": "build-netlify.js",
+      "norm_label": "copyrecursive()"
+    },
+    {
+      "label": "excluded",
+      "file_type": "code",
+      "source_file": "scripts/build-netlify.js",
+      "source_location": "L53",
+      "_origin": "ast",
+      "id": "scripts_build_netlify_excluded",
+      "community": 36,
+      "community_name": "build-netlify.js",
+      "norm_label": "excluded"
+    },
+    {
       "label": "form.test.js",
       "file_type": "code",
       "source_file": "tests/unit/form.test.js",
       "source_location": "L1",
       "_origin": "ast",
-      "id": "tests_unit_form_test",
       "community": 8,
       "community_name": "form.test.js",
-      "norm_label": "form.test.js"
+      "norm_label": "form.test.js",
+      "id": "tests_unit_form_test"
     },
     {
       "label": "fs",
@@ -20,10 +163,10 @@
       "source_file": "tests/unit/form.test.js",
       "source_location": "L16",
       "_origin": "ast",
-      "id": "tests_unit_form_test_fs",
       "community": 8,
       "community_name": "form.test.js",
-      "norm_label": "fs"
+      "norm_label": "fs",
+      "id": "tests_unit_form_test_fs"
     },
     {
       "label": "path",
@@ -31,10 +174,10 @@
       "source_file": "tests/unit/form.test.js",
       "source_location": "L17",
       "_origin": "ast",
-      "id": "tests_unit_form_test_path",
       "community": 8,
       "community_name": "form.test.js",
-      "norm_label": "path"
+      "norm_label": "path",
+      "id": "tests_unit_form_test_path"
     },
     {
       "label": "html",
@@ -42,10 +185,10 @@
       "source_file": "tests/unit/form.test.js",
       "source_location": "L19",
       "_origin": "ast",
-      "id": "tests_unit_form_test_html",
       "community": 8,
       "community_name": "form.test.js",
-      "norm_label": "html"
+      "norm_label": "html",
+      "id": "tests_unit_form_test_html"
     },
     {
       "label": "on()",
@@ -53,10 +196,10 @@
       "source_file": "tests/unit/form.test.js",
       "source_location": "L36",
       "_origin": "ast",
-      "id": "tests_unit_form_test_on",
       "community": 8,
       "community_name": "form.test.js",
-      "norm_label": "on()"
+      "norm_label": "on()",
+      "id": "tests_unit_form_test_on"
     },
     {
       "label": "raf()",
@@ -64,10 +207,10 @@
       "source_file": "tests/unit/form.test.js",
       "source_location": "L37",
       "_origin": "ast",
-      "id": "tests_unit_form_test_raf",
       "community": 8,
       "community_name": "form.test.js",
-      "norm_label": "raf()"
+      "norm_label": "raf()",
+      "id": "tests_unit_form_test_raf"
     },
     {
       "label": "scrollTo()",
@@ -75,10 +218,10 @@
       "source_file": "tests/unit/form.test.js",
       "source_location": "L38",
       "_origin": "ast",
-      "id": "tests_unit_form_test_scrollto",
       "community": 8,
       "community_name": "form.test.js",
-      "norm_label": "scrollto()"
+      "norm_label": "scrollto()",
+      "id": "tests_unit_form_test_scrollto"
     },
     {
       "label": "stop()",
@@ -86,10 +229,10 @@
       "source_file": "tests/unit/form.test.js",
       "source_location": "L39",
       "_origin": "ast",
-      "id": "tests_unit_form_test_stop",
       "community": 8,
       "community_name": "form.test.js",
-      "norm_label": "stop()"
+      "norm_label": "stop()",
+      "id": "tests_unit_form_test_stop"
     },
     {
       "label": "start()",
@@ -97,10 +240,10 @@
       "source_file": "tests/unit/form.test.js",
       "source_location": "L40",
       "_origin": "ast",
-      "id": "tests_unit_form_test_start",
       "community": 8,
       "community_name": "form.test.js",
-      "norm_label": "start()"
+      "norm_label": "start()",
+      "id": "tests_unit_form_test_start"
     },
     {
       "label": "constructor()",
@@ -108,10 +251,10 @@
       "source_file": "tests/unit/form.test.js",
       "source_location": "L47",
       "_origin": "ast",
-      "id": "tests_unit_form_test_constructor",
       "community": 8,
       "community_name": "form.test.js",
-      "norm_label": "constructor()"
+      "norm_label": "constructor()",
+      "id": "tests_unit_form_test_constructor"
     },
     {
       "label": "observe()",
@@ -119,10 +262,10 @@
       "source_file": "tests/unit/form.test.js",
       "source_location": "L48",
       "_origin": "ast",
-      "id": "tests_unit_form_test_observe",
       "community": 8,
       "community_name": "form.test.js",
-      "norm_label": "observe()"
+      "norm_label": "observe()",
+      "id": "tests_unit_form_test_observe"
     },
     {
       "label": "unobserve()",
@@ -130,10 +273,10 @@
       "source_file": "tests/unit/form.test.js",
       "source_location": "L49",
       "_origin": "ast",
-      "id": "tests_unit_form_test_unobserve",
       "community": 8,
       "community_name": "form.test.js",
-      "norm_label": "unobserve()"
+      "norm_label": "unobserve()",
+      "id": "tests_unit_form_test_unobserve"
     },
     {
       "label": "disconnect()",
@@ -141,10 +284,10 @@
       "source_file": "tests/unit/form.test.js",
       "source_location": "L50",
       "_origin": "ast",
-      "id": "tests_unit_form_test_disconnect",
       "community": 8,
       "community_name": "form.test.js",
-      "norm_label": "disconnect()"
+      "norm_label": "disconnect()",
+      "id": "tests_unit_form_test_disconnect"
     },
     {
       "label": "fillValidForm()",
@@ -152,10 +295,10 @@
       "source_file": "tests/unit/form.test.js",
       "source_location": "L64",
       "_origin": "ast",
-      "id": "tests_unit_form_test_fillvalidform",
       "community": 8,
       "community_name": "form.test.js",
-      "norm_label": "fillvalidform()"
+      "norm_label": "fillvalidform()",
+      "id": "tests_unit_form_test_fillvalidform"
     },
     {
       "label": "submitForm()",
@@ -163,10 +306,10 @@
       "source_file": "tests/unit/form.test.js",
       "source_location": "L77",
       "_origin": "ast",
-      "id": "tests_unit_form_test_submitform",
       "community": 8,
       "community_name": "form.test.js",
-      "norm_label": "submitform()"
+      "norm_label": "submitform()",
+      "id": "tests_unit_form_test_submitform"
     },
     {
       "label": "script.js",
@@ -1399,127 +1542,6 @@
       "community_name": "script.min.js",
       "norm_label": "initfaqaccordion()",
       "id": "script_min_initfaqaccordion"
-    },
-    {
-      "label": "build-netlify.js",
-      "file_type": "code",
-      "source_file": "scripts/build-netlify.js",
-      "source_location": "L1",
-      "_origin": "ast",
-      "community": 36,
-      "community_name": "build-netlify.js",
-      "norm_label": "build-netlify.js",
-      "id": "scripts_build_netlify"
-    },
-    {
-      "label": "fs",
-      "file_type": "code",
-      "source_file": "scripts/build-netlify.js",
-      "source_location": "L10",
-      "_origin": "ast",
-      "community": 36,
-      "community_name": "build-netlify.js",
-      "norm_label": "fs",
-      "id": "scripts_build_netlify_fs"
-    },
-    {
-      "label": "path",
-      "file_type": "code",
-      "source_file": "scripts/build-netlify.js",
-      "source_location": "L11",
-      "_origin": "ast",
-      "community": 36,
-      "community_name": "build-netlify.js",
-      "norm_label": "path",
-      "id": "scripts_build_netlify_path"
-    },
-    {
-      "label": "ROOT",
-      "file_type": "code",
-      "source_file": "scripts/build-netlify.js",
-      "source_location": "L13",
-      "_origin": "ast",
-      "community": 36,
-      "community_name": "build-netlify.js",
-      "norm_label": "root",
-      "id": "scripts_build_netlify_root"
-    },
-    {
-      "label": "DIST",
-      "file_type": "code",
-      "source_file": "scripts/build-netlify.js",
-      "source_location": "L14",
-      "_origin": "ast",
-      "community": 36,
-      "community_name": "build-netlify.js",
-      "norm_label": "dist",
-      "id": "scripts_build_netlify_dist"
-    },
-    {
-      "label": "FILES",
-      "file_type": "code",
-      "source_file": "scripts/build-netlify.js",
-      "source_location": "L17",
-      "_origin": "ast",
-      "community": 36,
-      "community_name": "build-netlify.js",
-      "norm_label": "files",
-      "id": "scripts_build_netlify_files"
-    },
-    {
-      "label": "DIRS",
-      "file_type": "code",
-      "source_file": "scripts/build-netlify.js",
-      "source_location": "L18",
-      "_origin": "ast",
-      "community": 36,
-      "community_name": "build-netlify.js",
-      "norm_label": "dirs",
-      "id": "scripts_build_netlify_dirs"
-    },
-    {
-      "label": "EXCLUDE",
-      "file_type": "code",
-      "source_file": "scripts/build-netlify.js",
-      "source_location": "L24",
-      "_origin": "ast",
-      "community": 36,
-      "community_name": "build-netlify.js",
-      "norm_label": "exclude",
-      "id": "scripts_build_netlify_exclude"
-    },
-    {
-      "label": "toPosix()",
-      "file_type": "code",
-      "source_file": "scripts/build-netlify.js",
-      "source_location": "L29",
-      "_origin": "ast",
-      "community": 36,
-      "community_name": "build-netlify.js",
-      "norm_label": "toposix()",
-      "id": "scripts_build_netlify_toposix"
-    },
-    {
-      "label": "copyRecursive()",
-      "file_type": "code",
-      "source_file": "scripts/build-netlify.js",
-      "source_location": "L33",
-      "_origin": "ast",
-      "community": 36,
-      "community_name": "build-netlify.js",
-      "norm_label": "copyrecursive()",
-      "id": "scripts_build_netlify_copyrecursive"
-    },
-    {
-      "label": "excluded",
-      "file_type": "code",
-      "source_file": "scripts/build-netlify.js",
-      "source_location": "L53",
-      "_origin": "ast",
-      "community": 36,
-      "community_name": "build-netlify.js",
-      "norm_label": "excluded",
-      "id": "scripts_build_netlify_excluded"
     },
     {
       "label": "src-original/script.js",
@@ -4637,8 +4659,8 @@
       "source_file": "vendor/gsap/ScrollTrigger.min.js",
       "source_location": "L10",
       "_origin": "ast",
-      "community": 11,
-      "community_name": "r",
+      "community": 20,
+      "community_name": "df",
       "norm_label": "m()",
       "id": "vendor_gsap_scrolltrigger_min_m"
     },
@@ -4780,8 +4802,8 @@
       "source_file": "vendor/gsap/ScrollTrigger.min.js",
       "source_location": "L10",
       "_origin": "ast",
-      "community": 11,
-      "community_name": "r",
+      "community": 20,
+      "community_name": "df",
       "norm_label": "pf()",
       "id": "vendor_gsap_scrolltrigger_min_pf"
     },
@@ -4824,8 +4846,8 @@
       "source_file": "vendor/gsap/ScrollTrigger.min.js",
       "source_location": "L10",
       "_origin": "ast",
-      "community": 11,
-      "community_name": "r",
+      "community": 20,
+      "community_name": "df",
       "norm_label": "tf()",
       "id": "vendor_gsap_scrolltrigger_min_tf"
     },
@@ -5539,8 +5561,8 @@
       "source_file": "vendor/gsap/gsap.min.js",
       "source_location": "L10",
       "_origin": "ast",
-      "community": 11,
-      "community_name": "r",
+      "community": 22,
+      "community_name": "_d",
       "norm_label": "fa()",
       "id": "vendor_gsap_gsap_min_fa"
     },
@@ -5638,8 +5660,8 @@
       "source_file": "vendor/gsap/gsap.min.js",
       "source_location": "L10",
       "_origin": "ast",
-      "community": 12,
-      "community_name": "gb",
+      "community": 11,
+      "community_name": "r",
       "norm_label": "oa()",
       "id": "vendor_gsap_gsap_min_oa"
     },
@@ -5781,8 +5803,8 @@
       "source_file": "vendor/gsap/gsap.min.js",
       "source_location": "L10",
       "_origin": "ast",
-      "community": 12,
-      "community_name": "gb",
+      "community": 11,
+      "community_name": "r",
       "norm_label": "wa()",
       "id": "vendor_gsap_gsap_min_wa"
     },
@@ -5847,8 +5869,8 @@
       "source_file": "vendor/gsap/gsap.min.js",
       "source_location": "L10",
       "_origin": "ast",
-      "community": 12,
-      "community_name": "gb",
+      "community": 11,
+      "community_name": "r",
       "norm_label": "gb()",
       "id": "vendor_gsap_gsap_min_gb"
     },
@@ -5858,8 +5880,8 @@
       "source_file": "vendor/gsap/gsap.min.js",
       "source_location": "L10",
       "_origin": "ast",
-      "community": 12,
-      "community_name": "gb",
+      "community": 11,
+      "community_name": "r",
       "norm_label": "hb()",
       "id": "vendor_gsap_gsap_min_hb"
     },
@@ -5869,8 +5891,8 @@
       "source_file": "vendor/gsap/gsap.min.js",
       "source_location": "L10",
       "_origin": "ast",
-      "community": 12,
-      "community_name": "gb",
+      "community": 11,
+      "community_name": "r",
       "norm_label": "lb()",
       "id": "vendor_gsap_gsap_min_lb"
     },
@@ -5880,8 +5902,8 @@
       "source_file": "vendor/gsap/gsap.min.js",
       "source_location": "L10",
       "_origin": "ast",
-      "community": 12,
-      "community_name": "gb",
+      "community": 11,
+      "community_name": "r",
       "norm_label": "ob()",
       "id": "vendor_gsap_gsap_min_ob"
     },
@@ -6199,8 +6221,8 @@
       "source_file": "vendor/gsap/gsap.min.js",
       "source_location": "L10",
       "_origin": "ast",
-      "community": 22,
-      "community_name": "_d",
+      "community": 12,
+      "community_name": "xe",
       "norm_label": "vd()",
       "id": "vendor_gsap_gsap_min_vd"
     },
@@ -6419,8 +6441,8 @@
       "source_file": "vendor/gsap/gsap.min.js",
       "source_location": "L10",
       "_origin": "ast",
-      "community": 22,
-      "community_name": "_d",
+      "community": 12,
+      "community_name": "xe",
       "norm_label": "ud()",
       "id": "vendor_gsap_gsap_min_ud"
     },
@@ -6540,8 +6562,8 @@
       "source_file": "vendor/gsap/gsap.min.js",
       "source_location": "L10",
       "_origin": "ast",
-      "community": 22,
-      "community_name": "_d",
+      "community": 12,
+      "community_name": "xe",
       "norm_label": "we()",
       "id": "vendor_gsap_gsap_min_we"
     },
@@ -6551,8 +6573,8 @@
       "source_file": "vendor/gsap/gsap.min.js",
       "source_location": "L10",
       "_origin": "ast",
-      "community": 22,
-      "community_name": "_d",
+      "community": 12,
+      "community_name": "xe",
       "norm_label": "xe()",
       "id": "vendor_gsap_gsap_min_xe"
     },
@@ -13634,13 +13656,146 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
+      "source_file": "defer-css.js",
+      "source_location": "L2",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "defer_css",
+      "target": "defer_css_loadcss",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/build-netlify.js",
+      "source_location": "L33",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "scripts_build_netlify",
+      "target": "scripts_build_netlify_copyrecursive",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/build-netlify.js",
+      "source_location": "L18",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "scripts_build_netlify",
+      "target": "scripts_build_netlify_dirs",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/build-netlify.js",
+      "source_location": "L14",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "scripts_build_netlify",
+      "target": "scripts_build_netlify_dist",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/build-netlify.js",
+      "source_location": "L24",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "scripts_build_netlify",
+      "target": "scripts_build_netlify_exclude",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/build-netlify.js",
+      "source_location": "L53",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "scripts_build_netlify",
+      "target": "scripts_build_netlify_excluded",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/build-netlify.js",
+      "source_location": "L17",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "scripts_build_netlify",
+      "target": "scripts_build_netlify_files",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/build-netlify.js",
+      "source_location": "L10",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "scripts_build_netlify",
+      "target": "scripts_build_netlify_fs",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/build-netlify.js",
+      "source_location": "L11",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "scripts_build_netlify",
+      "target": "scripts_build_netlify_path",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/build-netlify.js",
+      "source_location": "L13",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "scripts_build_netlify",
+      "target": "scripts_build_netlify_root",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/build-netlify.js",
+      "source_location": "L29",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "scripts_build_netlify",
+      "target": "scripts_build_netlify_toposix",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/build-netlify.js",
+      "source_location": "L43",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "scripts_build_netlify_copyrecursive",
+      "target": "scripts_build_netlify_toposix",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
       "source_file": "tests/unit/form.test.js",
       "source_location": "L47",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "tests_unit_form_test",
-      "target": "tests_unit_form_test_constructor",
-      "confidence_score": 1.0
+      "target": "tests_unit_form_test_constructor"
     },
     {
       "relation": "contains",
@@ -13649,9 +13804,9 @@
       "source_location": "L50",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "tests_unit_form_test",
-      "target": "tests_unit_form_test_disconnect",
-      "confidence_score": 1.0
+      "target": "tests_unit_form_test_disconnect"
     },
     {
       "relation": "contains",
@@ -13660,9 +13815,9 @@
       "source_location": "L64",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "tests_unit_form_test",
-      "target": "tests_unit_form_test_fillvalidform",
-      "confidence_score": 1.0
+      "target": "tests_unit_form_test_fillvalidform"
     },
     {
       "relation": "contains",
@@ -13671,9 +13826,9 @@
       "source_location": "L16",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "tests_unit_form_test",
-      "target": "tests_unit_form_test_fs",
-      "confidence_score": 1.0
+      "target": "tests_unit_form_test_fs"
     },
     {
       "relation": "contains",
@@ -13682,9 +13837,9 @@
       "source_location": "L19",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "tests_unit_form_test",
-      "target": "tests_unit_form_test_html",
-      "confidence_score": 1.0
+      "target": "tests_unit_form_test_html"
     },
     {
       "relation": "contains",
@@ -13693,9 +13848,9 @@
       "source_location": "L48",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "tests_unit_form_test",
-      "target": "tests_unit_form_test_observe",
-      "confidence_score": 1.0
+      "target": "tests_unit_form_test_observe"
     },
     {
       "relation": "contains",
@@ -13704,9 +13859,9 @@
       "source_location": "L36",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "tests_unit_form_test",
-      "target": "tests_unit_form_test_on",
-      "confidence_score": 1.0
+      "target": "tests_unit_form_test_on"
     },
     {
       "relation": "contains",
@@ -13715,9 +13870,9 @@
       "source_location": "L17",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "tests_unit_form_test",
-      "target": "tests_unit_form_test_path",
-      "confidence_score": 1.0
+      "target": "tests_unit_form_test_path"
     },
     {
       "relation": "contains",
@@ -13726,9 +13881,9 @@
       "source_location": "L37",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "tests_unit_form_test",
-      "target": "tests_unit_form_test_raf",
-      "confidence_score": 1.0
+      "target": "tests_unit_form_test_raf"
     },
     {
       "relation": "contains",
@@ -13737,9 +13892,9 @@
       "source_location": "L38",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "tests_unit_form_test",
-      "target": "tests_unit_form_test_scrollto",
-      "confidence_score": 1.0
+      "target": "tests_unit_form_test_scrollto"
     },
     {
       "relation": "contains",
@@ -13748,9 +13903,9 @@
       "source_location": "L40",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "tests_unit_form_test",
-      "target": "tests_unit_form_test_start",
-      "confidence_score": 1.0
+      "target": "tests_unit_form_test_start"
     },
     {
       "relation": "contains",
@@ -13759,9 +13914,9 @@
       "source_location": "L39",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "tests_unit_form_test",
-      "target": "tests_unit_form_test_stop",
-      "confidence_score": 1.0
+      "target": "tests_unit_form_test_stop"
     },
     {
       "relation": "contains",
@@ -13770,9 +13925,9 @@
       "source_location": "L77",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "tests_unit_form_test",
-      "target": "tests_unit_form_test_submitform",
-      "confidence_score": 1.0
+      "target": "tests_unit_form_test_submitform"
     },
     {
       "relation": "contains",
@@ -13781,9 +13936,9 @@
       "source_location": "L49",
       "weight": 1.0,
       "_origin": "ast",
+      "confidence_score": 1.0,
       "source": "tests_unit_form_test",
-      "target": "tests_unit_form_test_unobserve",
-      "confidence_score": 1.0
+      "target": "tests_unit_form_test_unobserve"
     },
     {
       "relation": "contains",
@@ -16329,128 +16484,6 @@
       "confidence_score": 1.0,
       "source": "script_min_runqueuewhenidle",
       "target": "script_min_runwhenidle"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "scripts/build-netlify.js",
-      "source_location": "L33",
-      "weight": 1.0,
-      "_origin": "ast",
-      "confidence_score": 1.0,
-      "source": "scripts_build_netlify",
-      "target": "scripts_build_netlify_copyrecursive"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "scripts/build-netlify.js",
-      "source_location": "L18",
-      "weight": 1.0,
-      "_origin": "ast",
-      "confidence_score": 1.0,
-      "source": "scripts_build_netlify",
-      "target": "scripts_build_netlify_dirs"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "scripts/build-netlify.js",
-      "source_location": "L14",
-      "weight": 1.0,
-      "_origin": "ast",
-      "confidence_score": 1.0,
-      "source": "scripts_build_netlify",
-      "target": "scripts_build_netlify_dist"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "scripts/build-netlify.js",
-      "source_location": "L24",
-      "weight": 1.0,
-      "_origin": "ast",
-      "confidence_score": 1.0,
-      "source": "scripts_build_netlify",
-      "target": "scripts_build_netlify_exclude"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "scripts/build-netlify.js",
-      "source_location": "L53",
-      "weight": 1.0,
-      "_origin": "ast",
-      "confidence_score": 1.0,
-      "source": "scripts_build_netlify",
-      "target": "scripts_build_netlify_excluded"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "scripts/build-netlify.js",
-      "source_location": "L17",
-      "weight": 1.0,
-      "_origin": "ast",
-      "confidence_score": 1.0,
-      "source": "scripts_build_netlify",
-      "target": "scripts_build_netlify_files"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "scripts/build-netlify.js",
-      "source_location": "L10",
-      "weight": 1.0,
-      "_origin": "ast",
-      "confidence_score": 1.0,
-      "source": "scripts_build_netlify",
-      "target": "scripts_build_netlify_fs"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "scripts/build-netlify.js",
-      "source_location": "L11",
-      "weight": 1.0,
-      "_origin": "ast",
-      "confidence_score": 1.0,
-      "source": "scripts_build_netlify",
-      "target": "scripts_build_netlify_path"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "scripts/build-netlify.js",
-      "source_location": "L13",
-      "weight": 1.0,
-      "_origin": "ast",
-      "confidence_score": 1.0,
-      "source": "scripts_build_netlify",
-      "target": "scripts_build_netlify_root"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "scripts/build-netlify.js",
-      "source_location": "L29",
-      "weight": 1.0,
-      "_origin": "ast",
-      "confidence_score": 1.0,
-      "source": "scripts_build_netlify",
-      "target": "scripts_build_netlify_toposix"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "scripts/build-netlify.js",
-      "source_location": "L43",
-      "weight": 1.0,
-      "_origin": "ast",
-      "confidence_score": 1.0,
-      "source": "scripts_build_netlify_copyrecursive",
-      "target": "scripts_build_netlify_toposix"
     },
     {
       "relation": "contains",
@@ -32685,5 +32718,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "0ecc087c1c8690b15c6ed99898807c24327b846c"
+  "built_at_commit": "a4e59fe2ea48bb268c7401bee01c420315d711ee"
 }
