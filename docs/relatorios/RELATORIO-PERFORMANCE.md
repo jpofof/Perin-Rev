@@ -1086,3 +1086,36 @@ Validado adicionalmente:
 - Drag/touch continua funcionando normalmente na nova velocidade — gesto de arraste responde e o autoplay retoma normalmente ao soltar, sem conflito.
 - Nenhum teste unitário/regressão referenciava o valor de velocidade — os 112 testes continuam passando sem alteração.
 - `script.min.js` regenerado e `check-min-freshness` confirma consistência.
+
+## Travamento repetido no scroll hero → sobre-nós (hardware fraco) — investigação sem correção aplicada
+
+**Data:** 16/08/2026.
+
+### Sintoma
+
+Travamento/stuttering repetido (múltiplos "congelamentos", não um único evento) durante a rolagem de `#hero` para `#about`, em hardware fraco/CPU limitada — reproduzido em desktop e mobile (diferente do caso do blur acima, que era específico do motor WebKit/Safari; este reproduz normalmente em Chrome com CPU throttled via CDP).
+
+### Metodologia
+
+Reprodução via Puppeteer com `Emulation.setCPUThrottlingRate` (6x, acima do padrão Lighthouse de 4x) + `page.mouse.wheel` contínuo (preserva o smoothing do Lenis), capturando trace do Chrome Performance, `PerformanceObserver({entryTypes:['longtask']})`, amostragem de frame gap via `requestAnimationFrame`, e contagem de `ScrollTrigger.getAll().length` ao longo do tempo. Clusterização de long tasks com gap > 150ms = novo pico.
+
+**Baseline medido:** mobile — 5 picos, FPS médio 22.5, pior gap de frame 366.8ms. Desktop — 6 picos, FPS médio 19.8, pior gap 349.9ms.
+
+### Causa raiz identificada
+
+**26-27 instâncias de `ScrollTrigger` simultâneas**, criadas em uma única rajada dentro de um `requestIdleCallback` (`runBatchWhenIdle`, Grupo A de `startIdleQueue()`, `script.js`) disparado logo após o `onComplete` da timeline de entrada do hero (ou pelo fallback de 3,5s). O trace mostrou a contagem saltando de 1 para 26 no meio da rolagem do usuário (não no carregamento) — sob CPU throttled, o atraso na conclusão do hero empurra essa rajada para dentro da janela em que o usuário já está rolando ativamente, tornando o custo concorrente com o scroll.
+
+O custo real não é a criação dos triggers em si, e sim `ScrollTrigger.refresh()` — chamado em `resize` (debounced, só por largura), `window.load` e `document.fonts.ready` — recalculando as 26-27 instâncias de uma vez; isso respondeu por ~42-44% do custo agregado medido no trace. Nota de correção: `ScrollTrigger.batch()` (já usado em 3 pontos do código, incluindo `batchReveal()`) **não reduz a contagem de instâncias** — uma instância interna ainda é criada por elemento; `batch()` só agrupa a entrega do callback (`onEnter` recebe um array), não o mecanismo de refresh.
+
+### Tentativas feitas
+
+1. **Split em 3 grupos menores** (Grupo A dividido por proximidade de seção com a dobra — clients+about / services+portfolio / process+differentials —, cada um com seu próprio `runQueueWhenIdle`, sem gap entre eles): melhora clara em desktop (pior gap de frame -43%, de 349.9ms para ~200ms; FPS médio subiu de 19.8 para 21.1), mas regressão real e reproduzível no mobile — confirmada em 3 rodadas idênticas (mesma CPU throttle, mesmo scroll), pior gap consistentemente entre 433-533ms, sempre acima do baseline de 366.8ms. Contagem de picos não convergiu de forma confiável entre rodadas (variou de 2 a 6) para compensar a perda no pior gap.
+2. **Espaçamento temporal explícito entre grupos** (`setTimeout` de 150ms e 300ms antes de cada `runQueueWhenIdle` seguinte, garantindo separação real mesmo com múltiplas janelas ociosas disponíveis): piorou o mobile ainda mais, de forma não-monotônica (300ms → pior gap 550ms; 150ms → pior gap 1066.8ms) — descartado.
+
+Regressão específica testada em cada etapa (`npm test`, 103/103, e `tests/unit/init-scheduling.test.js` isolado — cobre especificamente os dois sintomas históricos desta área: atraso na entrada do hero e "carrossel parado"): sempre passando, em todas as variações. O problema encontrado foi de performance sob CPU throttled, não de lógica de agendamento.
+
+### Estado final
+
+**Revertido.** `script.js` restaurado ao `runBatchWhenIdle` original de 8 funções em um único grupo (estado anterior a toda esta investigação) via `git checkout -- script.js`, confirmado sem diff contra o commit anterior. `script.min.js`/`dist/` não precisaram de rebuild (`check-min-freshness` OK) já que o fonte voltou ao estado já refletido no build. Nenhuma correção foi aplicada em produção.
+
+Direção mais promissora ainda não testada: criação **lazy** dos `ScrollTrigger`/`batchReveal()` de seções abaixo da dobra (tudo depois de `#about`) via `IntersectionObserver`, disparada conforme a seção anterior se aproxima da viewport, em vez de todas as 26-27 instâncias existirem desde o início. Avaliada anteriormente como risco moderado — nesta mesma área de código já houve 2 regressões documentadas (hero-entrance travando por long task, "carrossel parado" por atraso na fila de idle) — e exigiria seu próprio `ScrollTrigger.refresh()` no momento da criação lazy (já que `refresh()` só roda em `resize`/`load`/`fonts.ready`), o que poderia apenas deslocar o pico em vez de eliminá-lo. Não implementada nesta sessão.
