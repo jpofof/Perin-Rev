@@ -1119,3 +1119,43 @@ Regressão específica testada em cada etapa (`npm test`, 103/103, e `tests/unit
 **Revertido.** `script.js` restaurado ao `runBatchWhenIdle` original de 8 funções em um único grupo (estado anterior a toda esta investigação) via `git checkout -- script.js`, confirmado sem diff contra o commit anterior. `script.min.js`/`dist/` não precisaram de rebuild (`check-min-freshness` OK) já que o fonte voltou ao estado já refletido no build. Nenhuma correção foi aplicada em produção.
 
 Direção mais promissora ainda não testada: criação **lazy** dos `ScrollTrigger`/`batchReveal()` de seções abaixo da dobra (tudo depois de `#about`) via `IntersectionObserver`, disparada conforme a seção anterior se aproxima da viewport, em vez de todas as 26-27 instâncias existirem desde o início. Avaliada anteriormente como risco moderado — nesta mesma área de código já houve 2 regressões documentadas (hero-entrance travando por long task, "carrossel parado" por atraso na fila de idle) — e exigiria seu próprio `ScrollTrigger.refresh()` no momento da criação lazy (já que `refresh()` só roda em `resize`/`load`/`fonts.ready`), o que poderia apenas deslocar o pico em vez de eliminá-lo. Não implementada nesta sessão.
+
+## CSS crítico inline + carregamento adiado — duas tentativas, revertidas em produção
+
+**Data:** commits `72b5b69` (implementação), `58e01fa` (registro dos resultados v2), `ac14487` (revert, 17/08/2026).
+
+### Sintoma
+
+Otimização de Lighthouse (inlining do CSS crítico no `<head>` + carregamento assíncrono do restante via `defer-css.js`) melhorava a métrica de performance mobile no Lighthouse, mas causava uma janela real de 2-3s em cache frio, em produção, na qual todo o conteúdo abaixo da dobra renderizava sem estilo (flash of unstyled content) — reportado como bug visível, não capturado pelo Lighthouse porque o teste automatizado não expõe esse tipo de flash sob condições reais de rede/dispositivo.
+
+### Metodologia
+
+Duas rodadas de Lighthouse (`audit/lighthouse-cli`, desktop + mobile), cada uma com baseline/depois, medindo Performance, FCP, LCP e CLS.
+
+### Métricas — tentativa 1 (`audit/perf-css-critico/`, abandonada)
+
+| Relatório | Performance | FCP | LCP | CLS |
+|---|---|---|---|---|
+| baseline-desktop | 85 | 0,3s | 2,7s | 0 |
+| baseline-mobile | 66 | 3,4s | 4,1s | 0 |
+| after-desktop | 84 | 0,7s | 2,8s | 0 |
+| after-mobile | **52** | 1,3s | **5,3s** | 0 |
+
+Mobile piorou (66→52, LCP 4,1s→5,3s) — tentativa abandonada sem chegar a produção.
+
+### Métricas — tentativa 2 (`audit/perf-css-critico-v2/`, implementada em produção e depois revertida)
+
+| Relatório | Performance | FCP | LCP | CLS |
+|---|---|---|---|---|
+| v2-desktop | 84 | 0,4s | 2,8s | 0 |
+| v2-mobile | **81** | 1,4s | 4,0s | 0,029 |
+
+Ganho líquido no Lighthouse mobile (66→81), com uma pequena regressão de CLS (0→0,029). Foi essa versão que entrou em produção (`72b5b69`) — e que, apesar do ganho de score, causou o flash de conteúdo sem estilo reportado por usuários reais, levando ao revert completo em `ac14487` (ver changelog do README, entrada 17/08/2026).
+
+### Causa raiz da reversão
+
+Ganho de Lighthouse não capturou o custo real do carregamento assíncrono do CSS não-crítico em cache frio — o intervalo entre o CSS crítico inline pintar a dobra e o `defer-css.js` terminar de carregar o restante era suficiente, em condições reais de rede, para o usuário rolar e ver conteúdo sem estilo. Métrica de laboratório (Lighthouse, rede simulada) não reproduziu esse cenário.
+
+### Estado final
+
+**Totalmente revertido** em `ac14487` — CSS voltou a ser um `<link>` bloqueante único, `defer-css.js` removido do repositório e do `FILES` de `scripts/build-netlify.js`. As pastas `audit/perf-css-critico/`, `audit/perf-css-critico-v2/` e os 6 screenshots soltos na raiz de `audit/` (baseline-/after-/after2- desktop/mobile, ~30MB de relatórios/PNGs) foram removidos do repositório nesta consolidação — este resumo é a referência que resta; os artefatos brutos permanecem recuperáveis via histórico do git (commits `538c88a`, `58e01fa`) se necessário.

@@ -27,33 +27,51 @@ O projeto foi desenvolvido para transmitir engenharia, arquitetura, sofisticaç�
 ```
 /
 ├── index.html                          # Página principal (9 seções)
-├── styles.css                          # Design System completo
-├── script.js                           # Engine de animações e interações
-├── AGENTS.md                           # Contrato de comportamento do agente de IA
-├── CLAUDE.md                           # Instruções específicas do Claude Code
+├── styles.css / styles.min.css         # Design System completo (fonte / minificado, servido em produção)
+├── script.js / script.min.js           # Engine de animações e interações (fonte / minificado)
+├── 404.html, politica-de-privacidade.html
+├── AGENTS.md                           # Contrato de comportamento do agente de IA (fonte da verdade)
+├── CLAUDE.md                           # Overrides específicos do Claude Code (referencia AGENTS.md)
 ├── README.md                           # Documentação (este arquivo)
-├── PRD.md / SPECS.md / PLANO-MELHORIAS.md / relatorio.md / plano-skills.md / AUDITORIA.md
-│                                        # Documentos de apoio (produto, specs, auditoria, planejamento)
-├── package.json / jest.config.js       # Configuração da suíte de testes (Jest)
+├── _headers                            # CSP e demais headers de segurança/cache (Netlify)
+├── netlify.toml                        # Configuração de build/publish do Netlify
+├── robots.txt / sitemap.xml / llms.txt
+├── package.json / jest.config.js       # Dependências e configuração da suíte de testes (Jest)
 │
 ├── assets/
 │   └── images/
-│       ├── clients/                    # Logos de clientes (eldorado, elektro, isa-energia, state-grid)
-│       ├── brand/                      # Logos da própria Perin (navbar, footer)
+│       ├── clients/                    # Logos de clientes (elektro, isa-energia, state-grid)
+│       ├── brand/                      # Logos/favicons da própria Perin
+│       ├── about/, hero-fundo/         # Imagens das seções Sobre e Hero
 │       ├── social/                     # Imagem de preview para og:image/twitter:image
-│       ├── placeholders/               # Fotos genéricas usadas no portfólio fictício (placeholder-obra-01..05)
-│       └── portfolio/                  # Fotos reais de obras — NÃO integradas ao site ainda
-│           ├── portfolio-projeto-01/ .. portfolio-projeto-11/   # foto-01.webp, foto-02.webp, ...
-│           └── portfolio-duvidas/      # Fotos sem projeto de obra identificado
+│       ├── placeholders/               # placeholder-obra-03.webp — cover em uso no carrossel (script.js)
+│       └── portfolio/                  # Fotos reais de obras (parcial, ex.: elektro-02..06.webp) — uso pontual
 │
-├── originais-nao-webp/                 # Backup dos arquivos originais pré-conversão para .webp
+├── fonts/                              # Web fonts self-hosted (.woff2)
+├── vendor/                             # GSAP e Lenis self-hosted (evita CDN externo)
+│
+├── docs/
+│   ├── produto/                        # PRD.md, SPECS.md
+│   ├── planejamento/                   # PLANO-MELHORIAS.md e notas técnicas
+│   ├── relatorios/                     # AUDITORIA.md, RELATORIO-PERFORMANCE.md (histórico de perf) etc.
+│   └── ferramentas/                    # Notas sobre graphify, headroom
+│
+├── audit/                              # Investigações pontuais (Lighthouse, diagnósticos de produção)
+├── prototipos/                         # Referências externas testadas isoladamente (ex.: cascading-slider/)
+├── _archive/                           # Código/assets legados, fora do build ativo
+├── scripts/
+│   ├── build-netlify.js                # Monta dist/ com só o necessário p/ produção + cache-busting (?v=hash)
+│   ├── check-min-freshness.js          # Verifica se .min.js/.min.css estão atualizados vs. fonte
+│   └── install-git-hooks.js
+│
+├── graphify-out/                       # Grafo de conhecimento do código (gerado, ver .claude/skills/graphify)
 │
 └── tests/
-    ├── unit/slider.test.js             # Testes unitários do Cascading Slider
-    └── regression/slider.regression.test.js  # Testes de regressão (Puppeteer)
+    ├── unit/                           # slider, clients-carousel, form, init-scheduling
+    └── regression/                     # slider, process-diagram (Puppeteer)
 ```
 
-> **Nota:** as pastas em `assets/images/portfolio/` contêm as 88 fotos reais de obras já catalogadas em `relatorio.md`, mas o carrossel do site (`portfolioProjects` em `script.js`) ainda usa um conjunto fictício de 6 projetos com logos de clientes e fotos placeholder — a integração dessas fotos reais ao site é um passo futuro, pendente de confirmação dos nomes reais das obras.
+Build de produção: `npm run build:netlify` gera `dist/` (gitignored) copiando somente os arquivos referenciados acima (não inclui `docs/`, `audit/`, `scripts/`, `tests/`, `prototipos/`, `_archive/`) e aplica cache-busting — anexa `?v=<hash-md5-do-conteúdo>` em `script.min.js`/`styles.min.css` no `index.html` gerado, evitando que o `Cache-Control: max-age=2592000` do `_headers` sirva JS/CSS desatualizado por até 30 dias após um deploy.
 
 ---
 

@@ -197,8 +197,8 @@ describe('REGRESSION — Portfolio Section', () => {
 // Regression: Image Assets
 // ────────────────────────────────────
 describe('REGRESSION — Image Assets', () => {
-  test('placeholder-obra-01.webp file exists', () => {
-    expect(fs.existsSync(path.join(__dirname, '..', '..', 'assets', 'images', 'placeholders', 'placeholder-obra-01.webp'))).toBe(true);
+  test('placeholder-obra-03.webp file exists (cover photo in active use, script.js)', () => {
+    expect(fs.existsSync(path.join(__dirname, '..', '..', 'assets', 'images', 'placeholders', 'placeholder-obra-03.webp'))).toBe(true);
   });
 
   test('logo files exist', () => {
@@ -207,9 +207,6 @@ describe('REGRESSION — Image Assets', () => {
   });
 
   test('project cover images exist', () => {
-    expect(fs.existsSync(path.join(__dirname, '..', '..', 'assets', 'images', 'placeholders', 'placeholder-obra-02.webp'))).toBe(true);
-    expect(fs.existsSync(path.join(__dirname, '..', '..', 'assets', 'images', 'placeholders', 'placeholder-obra-03.webp'))).toBe(true);
-    expect(fs.existsSync(path.join(__dirname, '..', '..', 'assets', 'images', 'placeholders', 'placeholder-obra-04.webp'))).toBe(true);
     expect(fs.existsSync(path.join(__dirname, '..', '..', 'assets', 'images', 'clients', 'state-grid.webp'))).toBe(true);
   });
 });

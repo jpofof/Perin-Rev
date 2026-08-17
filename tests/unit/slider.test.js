@@ -273,8 +273,8 @@ describe('Script Integrity', () => {
 // Image assets
 // ────────────────────────────────────
 describe('Image Assets', () => {
-  test('placeholder-obra-01.webp exists', () => {
-    const exists = fs.existsSync(path.join(__dirname, '..', '..', 'assets', 'images', 'placeholders', 'placeholder-obra-01.webp'));
+  test('placeholder-obra-03.webp exists (cover photo in active use, script.js)', () => {
+    const exists = fs.existsSync(path.join(__dirname, '..', '..', 'assets', 'images', 'placeholders', 'placeholder-obra-03.webp'));
     expect(exists).toBe(true);
   });
 
