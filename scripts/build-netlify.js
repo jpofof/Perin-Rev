@@ -9,6 +9,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 
 const ROOT = path.resolve(__dirname, '..');
 const DIST = path.join(ROOT, 'dist');
@@ -63,6 +64,27 @@ for (const file of FILES) {
     }
     copyRecursive(srcPath, path.join(DIST, file));
 }
+
+// Cache busting: os nomes fisicos de script.min.js/styles.min.css nao mudam
+// entre deploys, e o _headers aplica max-age=2592000 (30 dias) a eles — sem
+// isso, quem visitou o site recentemente pode continuar servindo o JS/CSS de
+// um deploy anterior por ate 30 dias mesmo depois do HTML (max-age=0) mudar,
+// misturando versoes e quebrando o layout. O hash muda so quando o conteudo
+// muda, entao o navegador so revalida quando ha de fato uma versao nova.
+function shortHash(filePath) {
+    const content = fs.readFileSync(filePath);
+    return crypto.createHash('md5').update(content).digest('hex').slice(0, 8);
+}
+
+const scriptHash = shortHash(path.join(ROOT, 'script.min.js'));
+const stylesHash = shortHash(path.join(ROOT, 'styles.min.css'));
+
+const indexPath = path.join(DIST, 'index.html');
+let indexHtml = fs.readFileSync(indexPath, 'utf8');
+indexHtml = indexHtml
+    .replace('src="script.min.js"', `src="script.min.js?v=${scriptHash}"`)
+    .replace('href="styles.min.css"', `href="styles.min.css?v=${stylesHash}"`);
+fs.writeFileSync(indexPath, indexHtml);
 
 for (const dir of DIRS) {
     const srcPath = path.join(ROOT, dir);
