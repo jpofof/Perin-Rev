@@ -15,13 +15,13 @@
     "semantic_hash": ""
   },
   "script.js": {
-    "mtime": 1787003647.074402,
-    "ast_hash": "3d13b3026f1b0f589374b8b9184a17d6",
+    "mtime": 1787068393.9038215,
+    "ast_hash": "8b9641a020ea5702ba13c7cd1801ddae",
     "semantic_hash": ""
   },
   "script.min.js": {
-    "mtime": 1787020537.5975664,
-    "ast_hash": "86c0a681133a5492ef894f02ef87b42b",
+    "mtime": 1787084175.5611439,
+    "ast_hash": "f0a242adf212218da62528fc30ced549",
     "semantic_hash": ""
   },
   "scripts/check-min-freshness.js": {
@@ -135,8 +135,8 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1787001807.4591377,
-    "ast_hash": "0df74fd204d768537a4984eadf4e73b1",
+    "mtime": 1787084774.8697495,
+    "ast_hash": "ee21f25182d4fab9c8d499e0dccd95ed",
     "semantic_hash": ""
   },
   "audit/bootstrap-uso-real.md": {
@@ -597,6 +597,11 @@
   "tests/regression/hero-video.regression.test.js": {
     "mtime": 1787020731.307183,
     "ast_hash": "1b900d18ce4963badcd94f3b1de4495e",
+    "semantic_hash": ""
+  },
+  "tests/regression/scroll-reveal.regression.test.js": {
+    "mtime": 1787068580.3464074,
+    "ast_hash": "44df533ab138b9ca2cc4dbfbcb358dc9",
     "semantic_hash": ""
   }
 }

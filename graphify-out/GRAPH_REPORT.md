@@ -1,16 +1,16 @@
-# Graph Report - Perin_Rev  (2026-08-17)
+# Graph Report - Perin_Rev  (2026-08-18)
 
 ## Corpus Check
-- 64 files · ~444,391 words
+- 65 files · ~445,302 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1259 nodes · 1700 edges · 97 communities (92 shown, 5 thin omitted)
+- 1270 nodes · 1710 edges · 98 communities (93 shown, 5 thin omitted)
 - Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 58 edges (avg confidence: 0.59)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `30feee4f`
+- Built from commit: `0b7703f8`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -105,6 +105,7 @@
 - Rodada 2 — Remoção do Bootstrap
 - Extração de padrões — burkhardprojekte.ch → Perin Construções
 - Headroom
+- scroll-reveal.regression.test.js
 - CLAUDE.md
 - checklist-pendencias-mobile.md
 - process-diagram.regression.test.js
@@ -137,15 +138,15 @@
 ## Import Cycles
 - None detected.
 
-## Communities (97 total, 5 thin omitted)
+## Communities (98 total, 5 thin omitted)
 
 ### Community 0 - "script.js"
-Cohesion: 0.07
-Nodes (40): applyPhoneMask(), batchReveal(), buildResponsiveImgAttrs(), capitalizeName(), captureStack(), checkEmail(), checkName(), checkNameOnBlur() (+32 more)
+Cohesion: 0.08
+Nodes (40): applyPhoneMask(), buildResponsiveImgAttrs(), capitalizeName(), captureStack(), checkEmail(), checkName(), checkNameOnBlur(), checkPhone() (+32 more)
 
 ### Community 1 - "script.min.js"
 Cohesion: 0.08
-Nodes (43): applyPhoneMask(), batchReveal(), buildResponsiveImgAttrs(), capitalizeName(), checkEmail(), checkName(), checkNameOnBlur(), checkPhone() (+35 more)
+Nodes (42): applyPhoneMask(), buildResponsiveImgAttrs(), capitalizeName(), checkEmail(), checkName(), checkNameOnBlur(), checkPhone(), checkService() (+34 more)
 
 ### Community 2 - "gsap/gsap.min.js"
 Cohesion: 0.06
@@ -491,12 +492,16 @@ Nodes (4): Extração de padrões — burkhardprojekte.ch → Perin Construçõe
 Cohesion: 0.40
 Nodes (4): Como fechar essa pendência, Em aberto — preencher quando souber, Headroom, Papel conhecido
 
+### Community 93 - "scroll-reveal.regression.test.js"
+Cohesion: 0.14
+Nodes (7): css, FakeIntersectionObserver, flush(), fs, html, loadScript(), path
+
 ### Community 102 - "process-diagram.regression.test.js"
 Cohesion: 0.22
 Nodes (6): css, flush(), fs, html, loadScript(), path
 
 ## Knowledge Gaps
-- **549 isolated node(s):** `fs`, `path`, `html`, `portfolioProjects`, `portfolioProjects` (+544 more)
+- **553 isolated node(s):** `🚀 Tecnologias`, `📁 Estrutura do Projeto`, `Paleta de Cores (Design Tokens)`, `Tipografia`, `Sistema Tipográfico` (+548 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **5 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
@@ -504,16 +509,16 @@ Nodes (6): css, flush(), fs, html, loadScript(), path
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `f()` connect `script.min.js` to `r`, `r`?**
-  _High betweenness centrality (0.019) - this node is a cross-community bridge._
-- **Why does `wb()` connect `Tween` to `r`, `gsap/gsap.min.js`, `ce`?**
-  _High betweenness centrality (0.012) - this node is a cross-community bridge._
+  _High betweenness centrality (0.020) - this node is a cross-community bridge._
 - **Why does `eb()` connect `r` to `script.min.js`, `gsap/gsap.min.js`, `Tween`, `ja`?**
+  _High betweenness centrality (0.012) - this node is a cross-community bridge._
+- **Why does `wb()` connect `Tween` to `r`, `gsap/gsap.min.js`, `ce`?**
   _High betweenness centrality (0.011) - this node is a cross-community bridge._
-- **What connects `fs`, `path`, `html` to the rest of the system?**
-  _549 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **What connects `🚀 Tecnologias`, `📁 Estrutura do Projeto`, `Paleta de Cores (Design Tokens)` to the rest of the system?**
+  _553 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `script.js` be split into smaller, more focused modules?**
-  _Cohesion score 0.07256894049346879 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.07686274509803921 - nodes in this community are weakly interconnected._
 - **Should `script.min.js` be split into smaller, more focused modules?**
-  _Cohesion score 0.08069381598793364 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.08489795918367347 - nodes in this community are weakly interconnected._
 - **Should `gsap/gsap.min.js` be split into smaller, more focused modules?**
   _Cohesion score 0.06342780026990553 - nodes in this community are weakly interconnected._
