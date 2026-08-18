@@ -690,52 +690,6 @@ function initNavigation() {
     });
 }
 
-// === SCROLL REVEAL ANIMATIONS ===
-function initScrollReveals() {
-    gsap.utils.toArray('.section-title-reveal').forEach(title => {
-        gsap.to(title, {
-            scrollTrigger: {
-                trigger: title,
-                start: 'top 85%',
-                toggleActions: 'play none none reverse',
-            },
-            opacity: 1,
-            y: 0,
-            duration: 1,
-            ease: 'power3.out',
-        });
-    });
-
-    gsap.utils.toArray('.text-reveal').forEach(text => {
-        gsap.to(text, {
-            scrollTrigger: {
-                trigger: text,
-                start: 'top 85%',
-                toggleActions: 'play none none reverse',
-            },
-            opacity: 1,
-            y: 0,
-            duration: 0.8,
-            ease: 'power2.out',
-        });
-    });
-
-    // Antes: 1 ScrollTrigger.create() por .process-step (uma instancia cada).
-    // Agora: 1 unica instancia via ScrollTrigger.batch() para toda a secao —
-    // mesmo start/once/stagger visual (200ms por item), so o mecanismo interno mudou.
-    ScrollTrigger.batch('.process-step', {
-        start: 'top 80%',
-        once: true,
-        onEnter: (batch) => {
-            batch.forEach((step, i) => {
-                setTimeout(() => {
-                    step.classList.add('revealed');
-                }, i * 200);
-            });
-        },
-    });
-}
-
 // === COUNTER ANIMATIONS ===
 function initCounters() {
     gsap.utils.toArray('.counter-target').forEach(counter => {
@@ -1640,30 +1594,57 @@ function initButtonRipple() {
 }
 
 // === SCROLL REVEAL HELPERS ===
-// Antes: cada secao criava 1 ScrollTrigger por item (gsap.from + toggleActions
-// 'play none none reverse' — anima ao entrar, reverte ao rolar de volta pra
-// cima). Agora: 1 unica instancia via ScrollTrigger.batch() por secao. Para
-// preservar o "reverse" do toggleActions original (que nao existe nativamente
-// em batch), a mesma transicao e replicada manualmente em onEnter/onLeaveBack.
-// O delay em cascata (delay: i*X) vira stagger (mesmo efeito visual, mesmo
-// valor), aplicado dentro de cada grupo que entra junto na viewport.
+// Antes: ScrollTrigger.batch() por secao (gsap.set + onEnter/onLeaveBack).
+// Agora: 1 IntersectionObserver nativo por secao, alternando a classe
+// .is-revealed — a transicao visual (opacity/translate, duration, easing)
+// mora em CSS, calibrada para bater com os valores originais do GSAP
+// (duration 0.6s, ease power2.out ~= cubic-bezier(0.215, 0.61, 0.355, 1)).
+// stagger vira transition-delay por indice, calculado por elemento dentro do
+// grupo que entra junto no mesmo tick do IntersectionObserver — equivalente
+// ao "batch" que entra junto na viewport no ScrollTrigger.batch original.
 //
-// IMPORTANTE — leaveStagger:0 por padrao. Medido com Puppeteer (screenshots
-// em 25/50/75% da transicao) que o toggleActions original, ao reverter, NAO
-// produzia stagger visivel: o "delay" de um gsap.from() fica na CAUDA do
-// tween, entao ao reverter a partir do estado 100% completo o delay vira
-// tempo morto DEPOIS da animacao visual, nao antes — todos os itens saiam
-// sincronizados. Usar o mesmo `stagger` do onEnter tambem no onLeaveBack
-// introduzia uma cascata nova e perceptivel que nao existia antes (~150-300ms
-// de defasagem entre itens grandes, acima do limiar de percepcao de
-// assincronia). leaveStagger:0 restaura o comportamento sincronizado original.
-function batchReveal(selector, { y = 40, duration = 0.6, stagger = 0.1, leaveStagger = 0, ease = 'power2.out', start = 'top 85%' } = {}) {
-    gsap.set(selector, { opacity: 0, y });
-    ScrollTrigger.batch(selector, {
-        start,
-        onEnter: (batch) => gsap.to(batch, { opacity: 1, y: 0, duration, stagger, ease, overwrite: true }),
-        onLeaveBack: (batch) => gsap.to(batch, { opacity: 0, y, duration, stagger: leaveStagger, ease, overwrite: true }),
-    });
+// Direcao onEnter/onLeaveBack: o ScrollTrigger original so revertia
+// (onLeaveBack) ao rolar pra CIMA e o elemento sair pela parte de BAIXO do
+// viewport (linha de start); rolar pra baixo e o elemento sair por CIMA
+// (onLeave, nao vinculado) nao escondia nada. Aqui isso e replicado
+// comparando o lado da intersecao perdida: boundingClientRect.top >=
+// rootBounds.bottom so acontece na saida por baixo (== onLeaveBack).
+//
+// leaveStagger sempre 0 (saida sincronizada, sem cascata) — decisao
+// original preservada: medido com Puppeteer que o toggleActions original,
+// ao reverter, nao produzia stagger visivel na saida.
+function nativeReveal(selector, { stagger = 0.1 } = {}) {
+    const elements = Array.from(document.querySelectorAll(selector));
+    if (!elements.length) return;
+
+    if (typeof IntersectionObserver !== 'function') {
+        elements.forEach(el => el.classList.add('is-revealed'));
+        return;
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+        const entering = [];
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entering.push(entry.target);
+                return;
+            }
+            const { boundingClientRect, rootBounds } = entry;
+            if (rootBounds && boundingClientRect.top >= rootBounds.bottom) {
+                entry.target.style.transitionDelay = '0s';
+                entry.target.classList.remove('is-revealed');
+            }
+        });
+
+        entering
+            .sort((a, b) => elements.indexOf(a) - elements.indexOf(b))
+            .forEach((el, i) => {
+                el.style.transitionDelay = `${i * stagger}s`;
+                el.classList.add('is-revealed');
+            });
+    }, { threshold: 0, rootMargin: '0px 0px -15% 0px' });
+
+    elements.forEach(el => observer.observe(el));
 }
 
 // === PROCESS DIAGRAM — cluster de circulos + accordion sincronizados ===
@@ -1696,15 +1677,15 @@ function initProcessDiagram() {
         head.addEventListener('click', () => setActive(item.dataset.stepIndex));
     });
 
-    batchReveal('.process-circle-cluster, .process-accordion-item', { y: 30, duration: 0.6, stagger: 0.08, ease: 'power2.out', start: 'top 85%' });
+    nativeReveal('.process-circle-cluster, .process-accordion-item', { stagger: 0.08 });
 }
 
 function initDifferentialsAnimation() {
-    batchReveal('.differential-item', { y: 40, duration: 0.6, stagger: 0.1, ease: 'power2.out', start: 'top 85%' });
+    nativeReveal('.differential-item', { stagger: 0.1 });
 }
 
 function initServicesReveal() {
-    batchReveal('.service-mosaic-item', { y: 40, duration: 0.6, stagger: 0.1, ease: 'power2.out', start: 'top 85%' });
+    nativeReveal('.service-mosaic-item', { stagger: 0.1 });
 }
 
 // === SERVICE MOSAIC GRID - DYNAMIC SIZING ===
@@ -1998,62 +1979,6 @@ function scheduleClientsCarouselEarly() {
     earlyObserver.observe(clientsStage);
 }
 
-// === SCROLL REVEAL FALLBACK — segurança contra ScrollTrigger nunca disparar ===
-// Causa raiz do bug original: initPage() roda em DOMContentLoaded, antes de
-// imagens (portfolio, mosaico de serviços, avatares) terminarem de carregar.
-// Os marcadores de start do ScrollTrigger são calculados com a página ainda
-// curta; em mobile (rede mais lenta, ignoreMobileResize:true suprime o resize
-// do endereço do Safari) esses marcadores nunca são recalculados, e o
-// scroll do usuário não atinge o ponto onde o ScrollTrigger acha que deveria
-// disparar — o elemento fica com opacity:0 (aplicado inline pelo gsap.from())
-// para sempre. window.load + ScrollTrigger.refresh() corrige a causa raiz;
-// este fallback é a rede de segurança caso, por qualquer motivo futuro, um
-// elemento ainda fique retido perto da viewport sem revelar.
-function initScrollRevealFallback() {
-    const GRACE_PERIOD_MS = 1500;
-    const selector = '.differential-item, .service-mosaic-item, .process-step';
-    const elements = document.querySelectorAll(selector);
-    if (!elements.length) return;
-
-    function isHidden(el) {
-        if (el.classList.contains('process-step')) {
-            return !el.classList.contains('revealed');
-        }
-        return parseFloat(window.getComputedStyle(el).opacity) < 1;
-    }
-
-    function forceReveal(el) {
-        if (!isHidden(el)) return;
-        if (el.classList.contains('process-step')) {
-            el.classList.add('revealed');
-        } else {
-            gsap.set(el, { opacity: 1, x: 0, y: 0 });
-        }
-    }
-
-    if (typeof IntersectionObserver !== 'function') {
-        elements.forEach(forceReveal);
-        return;
-    }
-
-    // Observa continuamente (não é um disparo único pós-load): cobre também
-    // elementos que o usuário só alcança rolando bem mais tarde.
-    const fallbackObserver = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-            if (!entry.isIntersecting) return;
-            const el = entry.target;
-            // Dá tempo do ScrollTrigger legítimo disparar primeiro — só força
-            // a revelação se, depois da folga, o elemento ainda estiver preso.
-            setTimeout(() => {
-                if (isHidden(el)) forceReveal(el);
-            }, GRACE_PERIOD_MS);
-            fallbackObserver.unobserve(el);
-        });
-    }, { rootMargin: '200px 0px', threshold: 0 });
-
-    elements.forEach(el => fallbackObserver.observe(el));
-}
-
 // Roda fn assim que o main thread ficar ocioso, com timeout de seguranca (nao
 // espera para sempre se o thread ficar ocupado). Fallback setTimeout(fn, 0)
 // para navegadores sem requestIdleCallback (Safari).
@@ -2156,7 +2081,6 @@ function initPage() {
         // foram incluidas aqui tambem. Roda tudo em UM idle callback, sem
         // espacamento entre itens.
         runBatchWhenIdle([
-            initScrollReveals,
             initCounters,
             initServicesReveal,
             initDifferentialsAnimation,
@@ -2176,7 +2100,6 @@ function initPage() {
             initServicesInteraction,
             initContactForm,
             initCustomSelect,
-            initScrollRevealFallback,
             initFaqAccordion,
         ]);
     }

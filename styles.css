@@ -1134,7 +1134,8 @@ h6 {
     border: 1px solid var(--color-border-light);
     border-radius: 16px;
     overflow: hidden;
-    transition: all var(--transition-medium);
+    transition: border-color var(--transition-medium), transform var(--transition-medium), box-shadow var(--transition-medium),
+                opacity 0.6s cubic-bezier(0.215, 0.61, 0.355, 1), translate 0.6s cubic-bezier(0.215, 0.61, 0.355, 1);
     min-height: 320px;
     box-shadow: 0 2px 12px var(--color-shadow);
 }
@@ -1418,6 +1419,7 @@ h6 {
     width: 100%;
     aspect-ratio: 1 / 1;
     max-width: 400px;
+    transition: opacity 0.6s cubic-bezier(0.215, 0.61, 0.355, 1), translate 0.6s cubic-bezier(0.215, 0.61, 0.355, 1);
 }
 
 .process-circle {
@@ -1542,7 +1544,7 @@ h6 {
     border-bottom: 1px solid rgba(26, 26, 26, 0.1);
     padding: 4px 20px;
     border-radius: 12px;
-    transition: background-color 0.35s ease;
+    transition: background-color 0.35s ease, opacity 0.6s cubic-bezier(0.215, 0.61, 0.355, 1), translate 0.6s cubic-bezier(0.215, 0.61, 0.355, 1);
 }
 
 .process-accordion-item.is-active {
@@ -2122,12 +2124,13 @@ h6 {
 }
 
 .differential-item {
+    transition: border-color var(--transition-medium), transform var(--transition-medium), box-shadow var(--transition-medium),
+                opacity 0.6s cubic-bezier(0.215, 0.61, 0.355, 1), translate 0.6s cubic-bezier(0.215, 0.61, 0.355, 1);
     padding: 48px 36px;
     background: var(--color-bg-surface);
     border: 1px solid var(--color-border-light);
     border-radius: 16px;
     text-align: center;
-    transition: all var(--transition-medium);
     position: relative;
     overflow: hidden;
     box-shadow: 0 2px 12px var(--color-shadow);
@@ -2907,6 +2910,20 @@ h6 {
 
 .text-reveal {
     opacity: 1;
+}
+
+/* Estado inicial (antes do IntersectionObserver marcar .is-revealed) das
+   4 classes com fade/slide real; ver nativeReveal() em script.js. */
+.process-circle-cluster:not(.is-revealed),
+.process-accordion-item:not(.is-revealed) {
+    opacity: 0;
+    translate: 0 30px;
+}
+
+.differential-item:not(.is-revealed),
+.service-mosaic-item:not(.is-revealed) {
+    opacity: 0;
+    translate: 0 40px;
 }
 
 /* === RESPONSIVE === */
