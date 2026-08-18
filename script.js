@@ -389,11 +389,16 @@ function initHeroVideoBackground() {
 
     const HELD_MOMENT_MS = 260;
     const FIRST_PLAY_OFFSET_S = 2;
+    // Se canplaythrough não disparar dentro desse prazo (fetch travado/lento
+    // em rede ruim), toca mesmo assim — o browser bufferiza sob demanda daqui
+    // pra frente em vez de deixar o vídeo parado no poster indefinidamente.
+    const CANPLAYTHROUGH_FALLBACK_MS = 6000;
     let currentClip = forward;
     let nextClip = reverse;
     let isFirstPlay = true;
     let reverseLoadRequested = false;
     let heroIsVisible = false;
+    let forwardPlayAttempted = false;
 
     function requestReverseLoad() {
         if (reverseLoadRequested) return;
@@ -426,14 +431,18 @@ function initHeroVideoBackground() {
             forward.currentTime = FIRST_PLAY_OFFSET_S;
         }
         isFirstPlay = false;
+        forwardPlayAttempted = true;
         forward.classList.add('is-visible');
-        forward.play().catch(() => {});
+        forward.play()?.catch(() => {});
     }
 
     if (forward.readyState >= 4) {
         revealForward();
     } else {
         forward.addEventListener('canplaythrough', revealForward, { once: true });
+        setTimeout(() => {
+            if (!forwardPlayAttempted) revealForward();
+        }, CANPLAYTHROUGH_FALLBACK_MS);
     }
 
     // Rastreia visibilidade do hero para handleEnded() decidir se vale a
@@ -444,6 +453,17 @@ function initHeroVideoBackground() {
         const visibilityObserver = new IntersectionObserver((entries) => {
             entries.forEach((entry) => {
                 heroIsVisible = entry.isIntersecting;
+                // Retry: se o hero (re)entra na viewport e o clipe atual está
+                // parado (ex.: fetch travou antes do canplaythrough/fallback
+                // rodar), tenta de novo. Recarrega antes se readyState indica
+                // que nada foi baixado ainda.
+                if (heroIsVisible && currentClip.paused && !currentClip.ended) {
+                    if (currentClip.readyState < 2) {
+                        currentClip.load();
+                    }
+                    currentClip.classList.add('is-visible');
+                    currentClip.play()?.catch(() => {});
+                }
             });
         }, { threshold: 0.25 });
         visibilityObserver.observe(heroSection);
