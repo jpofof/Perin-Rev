@@ -1,16 +1,16 @@
-# Graph Report - Perin_Rev  (2026-08-13)
+# Graph Report - Perin_Rev  (2026-08-17)
 
 ## Corpus Check
-- 72 files · ~1,485,166 words
+- 64 files · ~444,391 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1240 nodes · 1686 edges · 96 communities (91 shown, 5 thin omitted)
-- Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 60 edges (avg confidence: 0.59)
+- 1259 nodes · 1700 edges · 97 communities (92 shown, 5 thin omitted)
+- Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 58 edges (avg confidence: 0.59)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `a4e59fe2`
+- Built from commit: `30feee4f`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -27,6 +27,7 @@
 - devDependencies
 - ce
 - r
+- Travamento repetido no scroll hero → sobre-nós (hardware fraco) — investigação sem correção aplicada
 - xe
 - Tween
 - clients-carousel.test.js
@@ -51,6 +52,7 @@
 - P
 - Nc
 - build-netlify.js
+- CSS crítico inline + carregamento adiado — duas tentativas, revertidas em produção
 - 03 — Smooth scroll (Lenis)
 - pre-commit
 - Cd
@@ -85,6 +87,7 @@
 - Hero: vídeo + correções
 - Travamento recorrente no Safari iOS — causa raiz e correção
 - 01 — Card de contato flutuante no hero
+- hero-video.regression.test.js
 - Notas de Implementação — Vídeo de Fundo no Hero
 - Verificação de Produção — Commit `ab2b2ae`
 - Relatório de Organização — Portfólio de Obras
@@ -103,17 +106,16 @@
 - Extração de padrões — burkhardprojekte.ch → Perin Construções
 - Headroom
 - CLAUDE.md
-- Mobile: conteúdo não revelava ao rolar
 - checklist-pendencias-mobile.md
 - process-diagram.regression.test.js
 - implementacao.js
 
 ## God Nodes (most connected - your core abstractions)
-1. `Relatório de Performance — Perin Construções` - 24 edges
+1. `Relatório de Performance — Perin Construções` - 26 edges
 2. `initPage()` - 21 edges
 3. `Instruções Gerais de Trabalho` - 20 edges
-4. `Bc()` - 14 edges
-5. `Perin Construções — Site Institucional Premium` - 14 edges
+4. `Perin Construções — Site Institucional Premium` - 14 edges
+5. `Bc()` - 14 edges
 6. `Tween()` - 13 edges
 7. `r()` - 13 edges
 8. `s()` - 13 edges
@@ -123,27 +125,27 @@
 ## Surprising Connections (you probably didn't know these)
 - `hb()` --indirect_call--> `f()`  [INFERRED]
   prototipos/cascading-slider/js/gsap.min.js → script.min.js
+- `eb()` --indirect_call--> `f()`  [INFERRED]
+  vendor/gsap/gsap.min.js → script.min.js
 - `zb()` --indirect_call--> `ve()`  [INFERRED]
   prototipos/cascading-slider/js/gsap.min.js → vendor/gsap/gsap.min.js
 - `zb()` --indirect_call--> `we()`  [INFERRED]
   prototipos/cascading-slider/js/gsap.min.js → vendor/gsap/gsap.min.js
 - `wb()` --indirect_call--> `ce()`  [INFERRED]
   vendor/gsap/gsap.min.js → prototipos/cascading-slider/js/gsap.min.js
-- `wb()` --indirect_call--> `he()`  [INFERRED]
-  vendor/gsap/gsap.min.js → prototipos/cascading-slider/js/gsap.min.js
 
 ## Import Cycles
 - None detected.
 
-## Communities (96 total, 5 thin omitted)
+## Communities (97 total, 5 thin omitted)
 
 ### Community 0 - "script.js"
 Cohesion: 0.07
-Nodes (43): applyPhoneMask(), batchReveal(), buildResponsiveImgAttrs(), capitalizeName(), captureStack(), checkEmail(), checkName(), checkNameOnBlur() (+35 more)
+Nodes (40): applyPhoneMask(), batchReveal(), buildResponsiveImgAttrs(), capitalizeName(), captureStack(), checkEmail(), checkName(), checkNameOnBlur() (+32 more)
 
 ### Community 1 - "script.min.js"
 Cohesion: 0.08
-Nodes (44): applyPhoneMask(), batchReveal(), buildResponsiveImgAttrs(), capitalizeName(), checkEmail(), checkName(), checkNameOnBlur(), checkPhone() (+36 more)
+Nodes (43): applyPhoneMask(), batchReveal(), buildResponsiveImgAttrs(), capitalizeName(), checkEmail(), checkName(), checkNameOnBlur(), checkPhone() (+35 more)
 
 ### Community 2 - "gsap/gsap.min.js"
 Cohesion: 0.06
@@ -182,10 +184,14 @@ Cohesion: 0.15
 Nodes (20): Ae(), Animation(), ce(), $d(), Da(), ee(), he(), ka() (+12 more)
 
 ### Community 11 - "r"
-Cohesion: 0.14
-Nodes (21): f(), _a(), ac(), Co(), db(), ea(), eb(), ga() (+13 more)
+Cohesion: 0.15
+Nodes (20): _a(), ac(), Co(), db(), ea(), eb(), ga(), gb() (+12 more)
 
-### Community 12 - "xe"
+### Community 12 - "Travamento repetido no scroll hero → sobre-nós (hardware fraco) — investigação sem correção aplicada"
+Cohesion: 0.33
+Nodes (6): Causa raiz identificada, Estado final, Metodologia, Sintoma, Tentativas feitas, Travamento repetido no scroll hero → sobre-nós (hardware fraco) — investigação sem correção aplicada
+
+### Community 13 - "xe"
 Cohesion: 0.50
 Nodes (4): Ud(), vd(), we(), xe()
 
@@ -278,8 +284,12 @@ Cohesion: 0.50
 Nodes (4): ja(), Lc(), Nc(), ub()
 
 ### Community 36 - "build-netlify.js"
-Cohesion: 0.20
-Nodes (10): copyRecursive(), DIRS, DIST, EXCLUDE, excluded, FILES, fs, path (+2 more)
+Cohesion: 0.12
+Nodes (15): copyRecursive(), crypto, DIRS, DIST, EXCLUDE, excluded, FILES, fs (+7 more)
+
+### Community 37 - "CSS crítico inline + carregamento adiado — duas tentativas, revertidas em produção"
+Cohesion: 0.29
+Nodes (7): Causa raiz da reversão, CSS crítico inline + carregamento adiado — duas tentativas, revertidas em produção, Estado final, Metodologia, Métricas — tentativa 1 (`audit/perf-css-critico/`, abandonada), Métricas — tentativa 2 (`audit/perf-css-critico-v2/`, implementada em produção e depois revertida), Sintoma
 
 ### Community 39 - "03 — Smooth scroll (Lenis)"
 Cohesion: 0.22
@@ -386,8 +396,8 @@ Cohesion: 0.20
 Nodes (9): 1. Estratégia de loop — DECISÃO: dois arquivos encadeados via `ended`, 2. Formato e encoding, 3. Estratégia de carregamento, 4. Estratégia de fallback (poster-only, sem vídeo), 5. Acessibilidade, 6. Localização de arquivos, 7. Orçamento de performance, Plano Técnico — Vídeo Time-lapse de Fundo no Hero (+1 more)
 
 ### Community 69 - "Relatório de Performance — Perin Construções"
-Cohesion: 0.20
-Nodes (9): Antes vs. Depois, Carrossel de clientes parado em mobile — causa raiz e correção, Carrossel de clientes — velocidade de rotação aumentada em 1.5x, Como revisar esta branch localmente, Decisão registrada, Pendências de decisão do usuário, Relatório de Performance — Perin Construções, Resumo consolidado — jornada completa de otimização (+1 more)
+Cohesion: 0.14
+Nodes (13): Antes vs. Depois, Carrossel de clientes parado em mobile — causa raiz e correção, Carrossel de clientes — velocidade de rotação aumentada em 1.5x, Causa raiz confirmada, Como revisar esta branch localmente, Correção implementada, Decisão registrada, Mobile: conteúdo não revelava ao rolar (+5 more)
 
 ### Community 70 - "Carregamento inicial: poster, hero entrance, primeira seção, travamento intermitente"
 Cohesion: 0.20
@@ -408,6 +418,10 @@ Nodes (9): Causa raiz confirmada, Correção aplicada, Passo 1 — Instrumentaç
 ### Community 74 - "01 — Card de contato flutuante no hero"
 Cohesion: 0.29
 Nodes (6): 01 — Card de contato flutuante no hero, Ajustes necessários ao aplicar no Perin, Atenção ao integrar — riscos previsíveis, Como o card transborda e sobrepõe a seção seguinte, Estratégia de posicionamento, Valores de espaçamento e dimensão por breakpoint
+
+### Community 75 - "hero-video.regression.test.js"
+Cohesion: 0.22
+Nodes (3): fs, html, path
 
 ### Community 76 - "Notas de Implementação — Vídeo de Fundo no Hero"
 Cohesion: 0.25
@@ -477,33 +491,29 @@ Nodes (4): Extração de padrões — burkhardprojekte.ch → Perin Construçõe
 Cohesion: 0.40
 Nodes (4): Como fechar essa pendência, Em aberto — preencher quando souber, Headroom, Papel conhecido
 
-### Community 95 - "Mobile: conteúdo não revelava ao rolar"
-Cohesion: 0.50
-Nodes (4): Causa raiz confirmada, Correção implementada, Mobile: conteúdo não revelava ao rolar, Validação
-
 ### Community 102 - "process-diagram.regression.test.js"
 Cohesion: 0.22
 Nodes (6): css, flush(), fs, html, loadScript(), path
 
 ## Knowledge Gaps
-- **530 isolated node(s):** `fs`, `path`, `ROOT`, `DIST`, `FILES` (+525 more)
+- **549 isolated node(s):** `fs`, `path`, `html`, `portfolioProjects`, `portfolioProjects` (+544 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **5 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `f()` connect `r` to `r`, `script.min.js`?**
-  _High betweenness centrality (0.023) - this node is a cross-community bridge._
-- **Why does `s()` connect `r` to `gsap/gsap.min.js`, `cb`, `df`, `Tween`?**
-  _High betweenness centrality (0.018) - this node is a cross-community bridge._
-- **Why does `eb()` connect `r` to `gsap/gsap.min.js`, `Tween`, `ja`?**
-  _High betweenness centrality (0.016) - this node is a cross-community bridge._
-- **What connects `fs`, `path`, `ROOT` to the rest of the system?**
-  _530 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **Why does `f()` connect `script.min.js` to `r`, `r`?**
+  _High betweenness centrality (0.019) - this node is a cross-community bridge._
+- **Why does `wb()` connect `Tween` to `r`, `gsap/gsap.min.js`, `ce`?**
+  _High betweenness centrality (0.012) - this node is a cross-community bridge._
+- **Why does `eb()` connect `r` to `script.min.js`, `gsap/gsap.min.js`, `Tween`, `ja`?**
+  _High betweenness centrality (0.011) - this node is a cross-community bridge._
+- **What connects `fs`, `path`, `html` to the rest of the system?**
+  _549 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `script.js` be split into smaller, more focused modules?**
-  _Cohesion score 0.06641604010025062 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.07256894049346879 - nodes in this community are weakly interconnected._
 - **Should `script.min.js` be split into smaller, more focused modules?**
-  _Cohesion score 0.07826694619147449 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.08069381598793364 - nodes in this community are weakly interconnected._
 - **Should `gsap/gsap.min.js` be split into smaller, more focused modules?**
   _Cohesion score 0.06342780026990553 - nodes in this community are weakly interconnected._
