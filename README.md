@@ -296,24 +296,31 @@ No `script.js`, função `initCascadingSlider()`:
 
 ## 🧪 Testes Automatizados
 
-O projeto possui uma suíte completa de testes unitários e de regressão para o carrossel de portfólio, garantindo que futuras alterações não introduzam regressões visuais ou funcionais.
+O projeto possui uma suíte de testes unitários e de regressão cobrindo o carrossel de portfólio (cascading slider), vídeo hero, diagrama de processo, scroll-reveal, formulário de contato, carrossel de clientes, agendamento e o build de deploy — garantindo que futuras alterações não introduzam regressões visuais ou funcionais.
 
 ### Estrutura
 
 ```
 tests/
 ├── unit/
-│   └── slider.test.js            # 35 testes unitários
+│   ├── slider.test.js               # cascading slider — lógica isolada
+│   ├── build-netlify.test.js        # scripts/build-netlify.js — cache busting (hash md5)
+│   ├── clients-carousel.test.js     # carrossel de logos de clientes
+│   ├── form.test.js                 # formulário de contato (validação, honeypot, sanitização)
+│   └── init-scheduling.test.js      # agendamento/CTA
 └── regression/
-    └── slider.regression.test.js  # 56 testes de regressão
+    ├── slider.regression.test.js         # cascading slider — integridade estrutural
+    ├── hero-video.regression.test.js     # vídeo hero (retry, fallback)
+    ├── process-diagram.regression.test.js # diagrama de processo
+    └── scroll-reveal.regression.test.js  # scroll-reveal via IntersectionObserver (substituiu ScrollTrigger/batchReveal)
 ```
 
 ### O que cada suíte testa
 
 | Suíte | Tipo | Cobertura |
 |---|---|---|
-| **unit** | Lógica isolada | Proporções PCT, cálculo `getSizes()`, estrutura DOM, regras CSS, detecção de touch, acessibilidade, assets de imagem |
-| **regression** | Integridade estrutural | Escala de imagens, overlay, estados de botões, breakpoints responsivos, camadas z-index, overflow, script integrity |
+| **unit** | Lógica isolada | Proporções do slider, cálculo `getSizes()`, cache busting do build de deploy, validação e sanitização de formulário, carrossel de clientes, agendamento, acessibilidade, assets de imagem |
+| **regression** | Integridade estrutural | Escala de imagens, overlay, estados de botões, breakpoints responsivos, camadas z-index, overflow, retry de vídeo, comportamento do scroll-reveal nativo, script integrity |
 
 ### Como instalar e executar
 
@@ -334,25 +341,27 @@ npm run test:regression
 ### Resultado esperado
 
 ```
-Test Suites: 2 passed, 2 total
-Tests:       91 passed, 91 total
+Test Suites: 9 passed, 9 total
+Tests:       119 passed, 119 total
 ```
 
 ### O que os testes garantem
 
 | Regra de Negócio | Teste |
 |---|---|
-| Proporções 6.5% / 13.5% / 60% / 13.5% / 6.5% | ✅ |
-| Proporções mobile 10% / 80% / 10% | ✅ |
+| Proporções do cascading slider por breakpoint (desktop/tablet/mobile/small) | ✅ |
+| Navegação circular (loop) e clonagem quando há menos de 9 fotos | ✅ |
 | Imagens com escala fixa (sem zoom) | ✅ |
 | Overlay transparente (sem escurecimento) | ✅ |
-| Sem filtro brightness/blur | ✅ |
 | Botões sem :hover CSS (gerenciado por JS) | ✅ |
-| Touch feedback auto-limpa | ✅ |
-| Breakpoints 750px e 480px | ✅ |
-| Estrutura DOM (5 slides, imagens, SVG) | ✅ |
+| Breakpoints responsivos do slider | ✅ |
 | Acessibilidade (ARIA labels) | ✅ |
-| Script integrity (PCT, CURVE, DURATION, funções) | ✅ |
+| Script integrity (funções e constantes do slider) | ✅ |
+| Cache busting: `?v=<hash md5>` aplicado a `script.min.js`/`styles.min.css` no build de deploy | ✅ |
+| Vídeo hero: retry automático em falha de carregamento | ✅ |
+| Scroll-reveal nativo (`IntersectionObserver`) replica o comportamento visual do GSAP/ScrollTrigger original | ✅ |
+| Formulário de contato: validação de campos, honeypot anti-bot, sanitização de input | ✅ |
+| Carrossel de clientes e agendamento: estrutura e comportamento | ✅ |
 
 ---
 
@@ -379,6 +388,7 @@ Nenhum servidor, build ou instalação de dependências é necessária.
 
 | Data | Mudança | Arquivos |
 |---|---|---|
+| 19/08/2026 | **Implementação do lote da auditoria de estrutura/SEO** (inventário completo feito em sessão anterior, sem GSAP/ScrollTrigger neste lote): (1) `robots.txt` — `Sitemap:` apontava para `perinconstrucoes.com.br` (domínio próprio ainda não registrado/propagado), corrigido para `perinconstrucoes.netlify.app` (mesmo domínio já usado no resto do site). (2) `politica-de-privacidade.html` — `<link rel="canonical">` tinha o mesmo problema de domínio, corrigido. (3) Novo teste `tests/unit/build-netlify.test.js` (3 casos) rodando o `scripts/build-netlify.js` real via `child_process` e validando que o cache busting (`?v=<hash md5 de 8 chars>`) aplicado a `script.min.js`/`styles.min.css` no `dist/index.html` bate com o hash real do conteúdo dos arquivos — cobertura que não existia antes (build de deploy não tinha nenhum teste). (4) Seção "🧪 Testes Automatizados" deste README reescrita: estava desatualizada desde antes das últimas 6 suítes serem adicionadas (falava só do cascading slider, "2 passed, 2 total"/"91 passed, 91 total"); atualizada para refletir as 9 suítes e 119 testes reais. (5) `docs/relatorios/RELATORIO-PERFORMANCE.md` — novo capítulo final documentando `0b7703f`/`671ce68`/`232e3af` (ver detalhe na entrada de 18/08/2026 abaixo), incluindo a confirmação de que `0b7703f` foi a implementação real da "direção mais promissora ainda não testada" que o próprio relatório havia apontado. (6) `script.js` (`initCascadingSlider()`) — as 6 fotos do carrossel de portfólio tinham `alt` idêntico ("Obra concluída para Elektro Redes") por herdarem o mesmo `name` em `portfolioProjects`; como não há metadado real de etapa/ângulo/local por foto, diferenciado com índice sequencial factual (`— foto N de 6`) em vez de inventar detalhes; `script.min.js` regenerado via `terser` e revalidado com `check-min-freshness.js`. 119/119 testes passando (nenhum teste cobria o `alt` das fotos antes ou depois, sem markup correspondente) | `robots.txt`, `politica-de-privacidade.html`, `tests/unit/build-netlify.test.js` (novo), `docs/relatorios/RELATORIO-PERFORMANCE.md`, `script.js`, `script.min.js`, `README.md` |
 | 18/08/2026 | **Diagnóstico final do item de scroll jank (parallax do hero + contadores) e remoção de `initCounters` como dead code**. Etapa 1 do diagnóstico (medir antes de decidir se valia trocar mecanismo): releitura das duas funções remanescentes revelou que a premissa estava incompleta — `initHeroParallax` não usa `ScrollTrigger` (é só um listener `mousemove`, sem ligação ao scroll) e `initCounters` usa `once:true` (revelação única, mesma categoria já migrada, não scrub contínuo). `ScrollTrigger.getAll().length` real hoje é **1**, não 2: apenas `initHeroContactCardParallax` (`scrub:true` em `.hero-contact-card-parallax`), já confirmado na entrada anterior desta tabela. Não há necessidade de uma segunda rodada de medição de CPU-throttle — o item já foi resolvido pela migração anterior das revelações; 1 instância `scrub:true` isolada não justifica a complexidade de reescrever com listener manual de scroll. Achado à parte durante a releitura: `initCounters()` iterava `.counter-target`, mas esse elemento não existe mais em `index.html` (seção de contadores removida do HTML em algum momento, função órfã ficou rodando sem nenhum efeito a cada carregamento) — função e sua chamada em `runBatchWhenIdle()` removidas. 116/116 testes passando (nenhum teste cobria `initCounters`, sem markup correspondente) | `script.js`, `README.md` |
 | 18/08/2026 | **Correção dos 3 achados reais de um diagnóstico de acessibilidade/responsividade (axe-core + medição de bounding rects)**: (1) **15 violações de `color-contrast` (WCAG AA), 2 padrões, ambos design tokens compartilhados**: `--cor-verde-floresta` (`#2A873E`→`#247335`, .section-tag) e `--cor-cinza-acastanhado` (`#857F76`→`#68645C`, labels/aviso de privacidade/footer). Ambos ajustados só na Lightness em HSL, preservando Hue/Saturation (mesma família de cor) — verde de H≈133°/S≈52,5%/L 34,7% para L 29,6% (pior caso medido via axe, `#E1E7D6`, era 3,58:1, agora 4,64:1); cinza de H≈36°/S≈6%/L 49,2% para L 38,4% (pior caso, footer `#EDEDE0`, era 3,36:1, agora ~4,99:1). Achado de processo: a primeira rodada de correção usou o fundo teórico (branco) do `.section-tag` em vez do fundo real composto por seção (`--color-bg-secondary` alternado), subestimando o pior caso — corrigido recalculando contra o valor que o axe mediu de fato. O primeiro valor do cinza (`#6F6A62`, 4,55:1) passava no axe mas com margem curta demais contra o mínimo de 4,5:1; recalculado para `#68645C` (~4,99:1), mesma família HSL, com folga real. 0/15 violações restantes (`axe.run()`, 1440px e 375px). (2) **Menu "Como Trabalhamos" quebrando em 2 linhas em 769-1023px**: nova regra `@media (min-width:769px) and (max-width:1023px)` reduzindo `gap`/`font-size`/padding do nav nessa faixa específica, sem tocar nos breakpoints de 768px (hamburger) nem 1024px (nav desktop full) — confirmado por bounding rect (`getClientRects().length === 1` em 769/820/900/1023px) e screenshot idêntico nos dois limites. (3) **Footer sobreposto pelo botão flutuante do WhatsApp em 769-900px**: `padding-bottom: 120px` em `.premium-footer` nessa faixa, espaço suficiente para o botão fixed (56px + 24px de offset) não cobrir `.footer-bottom` ao rolar até o fim — confirmado sem sobreposição via medição de bounding rect (`overlaps()`) em 769/800/850/900px. Bug de processo descoberto durante a verificação (mesma classe já documentada nas linhas abaixo): `styles.css` editado mas `styles.min.css` (bundle real carregado por `index.html`) não regenerado — corrigido via `npx clean-css-cli` + `node scripts/check-min-freshness.js`. 116/116 testes passando, `npm run build:netlify` OK | `styles.css`, `styles.min.css` |
 | 18/08/2026 | **Substituição das ~26-27 instâncias de `ScrollTrigger`/`ScrollTrigger.batch()` (revelação em scroll de `.differential-item`, `.service-mosaic-item`, `.process-circle-cluster`/`.process-accordion-item`) por `IntersectionObserver` nativo + CSS transition, mantida e aplicada após atender ao critério de decisão** (quarta tentativa de otimização de scroll desta série — as 3 anteriores, lazy-creation em duas variantes e fatiamento do Grupo A, foram descartadas por regressão ou resultado misto, ver entradas anteriores). Implementação: cada elemento das 3 categorias com efeito visual real ganha seu próprio `IntersectionObserver` (`rootMargin` replicando os thresholds do GSAP original), aplicando/removendo `.is-revealed`; transição via CSS (`opacity`/`translate`, `0.6s cubic-bezier(0.215, 0.61, 0.355, 1)`, equivalente a `power2.out`) com stagger por `transitionDelay` calculado em JS. Comportamento assimétrico do GSAP original preservado: item some ao rolar para cima e sair por baixo (`onLeaveBack`), mas não some ao rolar para baixo e sair por cima (sem `onLeave` vinculado no original). `.section-title-reveal`/`.text-reveal` (sem efeito visual algum previamente) mantidos como no-op, sem observer. **Bug crítico encontrado e corrigido durante a verificação**: `script.min.js`/`styles.min.css` (bundles carregados por `index.html` em produção, não os fontes) não haviam sido regenerados após a edição de `script.js`/`styles.css` — o site servido continuava rodando o código antigo (`ScrollTrigger.getAll().length` retornava 26 no browser ao vivo, contradizendo o código-fonte já alterado); corrigido regenerando via `terser`/`clean-css-cli` e revalidado com `node scripts/check-min-freshness.js` (após o fix, `ScrollTrigger.getAll().length` caiu para 1 — resta apenas o parallax não relacionado da hero). Verificação visual das 3 categorias via browser (estado inicial oculto, revelação em stagger no scroll rápido e lento, esconder assimétrico) sem regressão. Medição de performance com CPU throttle 6x, scroll de página inteira, 3 rounds mobile (390×844) + 2 rounds desktop (1440×900), comparando contra baseline via `git worktree` do HEAD (mesma metodologia ad-hoc, script Puppeteer não versionado): contagem de "peaks" (frame gaps > 50ms) caiu de forma consistente nos 3 rounds mobile (18→10, 14→9, 12→8) e também no desktop (17→14, 13→12), sem regressão em nenhuma métrica; FPS médio ficou estável/levemente melhor, dentro do ruído esperado de medição headless. Atendeu ao critério de decisão definido nas tentativas anteriores (melhora consistente nos 3 rounds mobile, sem piora em nenhuma métrica) — mudança mantida. 116/116 testes passando (10 novos de regressão em `tests/regression/scroll-reveal.regression.test.js`) | `script.js`, `script.min.js`, `styles.css`, `styles.min.css`, `tests/regression/scroll-reveal.regression.test.js` (novo) |

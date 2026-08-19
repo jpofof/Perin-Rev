@@ -1159,3 +1159,27 @@ Ganho de Lighthouse não capturou o custo real do carregamento assíncrono do CS
 ### Estado final
 
 **Totalmente revertido** em `ac14487` — CSS voltou a ser um `<link>` bloqueante único, `defer-css.js` removido do repositório e do `FILES` de `scripts/build-netlify.js`. As pastas `audit/perf-css-critico/`, `audit/perf-css-critico-v2/` e os 6 screenshots soltos na raiz de `audit/` (baseline-/after-/after2- desktop/mobile, ~30MB de relatórios/PNGs) foram removidos do repositório nesta consolidação — este resumo é a referência que resta; os artefatos brutos permanecem recuperáveis via histórico do git (commits `538c88a`, `58e01fa`) se necessário.
+
+## Scroll reveal nativo (IntersectionObserver) + limpeza de dead code — direção lazy finalmente validada
+
+**Data:** commits `0b7703f`, `671ce68`, `232e3af` (18/08/2026).
+
+### `0b7703f` — substituição do ScrollTrigger/batchReveal por IntersectionObserver nativo
+
+Esta é a implementação que atendeu à direção apontada como "mais promissora ainda não testada" na seção anterior (linha 1121) — não a criação **lazy** dos `ScrollTrigger` originais (abandonada), mas a remoção completa do mecanismo `ScrollTrigger`/`ScrollTrigger.batch()` para as 3 categorias com efeito visual real (`.differential-item`, `.service-mosaic-item`, `.process-circle-cluster`/`.process-accordion-item`), substituído por um `IntersectionObserver` nativo por elemento + transição CSS. Elimina de vez o custo de `ScrollTrigger.refresh()` identificado como causa raiz do scroll jank (linha 1108) para essas 3 categorias, sem precisar resolver o trade-off de quando disparar um refresh lazy.
+
+Resultado medido (mesma metodologia Puppeteer/CPU-throttle 6x desta seção, 3 rounds mobile + 2 rounds desktop contra baseline via `git worktree`): contagem de picos (frame gaps > 50ms) caiu de forma consistente em todos os rounds — mobile 18→10, 14→9, 12→8; desktop 17→14, 13→12 — sem regressão em nenhuma métrica, atendendo ao critério de decisão definido nas tentativas anteriores desta série (melhora consistente nos 3 rounds mobile, sem piora em nenhuma). Detalhe completo, incluindo o bug de bundle desatualizado encontrado durante a verificação, na entrada de 18/08/2026 do changelog do README.
+
+Após esta mudança, `ScrollTrigger.getAll().length` em produção caiu de 26-27 para **1** — resta apenas `initHeroContactCardParallax()` (`.hero-contact-card-parallax`, `scrub:true`), fora do escopo desta migração.
+
+### `671ce68` — correção de acessibilidade e layout (não relacionada a performance)
+
+Corrige 3 achados de uma auditoria de acessibilidade/responsividade (axe-core + medição de bounding rects): 15 violações de `color-contrast` (WCAG AA) em dois design tokens compartilhados, quebra do menu "Como Trabalhamos" em 2 linhas na faixa 769-1023px, e sobreposição do footer pelo botão flutuante do WhatsApp na faixa 769-900px. Não altera o mecanismo de scroll/animação; incluída aqui apenas por ordem cronológica no histórico de commits recentes. Detalhe completo na entrada de 18/08/2026 do changelog do README.
+
+### `232e3af` — remoção de `initCounters` como dead code
+
+Fecha o diagnóstico do item de scroll jank remanescente: `ScrollTrigger.getAll().length` real após `0b7703f` já era 1 (não 2, como a premissa inicial assumia) — `initHeroParallax()` não usa `ScrollTrigger` (é um listener `mousemove`) e `initCounters()` usava `once:true` (revelação única, não scrub contínuo, mesma categoria já migrada em `0b7703f`). Durante a releitura, `initCounters()` foi encontrada iterando `.counter-target`, um seletor que não existe mais em `index.html` (a seção de contadores foi removida do HTML em algum momento anterior, deixando a função rodando sem efeito a cada carregamento) — função e sua chamada em `runBatchWhenIdle()` removidas. Nenhum teste cobria `initCounters()` (sem markup correspondente), então a remoção não afetou a contagem de testes.
+
+### Estado final
+
+Da causa raiz identificada nesta seção do relatório (26-27 instâncias `ScrollTrigger` simultâneas), restam **0** instâncias relacionadas às revelações em scroll — a única instância `ScrollTrigger` restante em todo o site é o parallax do card de contato do hero (`scrub:true`, fora do escopo de scroll-jank desta investigação). Item não avaliado nesta consolidação: o parallax do hero permanece a única dependência de GSAP/ScrollTrigger para animação de scroll no site — se vier a ser revisitado, requer sua própria medição de Lighthouse contra produção real (Netlify), não apenas local.
