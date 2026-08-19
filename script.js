@@ -768,7 +768,7 @@ function initCascadingSlider(viewport, projects) {
         return '<div class="cascading-slider__item" data-cascading-slide="" data-status="inactive" role="listitem" aria-roledescription="slide">' +
             '<div class="cascading-slider__item-inner">' +
             '<div class="cascading-slider__item-bg">' +
-            '<img ' + buildResponsiveImgAttrs(project.cover) + ' alt="Obra concluída para ' + project.name + '" class="cascading-slider__img" draggable="false"' + (i === 0 ? ' loading="eager"' : ' loading="lazy"') + '>' +
+            '<img ' + buildResponsiveImgAttrs(project.cover) + ' alt="Obra concluída para ' + project.name + ' — foto ' + (i + 1) + ' de ' + projects.length + '" class="cascading-slider__img" draggable="false"' + (i === 0 ? ' loading="eager"' : ' loading="lazy"') + '>' +
             '</div>' +
             '<div class="cascading-slider__item-overlay">' +
             '<span class="cascading-slider__item-nome">' + project.name + '</span>' +
