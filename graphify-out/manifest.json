@@ -15,13 +15,13 @@
     "semantic_hash": ""
   },
   "script.js": {
-    "mtime": 1787068393.9038215,
-    "ast_hash": "8b9641a020ea5702ba13c7cd1801ddae",
+    "mtime": 1787160285.1360114,
+    "ast_hash": "543d1fe60ac4c19a5142bf6819a2a227",
     "semantic_hash": ""
   },
   "script.min.js": {
-    "mtime": 1787084175.5611439,
-    "ast_hash": "f0a242adf212218da62528fc30ced549",
+    "mtime": 1787160304.0438564,
+    "ast_hash": "882e6fa22a02c83172b5c1b424d55013",
     "semantic_hash": ""
   },
   "scripts/check-min-freshness.js": {
@@ -135,8 +135,8 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1787084774.8697495,
-    "ast_hash": "ee21f25182d4fab9c8d499e0dccd95ed",
+    "mtime": 1787160363.6576905,
+    "ast_hash": "d40479185316faee5147f116753ad28f",
     "semantic_hash": ""
   },
   "audit/bootstrap-uso-real.md": {
@@ -280,8 +280,8 @@
     "semantic_hash": ""
   },
   "docs/relatorios/RELATORIO-PERFORMANCE.md": {
-    "mtime": 1787001752.1427138,
-    "ast_hash": "fed990a2f6d477df6db31a52b8544045",
+    "mtime": 1787160027.8938496,
+    "ast_hash": "3e4d3c0bc038aa6bb781936dfdbc5dba",
     "semantic_hash": ""
   },
   "docs/relatorios/relatorio-organizacao-imagens.md": {
@@ -290,8 +290,8 @@
     "semantic_hash": ""
   },
   "index.html": {
-    "mtime": 1786979971.650907,
-    "ast_hash": "730d482f4b647f29bf5357395108c1a1",
+    "mtime": 1787108004.8332076,
+    "ast_hash": "d8088abbe59ed1f49ad55bae17187373",
     "semantic_hash": ""
   },
   "prototipos/cascading-slider/README-cscading.md": {
@@ -365,8 +365,8 @@
     "semantic_hash": ""
   },
   "robots.txt": {
-    "mtime": 1785448413.0092385,
-    "ast_hash": "d7a03985a5c99fa8baac886bd4dff13c",
+    "mtime": 1787159890.3182225,
+    "ast_hash": "3675eafe229d9bffa9614228cc1d4489",
     "semantic_hash": ""
   },
   "assets/images/about/sobre-nos.webp": {
@@ -550,8 +550,8 @@
     "semantic_hash": ""
   },
   "politica-de-privacidade.html": {
-    "mtime": 1786555973.394804,
-    "ast_hash": "f5c1e242fb5d2c2772c0e8cc4a6e4d73",
+    "mtime": 1787159893.7349966,
+    "ast_hash": "c24b4ba8cc41628af57c4d2c63225835",
     "semantic_hash": ""
   },
   "assets/images/portfolio/elektro-02.webp": {
@@ -602,6 +602,21 @@
   "tests/regression/scroll-reveal.regression.test.js": {
     "mtime": 1787068580.3464074,
     "ast_hash": "44df533ab138b9ca2cc4dbfbcb358dc9",
+    "semantic_hash": ""
+  },
+  "audit/lighthouse/audit-desktop.json": {
+    "mtime": 1787159422.3071778,
+    "ast_hash": "96b3810de9f5159ec396bd49f0654c5e",
+    "semantic_hash": ""
+  },
+  "audit/lighthouse/audit-mobile2.json": {
+    "mtime": 1787159479.2264652,
+    "ast_hash": "0a1e05b7ae64c0383cc9955dfb86ece0",
+    "semantic_hash": ""
+  },
+  "tests/unit/build-netlify.test.js": {
+    "mtime": 1787159916.9337497,
+    "ast_hash": "bdd22ab7345261e5fd412a9b2ea26e20",
     "semantic_hash": ""
   }
 }
