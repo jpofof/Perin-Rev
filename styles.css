@@ -29,7 +29,12 @@
     /* Tons de Verde (Destaques e Elementos) */
     --cor-verde-neon: #0CEB82;
     --cor-verde-brilhante: #3FCC5B;
-    --cor-verde-floresta: #2A873E;
+    /* Escurecida de #2A873E para #247335 (WCAG AA fix, mesma família HSL —
+       H~133 graus, S~52% preservados, so a Lightness caiu de 34.7% para
+       29.6%): .section-tag mede contra o fundo real de cada secao (nao so
+       branco) — pior caso medido via axe-core foi #E1E7D6, 3.58:1, abaixo
+       do minimo de 4.5:1. Novo valor atinge 4.64:1 nesse pior caso. */
+    --cor-verde-floresta: #247335;
     /* ~18% mais escura que --cor-verde-floresta (#2A873E), calculada
        multiplicando cada canal RGB por 0.82: R42->34(0x22), G135->111(0x6F),
        B62->51(0x33). Usada como hover de botoes com fundo verde solido —
@@ -40,7 +45,12 @@
 
     /* Tons Neutros / Base e Textos */
     --cor-bege-escuro: #BDB49F;
-    --cor-cinza-acastanhado: #857F76;
+    /* Escurecida de #857F76 para #68645C (WCAG AA fix, mesma família HSL —
+       H~36→40 graus, S~6% preservados, so a Lightness caiu de 49.2% para
+       ~38.4%): pior caso e o footer (#EDEDE0). Uma 1a tentativa (#6F6A62)
+       so alcancava 4.55:1 — margem curta demais contra o minimo de 4.5:1.
+       Novo valor atinge ~4.99:1 contra o footer, com folga real. */
+    --cor-cinza-acastanhado: #68645C;
     --cor-preto-puro: #0A0B0B;
 
     /* Utility Tokens — Light Theme */
@@ -2971,6 +2981,34 @@ h6 {
 
     .process-diagram-col {
         display: none;
+    }
+}
+
+/* Faixa 769-1023px: gap entre 768 (hamburger) e 1024 (nav desktop full).
+   O nav-container ja fica mais estreito aqui mas os .nav-link continuam no
+   tamanho desktop, o que quebra "Como Trabalhamos" em 2 linhas. Reduz
+   apenas gap/font-size/padding do nav nessa faixa — nao mexe em mais nada. */
+@media (min-width: 769px) and (max-width: 1023px) {
+    .nav-links {
+        gap: 20px;
+    }
+
+    .nav-link {
+        font-size: 13px;
+    }
+
+    .nav-link-highlight {
+        padding: 10px 16px;
+    }
+}
+
+/* Faixa 769-900px: o botao flutuante do WhatsApp (fixed, bottom:24px,
+   56px de altura) sobrepoe o texto do footer quando a pagina e rolada ate
+   o fim. Padding-bottom extra abre espaco suficiente (56 + 24 + margem)
+   pro conteudo do footer nao ficar embaixo do botao nessa faixa. */
+@media (min-width: 769px) and (max-width: 900px) {
+    .premium-footer {
+        padding-bottom: 120px;
     }
 }
 
