@@ -690,35 +690,6 @@ function initNavigation() {
     });
 }
 
-// === COUNTER ANIMATIONS ===
-function initCounters() {
-    gsap.utils.toArray('.counter-target').forEach(counter => {
-        const target = counter.getAttribute('data-target');
-        const numTarget = parseFloat(target);
-
-        if (isNaN(numTarget)) return;
-
-        gsap.to(counter, {
-            scrollTrigger: {
-                trigger: counter,
-                start: 'top 85%',
-                once: true,
-            },
-            innerHTML: numTarget,
-            duration: 2,
-            ease: 'power2.out',
-            snap: { innerHTML: 1 },
-            onUpdate: function () {
-                const val = Math.round(this.progress() * numTarget);
-                counter.innerHTML = val;
-                if (val >= numTarget) {
-                    counter.innerHTML = target === '[anos]' ? '15+' : target === '[indice]' ? '98%' : '200+';
-                }
-            },
-        });
-    });
-}
-
 // As variantes -mobile/-desktop dos placeholders (ver RELATORIO-PERFORMANCE.md)
 // foram removidas do repositorio numa limpeza de assets; so a versao base
 // .webp existe hoje, entao o srcset foi removido e cada imagem usa apenas src.
@@ -2074,14 +2045,12 @@ function initPage() {
         queueStarted = true;
         // Grupo A — afeta o que o usuario pode ver ao rolar ou interagir logo
         // apos o hero terminar (ScrollTrigger de reveal de secao, carrossel de
-        // clientes, grade do portfolio). initCounters (ScrollTrigger de numeros
-        // animados) e initServiceGridAdjust (rearranjo de grid da secao de
-        // servicos em mobile) nao estavam na lista original pedida, mas
-        // compartilham o mesmo risco — conteudo/layout visivel ao rolar — entao
-        // foram incluidas aqui tambem. Roda tudo em UM idle callback, sem
-        // espacamento entre itens.
+        // clientes, grade do portfolio). initServiceGridAdjust (rearranjo de
+        // grid da secao de servicos em mobile) nao estava na lista original
+        // pedida, mas compartilha o mesmo risco — conteudo/layout visivel ao
+        // rolar — entao foi incluida aqui tambem. Roda tudo em UM idle
+        // callback, sem espacamento entre itens.
         runBatchWhenIdle([
-            initCounters,
             initServicesReveal,
             initDifferentialsAnimation,
             initProcessDiagram,
