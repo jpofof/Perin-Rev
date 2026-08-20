@@ -1814,11 +1814,11 @@ h6 {
    mesmo, so o ponto de partida (quanto aparece antes de rolar) mudou.
 
    Posicionamento (z-index/margin) fica no wrapper .hero-contact-card-
-   parallax, nao no <a>: o GSAP (initHeroContactCardParallax, script.js)
-   anima o transform do wrapper no scroll — separado do <a> para o inline
-   style do GSAP nao vencer o transform: translateY(-2px) do :hover abaixo
-   (mesmo elemento + inline sempre ganha da regra de classe). transform
-   (GSAP, compositor) e margin (layout) sao independentes, sem conflito. */
+   parallax, nao no <a>: initHeroContactCardParallax (script.js) anima o
+   transform do wrapper no scroll — separado do <a> para o inline style
+   nao vencer o transform: translateY(-2px) do :hover abaixo (mesmo
+   elemento + inline sempre ganha da regra de classe). transform
+   (compositor) e margin (layout) sao independentes, sem conflito. */
 .hero-contact-card-parallax {
     position: relative;
     z-index: 6;

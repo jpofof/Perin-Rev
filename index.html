@@ -269,10 +269,10 @@
          ver AGENTS.md / _archive/prototipos-extracao-perin/01-card-contato-hero).
 
          .hero-contact-card-parallax: wrapper dedicado ao transform de scroll
-         (GSAP/ScrollTrigger, ver initHeroContactCardParallax em script.js) —
-         separado do <a> para o transform inline que o GSAP aplica no scroll
-         nao conflitar com o transform: translateY(-2px) do :hover do card
-         (inline sempre venceria a regra do CSS se fosse o mesmo elemento). -->
+         (ver initHeroContactCardParallax em script.js) — separado do <a>
+         para o transform inline aplicado no scroll nao conflitar com o
+         transform: translateY(-2px) do :hover do card (inline sempre
+         venceria a regra do CSS se fosse o mesmo elemento). -->
         <div class="hero-contact-card-parallax">
             <a href="#contact" class="hero-contact-card" aria-label="Solicitar orçamento com a Perin Construções">
                 <div class="hero-contact-card-text">
@@ -1090,13 +1090,14 @@
     <!-- GSAP vendorizado localmente (v3.12.5, baixado em 17/07/2026) — elimina dependência
          de cdnjs.cloudflare.com e a variabilidade de latência de CDN externo. Para atualizar
          a versão no futuro, baixar os novos .min.js e substituir em vendor/gsap/ manualmente
-         (sem pipeline de build automatizado para isso). -->
+         (sem pipeline de build automatizado para isso). ScrollTrigger.min.js removido em
+         19/08/2026 — o parallax do card de contato do hero (unico uso do plugin) passou a
+         calcular o progresso direto no evento 'scroll' do Lenis, sem ScrollTrigger. -->
     <script src="vendor/gsap/gsap.min.js" defer></script>
-    <script src="vendor/gsap/ScrollTrigger.min.js" defer></script>
     <!-- Lenis vendorizado localmente (~v1.1.20, self-hosted a partir de
          _archive/prototipos-extracao-perin/03-smooth-scroll/), mesma politica de nao usar CDN
          externo do GSAP acima. Ver initSmoothScroll() em script.js para a
-         sincronizacao manual com ScrollTrigger (autoRaf:false). -->
+         sincronizacao manual com o ticker do GSAP (autoRaf:false). -->
     <script src="vendor/lenis/lenis.min.js" defer></script>
     <script src="script.min.js" defer></script>
 </body>

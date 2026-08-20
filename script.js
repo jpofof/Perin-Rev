@@ -12,9 +12,9 @@ let lenisInstance = null;
 // === SMOOTH SCROLL (Lenis) ===
 // Integrado com autoRaf:false + sincronizacao manual via gsap.ticker — NAO o
 // autoRaf:true da referencia extraida (_archive/prototipos-extracao-perin/03-smooth-scroll/), que
-// deixa o Lenis atualizar a posicao de scroll no proprio requestAnimationFrame
-// sem avisar o ScrollTrigger, causando dessincronia/jitter entre o scroll
-// suavizado e os triggers. Ver README da extracao para o detalhamento.
+// deixa o Lenis rodar seu proprio requestAnimationFrame paralelo ao do GSAP,
+// dessincronizando o timing entre o scroll suavizado e as demais animacoes
+// GSAP da pagina. Ver README da extracao para o detalhamento.
 function initSmoothScroll() {
     const prefersReducedMotion = typeof window.matchMedia === 'function'
         && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -25,7 +25,6 @@ function initSmoothScroll() {
         syncTouch: false, // touch ja tem inercia nativa propria — nao empilhar duas
     });
 
-    lenisInstance.on('scroll', ScrollTrigger.update);
     gsap.ticker.add((time) => lenisInstance.raf(time * 1000));
     gsap.ticker.lagSmoothing(0);
 
@@ -494,26 +493,27 @@ function initHeroParallax() {
 }
 
 // === HERO CONTACT CARD — PARALLAX NO SCROLL ===
-// Pedido explicito: GSAP ScrollTrigger com scrub:true (diferente do padrao
-// "sem ScrollTrigger scrub" usado em initHeroAnimations logo abaixo) — o
-// card sobe ~70% da propria altura enquanto o hero percorre 100% da
+// O card sobe ~70% da propria altura enquanto o hero percorre 100% da
 // viewport, espelhando o valor medido na referencia Burkhard Projekte
 // (translate3d(0, -69.9874%, 0) em scroll intermediario). yPercent (em vez
 // de px) reproduz exatamente esse "% da propria altura", incluindo se o
-// conteudo do card mudar de tamanho depois. scrub:true liga o progresso
-// diretamente ao scroll — a sincronizacao Lenis -> ScrollTrigger.update ja
-// existe em initSmoothScroll(), entao o scrub acompanha o scroll suavizado
-// sem inercia propria adicional.
+// conteudo do card mudar de tamanho depois.
+//
+// Sem ScrollTrigger: o progresso e calculado direto no evento 'scroll' do
+// Lenis (mesmo loop que ja governa o resto da suavizacao), sem RAF extra.
+// getBoundingClientRect() e uma leitura de layout, mas como so lemos (sem
+// escrever nada entre leituras) e escrevemos so `transform` (propriedade de
+// compositor) na sequencia, nao ha forced reflow.
 //
 // Anima .hero-contact-card-parallax (wrapper), NAO o <a class="hero-contact-
-// card"> — ver comentario no CSS: o transform inline que o GSAP escreve
-// venceria o transform: translateY(-2px) do :hover se fosse o mesmo
-// elemento. O wrapper so tem position/z-index/margin (layout), o <a> tem o
-// hover — transform (compositor) e margin (layout) nao conflitam entre si.
+// card"> — ver comentario no CSS: o transform inline venceria o
+// transform: translateY(-2px) do :hover se fosse o mesmo elemento. O
+// wrapper so tem position/z-index/margin (layout), o <a> tem o hover —
+// transform (compositor) e margin (layout) nao conflitam entre si.
 function initHeroContactCardParallax() {
     const wrapper = document.querySelector('.hero-contact-card-parallax');
     const hero = document.querySelector('.hero-architectural-scene');
-    if (!wrapper || !hero) return;
+    if (!wrapper || !hero || !lenisInstance) return;
 
     const prefersReducedMotion = typeof window.matchMedia === 'function'
         && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -527,16 +527,17 @@ function initHeroContactCardParallax() {
     // redimensionando a janela ao vivo nao reajusta a amplitude).
     const amplitude = window.innerWidth < 768 ? -30 : -70;
 
-    gsap.to(wrapper, {
-        yPercent: amplitude,
-        ease: 'none',
-        scrollTrigger: {
-            trigger: hero,
-            start: 'top top',
-            end: 'bottom top',
-            scrub: true,
-        },
-    });
+    function updateParallax() {
+        const rect = hero.getBoundingClientRect();
+        const scrollable = rect.height - window.innerHeight;
+        const progress = scrollable > 0
+            ? Math.min(Math.max(-rect.top / scrollable, 0), 1)
+            : 0;
+        wrapper.style.transform = `translateY(${progress * amplitude}%)`;
+    }
+
+    lenisInstance.on('scroll', updateParallax);
+    updateParallax();
 }
 
 // === HERO SCROLL EFFECTS — determinístico, derivado de heroProgress ===
@@ -1565,16 +1566,13 @@ function initButtonRipple() {
 }
 
 // === SCROLL REVEAL HELPERS ===
-// Antes: ScrollTrigger.batch() por secao (gsap.set + onEnter/onLeaveBack).
-// Agora: 1 IntersectionObserver nativo por secao, alternando a classe
-// .is-revealed — a transicao visual (opacity/translate, duration, easing)
-// mora em CSS, calibrada para bater com os valores originais do GSAP
+// 1 IntersectionObserver nativo por secao, alternando a classe .is-revealed
+// — a transicao visual (opacity/translate, duration, easing) mora em CSS
 // (duration 0.6s, ease power2.out ~= cubic-bezier(0.215, 0.61, 0.355, 1)).
 // stagger vira transition-delay por indice, calculado por elemento dentro do
-// grupo que entra junto no mesmo tick do IntersectionObserver — equivalente
-// ao "batch" que entra junto na viewport no ScrollTrigger.batch original.
+// grupo que entra junto no mesmo tick do IntersectionObserver.
 //
-// Direcao onEnter/onLeaveBack: o ScrollTrigger original so revertia
+// Direcao onEnter/onLeaveBack: o comportamento original so revertia
 // (onLeaveBack) ao rolar pra CIMA e o elemento sair pela parte de BAIXO do
 // viewport (linha de start); rolar pra baixo e o elemento sair por CIMA
 // (onLeave, nao vinculado) nao escondia nada. Aqui isso e replicado
@@ -2014,9 +2012,9 @@ function initPage() {
     initHeroVideoBackground();
     initHeroParallax();
     initHeroAnimations();
-    initHeroContactCardParallax();
     initNavigation();
     initSmoothScroll();
+    initHeroContactCardParallax(); // depende de lenisInstance, criado em initSmoothScroll()
     initButtonRipple(); // inclui o botao do hero — precisa estar pronto pra clique imediato
     // Custo de setup e so um IntersectionObserver.observe() (nao mexe em
     // DOM/layout) — nao compete com o primeiro frame do hero. Ver comentario
@@ -2074,43 +2072,6 @@ function initPage() {
     }
     initHeroEntrance(startIdleQueue);
     setTimeout(startIdleQueue, 3500);
-
-    // ScrollTrigger refresh on resize — so quando a LARGURA muda (rotacao de
-    // tela, redimensionamento real de janela), nunca so por mudanca de altura.
-    // Causa raiz confirmada via stack trace real no iPhone: no Safari iOS, a
-    // barra de endereco dinamica (aparece/some durante o scroll) dispara varios
-    // eventos de resize so por mudanca de ALTURA da viewport — cada um chamava
-    // ScrollTrigger.refresh(), que internamente faz um scrollTo(0,0) pra medir
-    // e depois restaura a posicao; ciclos sobrepostos desses refreshes faziam
-    // a restauracao falhar, prendendo o scroll em 0 (o "salto pra tras"
-    // reportado). ScrollTrigger.config({ ignoreMobileResize: true }) nao
-    // protegia contra isso porque so filtra o listener INTERNO do proprio
-    // GSAP, nao este listener manual. Debounce de 150ms e protecao extra
-    // contra sequencias rapidas de resize de largura genuina (ex: redimensionar
-    // a janela no desktop arrastando a borda).
-    let lastWidth = window.innerWidth;
-    let resizeRefreshTimeout;
-    window.addEventListener('resize', () => {
-        if (window.innerWidth === lastWidth) return; // so altura mudou — ignora (barra de endereco do Safari)
-        lastWidth = window.innerWidth;
-        clearTimeout(resizeRefreshTimeout);
-        resizeRefreshTimeout = setTimeout(() => ScrollTrigger.refresh(), 150);
-    });
-    ScrollTrigger.config({ ignoreMobileResize: true });
-
-    // Recalcula os marcadores de start depois que TODAS as imagens/fontes
-    // terminarem de carregar — evita marcadores calculados para uma página
-    // ainda curta (causa raiz do bug de conteúdo não revelar em mobile).
-    window.addEventListener('load', () => ScrollTrigger.refresh());
-
-    // Gap encontrado no diagnostico de carregamento inicial: com font-display:swap,
-    // a troca da fonte (reflow de metricas/quebra de linha) pode terminar DEPOIS do
-    // evento 'load' em rede lenta — o refresh acima roda cedo demais nesse caso e a
-    // primeira secao apos o hero fica com marcadores desatualizados de novo. Refresh
-    // adicional quando document.fonts.ready resolver cobre esse caso especifico.
-    if (document.fonts && document.fonts.ready) {
-        document.fonts.ready.then(() => ScrollTrigger.refresh());
-    }
 }
 
 // Initialize page immediately

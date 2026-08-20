@@ -1183,3 +1183,15 @@ Fecha o diagnóstico do item de scroll jank remanescente: `ScrollTrigger.getAll(
 ### Estado final
 
 Da causa raiz identificada nesta seção do relatório (26-27 instâncias `ScrollTrigger` simultâneas), restam **0** instâncias relacionadas às revelações em scroll — a única instância `ScrollTrigger` restante em todo o site é o parallax do card de contato do hero (`scrub:true`, fora do escopo de scroll-jank desta investigação). Item não avaliado nesta consolidação: o parallax do hero permanece a única dependência de GSAP/ScrollTrigger para animação de scroll no site — se vier a ser revisitado, requer sua própria medição de Lighthouse contra produção real (Netlify), não apenas local.
+
+## Remoção do ScrollTrigger (plugin) — GSAP core mantido intacto
+
+**Data:** 19/08/2026 (achado #10 da auditoria de estrutura/SEO, TBT mobile 450ms).
+
+Fecha o item pendente apontado na seção anterior: a única instância `ScrollTrigger` restante no site (`initHeroContactCardParallax()`, `.hero-contact-card-parallax`, `scrub:true`) foi substituída por um listener direto no evento `scroll` do Lenis (`lenisInstance.on('scroll', ...)`), calculando o progresso via `hero.getBoundingClientRect()` e aplicando `wrapper.style.transform = translateY(progress * amplitude%)` diretamente — sem `requestAnimationFrame` próprio, aproveitando o `scroll` já emitido pelo Lenis a cada frame. `amplitude` (-30% mobile / -70% desktop) e o early-return de `prefers-reduced-motion` permanecem idênticos ao comportamento anterior.
+
+Escopo explicitamente restrito ao plugin ScrollTrigger — o GSAP core foi mantido intacto, pois ainda é usado por outras 5 animações do site (sync do Lenis via `gsap.ticker`, timeline de entrada do hero, cascading slider, hover do mosaico de serviços, estados do botão do formulário de contato, ripple de botão). Removidos junto com o plugin: a tag `<script src="vendor/gsap/ScrollTrigger.min.js">` em `index.html`, o `lenisInstance.on('scroll', ScrollTrigger.update)` de sincronização, `ScrollTrigger.config()`, e os listeners de `resize`/`load`/`document.fonts.ready` que existiam só para chamar `ScrollTrigger.refresh()`. Também removido o comentário morto remanescente referenciando o antigo `ScrollTrigger.batch()` (já migrado para `IntersectionObserver` na seção anterior).
+
+Ganho estimado no diagnóstico prévio (não medido em produção ainda): **-16.8KB gzip** (remoção de `ScrollTrigger.min.js` do bundle de scripts), **-52ms de scripting** e **-78ms de reflow** no TBT mobile, por eliminar o custo de `ScrollTrigger.refresh()` e o overhead do plugin sobre um scroll que já é suavizado pelo Lenis (o `ease: 'none'` da config antiga significava que o ScrollTrigger não adicionava interpolação alguma além da já fornecida pelo Lenis). Medição real contra produção (Lighthouse via Netlify) é o próximo passo, pendente de aprovação do usuário para o deploy.
+
+**Decisão separada, ainda não endereçada:** a remoção do GSAP core (as outras 5 animações listadas acima) permanece fora do escopo desta mudança — é uma decisão maior, com impacto em mais superfícies do site, que requer sua própria avaliação de custo/benefício antes de ser considerada.
