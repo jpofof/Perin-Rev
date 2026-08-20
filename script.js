@@ -527,9 +527,21 @@ function initHeroContactCardParallax() {
     // redimensionando a janela ao vivo nao reajusta a amplitude).
     const amplitude = window.innerWidth < 768 ? -30 : -70;
 
+    // scrollable (rect.height do hero, que usa 100dvh, menos window.innerHeight)
+    // cacheado — ambos oscilam durante o proprio gesto de scroll no mobile
+    // (retracao da barra de enderecos), o que fazia o progress (e o transform)
+    // tremer a cada frame. Recalculado so em resize real (mudanca de LARGURA),
+    // nunca a cada scroll — mesmo padrao do refresh() do ScrollTrigger que essa
+    // funcao substituiu, e do resize guard do cascading slider. rect.top segue
+    // lido ao vivo a cada tick, unico valor que deve mesmo mudar continuamente.
+    let scrollable = 0;
+    function measureScrollable() {
+        scrollable = hero.getBoundingClientRect().height - window.innerHeight;
+    }
+    measureScrollable();
+
     function updateParallax() {
         const rect = hero.getBoundingClientRect();
-        const scrollable = rect.height - window.innerHeight;
         const progress = scrollable > 0
             ? Math.min(Math.max(-rect.top / scrollable, 0), 1)
             : 0;
@@ -538,6 +550,13 @@ function initHeroContactCardParallax() {
 
     lenisInstance.on('scroll', updateParallax);
     updateParallax();
+
+    let lastWidth = window.innerWidth;
+    window.addEventListener('resize', () => {
+        if (window.innerWidth === lastWidth) return;
+        lastWidth = window.innerWidth;
+        measureScrollable();
+    });
 }
 
 // === HERO SCROLL EFFECTS — determinístico, derivado de heroProgress ===

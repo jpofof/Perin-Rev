@@ -6,7 +6,12 @@
  * Regression guard: o antigo scrollTrigger (GSAP ScrollTrigger, scrub:true)
  * foi substituido por um listener direto no evento 'scroll' do Lenis, que
  * calcula o progresso via getBoundingClientRect() do hero e aplica
- * translateY(progress * amplitude%) no wrapper. Este teste garante que:
+ * translateY(progress * amplitude%) no wrapper. O scrollable (rect.height -
+ * innerHeight) e medido uma vez na inicializacao e cacheado (evita tremor no
+ * mobile causado por 100dvh/innerHeight oscilando durante o proprio scroll,
+ * ver comentario em initHeroContactCardParallax) — por isso o mock de
+ * getBoundingClientRect precisa estar em vigor ANTES do require() do script,
+ * e so o rect.top varia entre as chamadas do handler. Este teste garante que:
  *  - progress 0 (topo do hero no topo da viewport) -> transform 0%
  *  - progress 1 (base do hero no topo da viewport) -> transform amplitude%
  *  - amplitude varia por breakpoint (-70% desktop, -30% mobile <768px)
@@ -90,17 +95,20 @@ describe('initHeroContactCardParallax — progresso via Lenis (sem ScrollTrigger
         Object.defineProperty(window, 'innerWidth', { writable: true, value: width });
         Object.defineProperty(window, 'innerHeight', { writable: true, value: 800 });
 
-        require('../../script.js');
-
-        const wrapper = document.querySelector('.hero-contact-card-parallax');
-        const hero = document.querySelector('.hero-architectural-scene');
-        expect(typeof capturedScrollHandler).toBe('function');
-
         const scrollableHeight = 2400; // hero.height - innerHeight
         const heroHeight = scrollableHeight + window.innerHeight;
 
-        // progress 0: topo do hero no topo da viewport (rect.top = 0)
+        // scrollable e medido no require() (init sincrono) — o mock precisa
+        // estar em vigor antes disso para o valor cacheado ficar correto.
+        const hero = document.querySelector('.hero-architectural-scene');
         hero.getBoundingClientRect = jest.fn(() => ({ top: 0, height: heroHeight }));
+
+        require('../../script.js');
+
+        const wrapper = document.querySelector('.hero-contact-card-parallax');
+        expect(typeof capturedScrollHandler).toBe('function');
+
+        // progress 0: topo do hero no topo da viewport (rect.top = 0)
         capturedScrollHandler();
         expect(wrapper.style.transform).toBe('translateY(0%)');
 
@@ -118,5 +126,29 @@ describe('initHeroContactCardParallax — progresso via Lenis (sem ScrollTrigger
         require('../../script.js');
 
         expect(capturedScrollHandler).toBeNull();
+    });
+
+    test('resize sem mudanca de largura (barra de enderecos mobile) nao recalcula o scrollable cacheado', () => {
+        polyfills();
+        Object.defineProperty(window, 'innerWidth', { writable: true, value: 1440 });
+        Object.defineProperty(window, 'innerHeight', { writable: true, value: 800 });
+
+        const scrollableHeight = 2400;
+        const heroHeight = scrollableHeight + window.innerHeight;
+        const hero = document.querySelector('.hero-architectural-scene');
+        hero.getBoundingClientRect = jest.fn(() => ({ top: -scrollableHeight, height: heroHeight }));
+
+        require('../../script.js');
+
+        const wrapper = document.querySelector('.hero-contact-card-parallax');
+
+        // Simula recolhimento da barra de enderecos: innerHeight muda, mas a
+        // largura nao — o scrollable cacheado deve permanecer o mesmo.
+        Object.defineProperty(window, 'innerHeight', { writable: true, value: 760 });
+        hero.getBoundingClientRect = jest.fn(() => ({ top: -scrollableHeight, height: heroHeight - 40 }));
+        window.dispatchEvent(new Event('resize'));
+
+        capturedScrollHandler();
+        expect(wrapper.style.transform).toBe('translateY(-70%)');
     });
 });
