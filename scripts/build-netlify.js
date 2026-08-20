@@ -73,6 +73,11 @@ for (const file of FILES) {
 // muda, entao o navegador so revalida quando ha de fato uma versao nova.
 function shortHash(filePath) {
     const content = fs.readFileSync(filePath);
+    // MD5 usado so como fingerprint de conteudo para cache-busting — nao ha
+    // uso criptografico (sem senha, sem assinatura, sem verificacao de
+    // integridade contra adulteracao maliciosa). Colisao de MD5 nao e um
+    // risco de seguranca aqui, so faria o navegador nao revalidar um asset
+    // idêntico em conteudo.
     return crypto.createHash('md5').update(content).digest('hex').slice(0, 8);
 }
 

@@ -57,7 +57,7 @@ global.fetch = jest.fn(() => Promise.resolve({ ok: true }));
 window.HTMLElement.prototype.scrollIntoView = jest.fn();
 
 jest.useFakeTimers();
-require('../../script.js');
+const { setFieldError } = require('../../script.js');
 for (let i = 0; i < 20; i++) jest.runOnlyPendingTimers();
 jest.useRealTimers();
 
@@ -146,6 +146,34 @@ describe('Contact form — honeypot', () => {
     document.getElementById('formWebsite').value = 'http://spam.example';
     submitForm();
     expect(fetch).not.toHaveBeenCalled();
+  });
+});
+
+describe('setFieldError — defesa em profundidade (mensagem nunca e interpretada como HTML)', () => {
+  test('SVG do icone continua renderizando dentro de .form-error-message', () => {
+    setFieldError('formGroupEmail', 'Digite um email válido.');
+    const msgEl = document.getElementById('formGroupEmail').querySelector('.form-error-message');
+    expect(msgEl.querySelector('svg')).not.toBeNull();
+    expect(msgEl.querySelector('circle')).not.toBeNull();
+    expect(msgEl.querySelector('path')).not.toBeNull();
+  });
+
+  test('mensagem com <script>/<b> chega como texto literal, nunca e parseada como HTML', () => {
+    const payload = 'ataque <script>alert(1)</script> e <b>negrito</b> forjado';
+    setFieldError('formGroupEmail', payload);
+    const msgEl = document.getElementById('formGroupEmail').querySelector('.form-error-message');
+
+    // nenhum elemento real foi criado a partir da string — prova concreta de
+    // que insertAdjacentText nunca interpreta o conteudo como markup.
+    expect(msgEl.querySelector('script')).toBeNull();
+    expect(msgEl.querySelector('b')).toBeNull();
+
+    // o texto literal (tags incluidas) aparece integralmente como conteudo
+    // textual do elemento.
+    expect(msgEl.textContent).toContain(payload);
+
+    // o icone SVG estatico continua presente junto com o texto malicioso.
+    expect(msgEl.querySelector('svg')).not.toBeNull();
   });
 });
 

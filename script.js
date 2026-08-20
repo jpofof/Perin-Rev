@@ -1092,10 +1092,13 @@ function setFieldError(groupId, message) {
     group.classList.add('form-group-error');
     const msgEl = group.querySelector('.form-error-message');
     if (msgEl && message) {
+        // SVG e markup estatico (seguro via innerHTML); a mensagem e sempre
+        // texto puro via insertAdjacentText para nunca ser interpretada como HTML.
         msgEl.innerHTML = `<svg width="14" height="14" viewBox="0 0 14 14" fill="none">
             <circle cx="7" cy="7" r="7" fill="#D32F2F" opacity="0.15"/>
             <path d="M7 4V8M7 10V10.01" stroke="#D32F2F" stroke-width="1.5" stroke-linecap="round"/>
-        </svg> ${message}`;
+        </svg> `;
+        msgEl.insertAdjacentText('beforeend', message);
     }
 }
 
@@ -2166,4 +2169,11 @@ function initFaqAccordion() {
             });
         });
     });
+}
+
+// Exportado so em ambiente Node/CommonJS (Jest) para permitir teste de
+// regressao direto em setFieldError; `module` nao existe no browser, entao
+// este bloco nao tem nenhum efeito no site em producao (<script defer>).
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { setFieldError };
 }
