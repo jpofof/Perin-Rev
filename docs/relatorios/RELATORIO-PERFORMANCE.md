@@ -1192,6 +1192,21 @@ Fecha o item pendente apontado na seção anterior: a única instância `ScrollT
 
 Escopo explicitamente restrito ao plugin ScrollTrigger — o GSAP core foi mantido intacto, pois ainda é usado por outras 5 animações do site (sync do Lenis via `gsap.ticker`, timeline de entrada do hero, cascading slider, hover do mosaico de serviços, estados do botão do formulário de contato, ripple de botão). Removidos junto com o plugin: a tag `<script src="vendor/gsap/ScrollTrigger.min.js">` em `index.html`, o `lenisInstance.on('scroll', ScrollTrigger.update)` de sincronização, `ScrollTrigger.config()`, e os listeners de `resize`/`load`/`document.fonts.ready` que existiam só para chamar `ScrollTrigger.refresh()`. Também removido o comentário morto remanescente referenciando o antigo `ScrollTrigger.batch()` (já migrado para `IntersectionObserver` na seção anterior).
 
-Ganho estimado no diagnóstico prévio (não medido em produção ainda): **-16.8KB gzip** (remoção de `ScrollTrigger.min.js` do bundle de scripts), **-52ms de scripting** e **-78ms de reflow** no TBT mobile, por eliminar o custo de `ScrollTrigger.refresh()` e o overhead do plugin sobre um scroll que já é suavizado pelo Lenis (o `ease: 'none'` da config antiga significava que o ScrollTrigger não adicionava interpolação alguma além da já fornecida pelo Lenis). Medição real contra produção (Lighthouse via Netlify) é o próximo passo, pendente de aprovação do usuário para o deploy.
+Ganho medido após deploy (commit `4594b4f`, push para `origin/master`, Lighthouse rodado em 20/08/2026 — arquivos em `audit/lighthouse/`):
 
-**Decisão separada, ainda não endereçada:** a remoção do GSAP core (as outras 5 animações listadas acima) permanece fora do escopo desta mudança — é uma decisão maior, com impacto em mais superfícies do site, que requer sua própria avaliação de custo/benefício antes de ser considerada.
+**Comparação limpa** (`localhost:4173`, mesmo ambiente/metodologia do baseline original em `audit-mobile2.json`/`audit-desktop.json`, isolando só o efeito do código):
+
+| | Mobile — antes | Mobile — depois | Desktop — antes | Desktop — depois |
+|---|---|---|---|---|
+| Perf score | 77 | **95** | 100 | 100 |
+| TBT | 447ms | **88ms** (-359ms) | 0ms | 0ms |
+| LCP | 3276ms | 2667ms | 720ms | 573ms |
+| FCP | 2543ms | 1437ms | 400ms | 405ms |
+
+Desktop sem margem de ganho — já estava no teto (score 100) antes da mudança. `ScrollTrigger.min.js` removido: **17.2KB gzip confirmado** (bateu com a estimativa de -16.8KB do diagnóstico prévio). A queda de TBT mobile (-359ms) superou a estimativa de -130ms (-52ms scripting + -78ms reflow) — a estimativa cobria só o custo de execução por frame do plugin, não o custo de parse/compile dos 43KB do arquivo sob o throttle de CPU 4x do perfil mobile, que some por completo ao remover o arquivo.
+
+**Produção real (Netlify)**, como referência — não comparável 1:1 à tabela acima, pois o baseline local rodou sem latência/CDN de rede real: Mobile score 97 (TBT 0ms, LCP 2252ms), Desktop score 99 (TBT 0ms, LCP 655ms). Arquivos: `audit-mobile-post-scrolltrigger.json`, `audit-desktop-post-scrolltrigger.json`.
+
+**Ressalva:** cada número acima é de uma única execução do Lighthouse (não mediana de N rodadas) — há variância normal entre execuções, então trate LCP/FCP como direcionais, não exatos.
+
+**Decisão separada, ainda não endereçada — rebaixada de prioridade:** a remoção do GSAP core (as outras 5 animações listadas acima) permanece fora do escopo desta mudança. Com o TBT mobile já em 88ms local / 0ms em produção — faixa considerada boa pelo Lighthouse — o esforço de reimplementar 5 animações (com risco de regressão visual) não se justifica no momento. Mantida como possível otimização futura, não como pendência ativa.
