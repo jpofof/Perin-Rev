@@ -15,13 +15,13 @@
     "semantic_hash": ""
   },
   "script.js": {
-    "mtime": 1787160285.1360114,
-    "ast_hash": "543d1fe60ac4c19a5142bf6819a2a227",
+    "mtime": 1787235472.1534522,
+    "ast_hash": "d99d9859e5f1c620ce3475355f89d046",
     "semantic_hash": ""
   },
   "script.min.js": {
-    "mtime": 1787160304.0438564,
-    "ast_hash": "882e6fa22a02c83172b5c1b424d55013",
+    "mtime": 1787235497.549053,
+    "ast_hash": "62d7679c9aa2da0fa607d39f684dcf0b",
     "semantic_hash": ""
   },
   "scripts/check-min-freshness.js": {
@@ -135,8 +135,8 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1787160363.6576905,
-    "ast_hash": "d40479185316faee5147f116753ad28f",
+    "mtime": 1787234498.5298984,
+    "ast_hash": "0984ebfb08607a584e9f49501ec678a6",
     "semantic_hash": ""
   },
   "audit/bootstrap-uso-real.md": {
@@ -280,8 +280,8 @@
     "semantic_hash": ""
   },
   "docs/relatorios/RELATORIO-PERFORMANCE.md": {
-    "mtime": 1787160027.8938496,
-    "ast_hash": "3e4d3c0bc038aa6bb781936dfdbc5dba",
+    "mtime": 1787233629.559252,
+    "ast_hash": "7054a6994530167ed594599936d93e04",
     "semantic_hash": ""
   },
   "docs/relatorios/relatorio-organizacao-imagens.md": {
@@ -290,8 +290,8 @@
     "semantic_hash": ""
   },
   "index.html": {
-    "mtime": 1787108004.8332076,
-    "ast_hash": "d8088abbe59ed1f49ad55bae17187373",
+    "mtime": 1787161728.410719,
+    "ast_hash": "fa9dd9265b6b060101b518b909d049cc",
     "semantic_hash": ""
   },
   "prototipos/cascading-slider/README-cscading.md": {
@@ -390,8 +390,8 @@
     "semantic_hash": ""
   },
   "scripts/build-netlify.js": {
-    "mtime": 1786985912.5769808,
-    "ast_hash": "5aa25066e0f3b4b48ee54102a88de9d3",
+    "mtime": 1787235230.987299,
+    "ast_hash": "f1c561eb6fdad690b3b4f08c0d8d880f",
     "semantic_hash": ""
   },
   "_archive/legado/src-original/index.html": {
@@ -590,8 +590,8 @@
     "semantic_hash": ""
   },
   "tests/unit/form.test.js": {
-    "mtime": 1786665077.0223153,
-    "ast_hash": "c34452fbd8817a922ae99a8f661744d8",
+    "mtime": 1787235489.7836142,
+    "ast_hash": "47643990cd875e7c17dbcaa8f74d67f6",
     "semantic_hash": ""
   },
   "tests/regression/hero-video.regression.test.js": {
@@ -617,6 +617,36 @@
   "tests/unit/build-netlify.test.js": {
     "mtime": 1787159916.9337497,
     "ast_hash": "bdd22ab7345261e5fd412a9b2ea26e20",
+    "semantic_hash": ""
+  },
+  "tests/unit/hero-contact-parallax.test.js": {
+    "mtime": 1787234386.7445543,
+    "ast_hash": "70fbce50ac3cc38a50ff6abefc66ab66",
+    "semantic_hash": ""
+  },
+  "audit/lighthouse/audit-desktop-post-scrolltrigger-local.json": {
+    "mtime": 1787233487.1426532,
+    "ast_hash": "cef66206bbd8d059e9e2bacff1b210e3",
+    "semantic_hash": ""
+  },
+  "audit/lighthouse/audit-desktop-post-scrolltrigger.json": {
+    "mtime": 1787233385.1835577,
+    "ast_hash": "2d2b3c28d1ad9b99a6b566227b4bf66e",
+    "semantic_hash": ""
+  },
+  "audit/lighthouse/audit-mobile-post-scrolltrigger-local.json": {
+    "mtime": 1787233464.3450828,
+    "ast_hash": "052250945565a5680500ada2cf208763",
+    "semantic_hash": ""
+  },
+  "audit/lighthouse/audit-mobile-post-scrolltrigger.json": {
+    "mtime": 1787233357.478935,
+    "ast_hash": "3370a714ccda2d904353ed9ccc123d80",
+    "semantic_hash": ""
+  },
+  "audit/seguranca-gitguard-2026-08-20.md": {
+    "mtime": 1787235269.9942012,
+    "ast_hash": "eff81db3672a25be2c2f751b94c6fd27",
     "semantic_hash": ""
   }
 }

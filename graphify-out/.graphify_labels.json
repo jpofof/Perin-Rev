@@ -7,7 +7,7 @@
   "5": "ScrollTrigger.min.js",
   "6": "03-smooth-scroll/lenis.min.js",
   "7": "lenis/lenis.min.js",
-  "8": "form.test.js",
+  "8": "Detalhamento",
   "9": "devDependencies",
   "10": "ce",
   "11": "r",
@@ -97,6 +97,8 @@
   "95": "build-netlify.test.js",
   "96": "checklist-pendencias-mobile.md",
   "97": "Scroll reveal nativo (IntersectionObserver) + limpeza de dead code — direção lazy finalmente validada",
+  "98": "hero-contact-parallax.test.js",
+  "99": "Mobile: conteúdo não revelava ao rolar",
   "102": "process-diagram.regression.test.js",
   "103": "implementacao.js"
 }
